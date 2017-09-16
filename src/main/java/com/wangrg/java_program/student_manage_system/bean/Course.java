@@ -22,6 +22,10 @@ public class Course {
     public Course() {
     }
 
+    public Course(Integer courseId) {
+        this.courseId = courseId;
+    }
+
     public Course(String courseName) {
         this.courseName = courseName;
     }

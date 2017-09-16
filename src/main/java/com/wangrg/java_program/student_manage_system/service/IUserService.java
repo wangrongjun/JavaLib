@@ -16,12 +16,4 @@ public interface IUserService {
     Manager managerLogin(String managerId, String password) throws
             AccountNotExistsException, PasswordErrorException;
 
-    Student getStudentFromCache();
-
-    void setStudentToCache(Student student);
-
-    Manager getManagerFromCache();
-
-    void setManagerToCache(Manager manager);
-
 }

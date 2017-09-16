@@ -3,7 +3,7 @@ package com.wangrg.java_program.lrc_editior;
 import com.wangrg.java_util.ClipboardUtil;
 import com.wangrg.java_util.DebugUtil;
 import com.wangrg.java_util.FileUtil;
-import com.wangrg.java_util.JOptionPaneUtil;
+import com.wangrg.swing.JOptionPaneUtil;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

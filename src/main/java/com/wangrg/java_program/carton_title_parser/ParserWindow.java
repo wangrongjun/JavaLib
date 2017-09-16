@@ -2,7 +2,7 @@ package com.wangrg.java_program.carton_title_parser;
 
 import com.wangrg.java_util.ConfigUtil;
 import com.wangrg.java_util.FileUtil;
-import com.wangrg.java_util.JOptionPaneUtil;
+import com.wangrg.swing.JOptionPaneUtil;
 import com.wangrg.java_util.TextUtil;
 
 import org.jsoup.Jsoup;

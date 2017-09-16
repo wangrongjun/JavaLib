@@ -1,14 +1,13 @@
-package com.wangrg.java_util;
+package com.wangrg.swing;
 
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.*;
 
 public class JOptionPaneUtil {
 
     public static void showError(Component component, String error) {
-        JOptionPane.showMessageDialog(component, error, "Error",
-                JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(component, error);
     }
 
     public static void showError(String error) {
@@ -16,8 +15,7 @@ public class JOptionPaneUtil {
     }
 
     public static void showInfo(Component component, String info) {
-        JOptionPane.showMessageDialog(component, info, "Info",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(component, info);
     }
 
     public static void showInfo(String info) {

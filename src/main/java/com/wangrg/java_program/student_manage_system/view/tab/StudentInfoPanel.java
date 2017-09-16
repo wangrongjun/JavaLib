@@ -3,7 +3,7 @@ package com.wangrg.java_program.student_manage_system.view.tab;
 import com.wangrg.java_program.student_manage_system.bean.Student;
 import com.wangrg.java_program.student_manage_system.contract.tab.StudentInfoContract;
 import com.wangrg.java_program.student_manage_system.controller.tab.StudentInfoController;
-import com.wangrg.java_util.JOptionPaneUtil;
+import com.wangrg.swing.JOptionPaneUtil;
 import com.wangrg.swing.JDialogUtil;
 
 import javax.swing.*;

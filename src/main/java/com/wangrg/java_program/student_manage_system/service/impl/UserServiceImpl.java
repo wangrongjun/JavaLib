@@ -17,9 +17,6 @@ public class UserServiceImpl implements IUserService {
     private IStudentDao studentDao = Spring.getBean(IStudentDao.class);
     private IManagerDao managerDao = Spring.getBean(IManagerDao.class);
 
-    private static Student student;
-    private static Manager manager;
-
     @Override
     public Student studentLogin(String studentId, String password) throws AccountNotExistsException, PasswordErrorException {
         try {
@@ -52,26 +49,6 @@ public class UserServiceImpl implements IUserService {
         } catch (NumberFormatException e) {
             throw new AccountNotExistsException();
         }
-    }
-
-    @Override
-    public Student getStudentFromCache() {
-        return student;
-    }
-
-    @Override
-    public void setStudentToCache(Student student) {
-        UserServiceImpl.student = student;
-    }
-
-    @Override
-    public Manager getManagerFromCache() {
-        return manager;
-    }
-
-    @Override
-    public void setManagerToCache(Manager manager) {
-        UserServiceImpl.manager = manager;
     }
 
 }

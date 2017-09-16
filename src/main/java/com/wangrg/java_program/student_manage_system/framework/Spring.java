@@ -1,5 +1,7 @@
 package com.wangrg.java_program.student_manage_system.framework;
 
+import com.wangrg.java_program.student_manage_system.background_executor.BackgroundExecutor;
+import com.wangrg.java_program.student_manage_system.background_executor.SwingBackgroundExecutor;
 import com.wangrg.java_program.student_manage_system.contract.LoginContract;
 import com.wangrg.java_program.student_manage_system.contract.StudentMainContract;
 import com.wangrg.java_program.student_manage_system.dao.*;
@@ -25,6 +27,9 @@ public class Spring {
 
     private static void initMap() {
         beanMap = new HashMap<>();
+
+        // BackgroundExecutor
+        beanMap.put(BackgroundExecutor.class, SwingBackgroundExecutor.class);
 
         // Dao
         beanMap.put(IStudentDao.class, StudentDaoImpl.class);

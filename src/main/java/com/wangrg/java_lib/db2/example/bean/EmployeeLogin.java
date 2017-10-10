@@ -1,8 +1,9 @@
 package com.wangrg.java_lib.db2.example.bean;
 
-import com.wangrg.java_lib.db2.Column;
-import com.wangrg.java_lib.db2.Id;
-import com.wangrg.java_lib.db2.Reference;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * by wangrongjun on 2017/6/15.
@@ -11,8 +12,9 @@ import com.wangrg.java_lib.db2.Reference;
 public class EmployeeLogin {
 
     @Id
+    @GeneratedValue
     private int employeeLoginId;
-    @Reference
+    @ManyToOne
     private Employee employee;
     @Column(length = 20, nullable = false)
     private String password;

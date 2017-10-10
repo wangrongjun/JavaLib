@@ -1,8 +1,9 @@
 package com.wangrg.java_lib.java_program.student_manage_system.bean;
 
-import com.wangrg.java_lib.db2.Id;
-import com.wangrg.java_lib.db2.Reference;
 import com.wangrg.java_lib.db3.main.UnionUniqueKey;
+
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * by wangrongjun on 2017/9/11.
@@ -12,10 +13,10 @@ public class SC {
     @Id
     private Integer scId;
     @UnionUniqueKey
-    @Reference
+    @ManyToOne
     private Student student;
     @UnionUniqueKey
-    @Reference
+    @ManyToOne
     private Course course;
 
     public SC() {

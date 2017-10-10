@@ -1,25 +1,26 @@
 package com.wangrg.java_lib.java_program.student_manage_system.bean;
 
-import com.wangrg.java_lib.db2.Column;
-import com.wangrg.java_lib.db2.Id;
-import com.wangrg.java_lib.db2.Ignore;
-import com.wangrg.java_lib.db2.Reference;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * by wangrongjun on 2017/9/11.
  */
 public class Student {
 
-    @Id(autoIncrement = false)
+    @Id
+    @GeneratedValue
     private Long studentId;
     @Column(length = 20, nullable = false, unique = true)
     private String studentName;
     @Column(length = 20, nullable = false)
     private String password;
-    @Reference
+    @ManyToOne
     private Location location;
 
-    @Ignore
+    @ManyToOne
     private int selecteCourseCount;
 
     public Student() {

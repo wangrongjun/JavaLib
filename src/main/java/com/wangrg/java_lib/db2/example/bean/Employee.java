@@ -1,11 +1,9 @@
 package com.wangrg.java_lib.db2.example.bean;
 
-
-import com.wangrg.java_lib.db2.Column;
-import com.wangrg.java_lib.db2.Id;
-import com.wangrg.java_lib.db2.Ignore;
-import com.wangrg.java_lib.db2.Reference;
-
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -14,17 +12,17 @@ import java.util.Date;
 
 public class Employee {
 
-    @Ignore
+    @Transient
     public static final int GENDER_MAN = 1;
-    @Ignore
+    @Transient
     public static final int GENDER_WOMAN = 0;
 
-    @Id(autoIncrement = false)
+    @Id
     private Long employeeId;
     @Column(length = 20, nullable = false)
     private String name;
     private Long gender;
-    @Reference
+    @ManyToOne
     private Position position;
     private Double salary;
     private Date startTime;//入职时间

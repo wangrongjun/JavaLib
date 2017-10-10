@@ -1,9 +1,11 @@
 package com.wangrg.java_lib.db2;
 
+import com.wangrg.java_lib.db.basis.Action;
 import com.wangrg.java_lib.java_util.DateUtil;
 import com.wangrg.java_lib.java_util.ReflectUtil;
 import com.wangrg.java_lib.java_util.TextUtil;
 
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -19,13 +21,12 @@ public class TableUtil {
     public static String createTableSql(Class entityClass) {
         String sql = "create table if not exists " + entityClass.getSimpleName() + " (\n";
         for (Field field : entityClass.getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (field.getAnnotation(Transient.class) != null) {
                 continue;
             }
             sql += field.getName() + " " + getType(field);
-            Id idAnno = field.getAnnotation(Id.class);
-            if (idAnno != null) {
-                if (idAnno.autoIncrement()) {
+            if (field.getAnnotation(Id.class) != null) {
+                if (field.getAnnotation(GeneratedValue.class) != null) {
                     sql += " primary key auto_increment,\n";
                 } else {
                     sql += " primary key,\n";
@@ -52,7 +53,7 @@ public class TableUtil {
      * User -> int/bigint
      */
     protected static String getType(Field field) {
-        if (field.getAnnotation(Reference.class) != null) {
+        if (field.getAnnotation(ManyToOne.class) != null) {
             Field innerIdField = ReflectUtil.findByAnno(field.getType(), Id.class);
             switch (innerIdField.getType().getSimpleName()) {
                 case "int":
@@ -95,26 +96,44 @@ public class TableUtil {
     public static List<String> foreignKeySql(Class entityClass) {
         List<String> list = new ArrayList<>();
         for (Field field : entityClass.getDeclaredFields()) {
-            Reference reference = field.getAnnotation(Reference.class);
-            if (reference == null) {
+            ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+            if (manyToOne == null) {
                 continue;
             }
             String mainTableName = entityClass.getSimpleName();
             String mainFieldName = field.getName();
             String referenceTableName = field.getType().getSimpleName();
             String referenceFieldName = ReflectUtil.findByAnno(field.getType(), Id.class).getName();
+
+            Action onDeleteAction = null;
+            Action onUpdateAction = null;
+            CascadeType[] cascade = manyToOne.cascade();
+            if (cascade.length > 0) {
+                switch (cascade[0]) {
+                    case ALL:
+                        onDeleteAction = onUpdateAction = Action.CASCADE;
+                        break;
+                    case DETACH:
+                    case REMOVE:
+                        onDeleteAction = onUpdateAction = Action.SET_NULL;
+                        break;
+                    default:
+                        onDeleteAction = onUpdateAction = Action.NO_ACTION;
+                }
+            }
+
             list.add(foreignKeySql(mainTableName, mainFieldName, referenceTableName,
-                    referenceFieldName, reference.onDeleteAction(), reference.onUpdateAction()));
+                    referenceFieldName, onDeleteAction, onUpdateAction));
         }
         return list;
     }
 
     public static String foreignKeySql(String mainTableName,
-                                        String mainFieldName,
-                                        String referenceTableName,
-                                        String referenceFieldName,
-                                        Reference.Action onDeleteAction,
-                                        Reference.Action onUpdateAction) {
+                                       String mainFieldName,
+                                       String referenceTableName,
+                                       String referenceFieldName,
+                                       Action onDeleteAction,
+                                       Action onUpdateAction) {
 
         String sql = "alter table " + mainTableName + " add foreign key (" + mainFieldName + ") " +
                 "references " + referenceTableName + " (" + referenceFieldName + ") ";

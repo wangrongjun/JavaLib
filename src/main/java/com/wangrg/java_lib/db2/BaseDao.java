@@ -5,15 +5,14 @@ import com.wangrg.java_lib.java_util.LogUtil;
 import com.wangrg.java_lib.java_util.ReflectUtil;
 import com.wangrg.java_lib.java_util.TextUtil;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,17 +208,17 @@ public class BaseDao<T> implements Dao<T> {
         String columnStringList = "";// (userId,username,password)
         String valueList = "";// ('1','wang','123')
         for (Field field : getEntityClass().getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (field.getAnnotation(Transient.class) != null) {
                 continue;
             }
-            Id idAnno = field.getAnnotation(Id.class);
-            if (idAnno != null && idAnno.autoIncrement()) {
+            if (field.getAnnotation(Id.class) != null &&
+                    field.getAnnotation(GeneratedValue.class) != null) {
                 continue;
             }
 
             field.setAccessible(true);
             try {
-                if (field.getAnnotation(Reference.class) != null) {
+                if (field.getAnnotation(ManyToOne.class) != null) {
                     Object innerEntity = field.get(entity);
                     long idValue = getIdValue(innerEntity);
                     if (idValue > 0) {// 外键id值大于0才把外键id设置到sql语句中
@@ -303,7 +302,7 @@ public class BaseDao<T> implements Dao<T> {
         String tableName = getTableName();
         String setValueList = "";// (userId='1',username='wang',password='123')
         for (Field field : getEntityClass().getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (field.getAnnotation(Transient.class) != null) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -314,7 +313,7 @@ public class BaseDao<T> implements Dao<T> {
             field.setAccessible(true);
             try {
                 setValueList += "," + field.getName() + "=";
-                if (field.getAnnotation(Reference.class) != null) {
+                if (field.getAnnotation(ManyToOne.class) != null) {
                     Object innerEntity = field.get(entity);
                     long idValue = getIdValue(innerEntity);
                     setValueList += "'" + idValue + "'";
@@ -368,11 +367,11 @@ public class BaseDao<T> implements Dao<T> {
             while (rs.next()) {
                 T entity = entityClass.newInstance();
                 for (Field field : entityClass.getDeclaredFields()) {
-                    if (field.getAnnotation(Ignore.class) != null) {
+                    if (field.getAnnotation(Transient.class) != null) {
                         continue;
                     }
                     field.setAccessible(true);
-                    if (field.getAnnotation(Reference.class) == null) {
+                    if (field.getAnnotation(ManyToOne.class) == null) {
                         // 正常赋值
                         boolean require = true;
                         if (currentLevel > 0 && field.getAnnotation(Id.class) == null &&

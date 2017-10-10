@@ -1,10 +1,7 @@
 package com.wangrg.java_lib.db3;
 
 import com.wangrg.java_lib.db.connection.Dbcp;
-import com.wangrg.java_lib.db2.Id;
-import com.wangrg.java_lib.db2.Ignore;
 import com.wangrg.java_lib.db2.Query;
-import com.wangrg.java_lib.db2.Reference;
 import com.wangrg.java_lib.db2.Where;
 import com.wangrg.java_lib.db3.db.IDataBase;
 import com.wangrg.java_lib.java_util.GsonUtil;
@@ -13,6 +10,10 @@ import com.wangrg.java_lib.java_util.LogUtil;
 import com.wangrg.java_lib.java_util.ReflectUtil;
 import com.wangrg.java_lib.java_util.TextUtil;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -174,7 +175,7 @@ public class BaseDao<T> implements Dao<T> {
         try {
             Field idField = getIdField();
             idField.setAccessible(true);
-            boolean autoIncrement = idField.getAnnotation(Id.class).autoIncrement();
+            boolean autoIncrement = idField.getAnnotation(GeneratedValue.class) != null;
             long id = db.insert(conn, entity.getClass().getSimpleName(), autoIncrement, sql);
             if (autoIncrement) {// 如果id是自增，才把insert返回的id设置进entity
                 switch (idField.getType().getSimpleName()) {
@@ -262,11 +263,11 @@ public class BaseDao<T> implements Dao<T> {
             while (rs.next()) {
                 T entity = entityClass.newInstance();
                 for (Field field : entityClass.getDeclaredFields()) {
-                    if (field.getAnnotation(Ignore.class) != null) {
+                    if (field.getAnnotation(Transient.class) != null) {
                         continue;
                     }
                     field.setAccessible(true);
-                    if (field.getAnnotation(Reference.class) == null) {
+                    if (field.getAnnotation(ManyToOne.class) == null) {
                         // 正常赋值
                         boolean require = true;
                         if (currentLevel > 0 && field.getAnnotation(Id.class) == null &&

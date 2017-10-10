@@ -1,10 +1,6 @@
 package com.wangrg.java_lib.db3.example.bean;
 
-import com.wangrg.java_lib.db2.Column;
-import com.wangrg.java_lib.db2.Id;
-import com.wangrg.java_lib.db2.Ignore;
-import com.wangrg.java_lib.db2.Reference;
-
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -13,17 +9,18 @@ import java.util.Date;
 
 public class Emp {
 
-    @Ignore
+    @Transient
     public static final int GENDER_MAN = 1;
-    @Ignore
+    @Transient
     public static final int GENDER_WOMAN = 0;
 
-    @Id(autoIncrement = false)
+    @Id
+    @GeneratedValue
     private Long empno;
     @Column(length = 20, nullable = false)
     private String ename;
     private Long gender;
-    @Reference
+    @ManyToOne
     private Pos pos;
     private Double salary;
     private Date hireDate;//入职时间

@@ -1,13 +1,14 @@
 package com.wangrg.java_lib.db3.db;
 
 import com.wangrg.java_lib.data_structure.Pair;
-import com.wangrg.java_lib.db2.*;
+import com.wangrg.java_lib.db.basis.Action;
+import com.wangrg.java_lib.db2.Where;
 import com.wangrg.java_lib.db3.main.TableField;
-import com.wangrg.java_lib.db3.main.UnionUniqueKey;
 import com.wangrg.java_lib.db3.main.UpdateSetValue;
 import com.wangrg.java_lib.java_util.ReflectUtil;
 import com.wangrg.java_lib.java_util.TextUtil;
 
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  * by wangrongjun on 2017/8/23.
  */
 
-abstract class DefaultDatabase implements IDataBase {
+public abstract class DefaultDatabase implements IDataBase {
 
     @Override
     public List<String> createTableSql(Class entityClass) {
@@ -26,33 +27,37 @@ abstract class DefaultDatabase implements IDataBase {
         List<String> unionUniqueList = new ArrayList<>();
 
         for (Field field : entityClass.getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (field.getAnnotation(Transient.class) != null ||
+                    field.getAnnotation(OneToMany.class) != null ||
+                    field.getAnnotation(OneToOne.class) != null) {
                 continue;
             }
 
             TableField tableField = new TableField(field.getName(), getType(field));
 
-            Id idAnno = field.getAnnotation(Id.class);
-            if (idAnno != null) {
+            if (field.getAnnotation(Id.class) != null) {
                 tableField.setPrimaryKey(true);
-                tableField.setAutoIncrement(idAnno.autoIncrement());
+            }
+            if (field.getAnnotation(GeneratedValue.class) != null) {
+                tableField.setAutoIncrement(true);
             }
 
             Column columnAnno = field.getAnnotation(Column.class);
             if (columnAnno != null) {
                 tableField.setLength(columnAnno.length());
-                tableField.setDecimalLength(columnAnno.decimalLength());
+//                tableField.setDecimalLength(columnAnno.decimalLength());
+                tableField.setDecimalLength(2);
                 tableField.setNullable(columnAnno.nullable());
                 tableField.setUnique(columnAnno.unique());
-                tableField.setDefaultValue(columnAnno.defaultValue());
+//                tableField.setDefaultValue(columnAnno.defaultValue());
             }
 
-            if (field.getAnnotation(UnionUniqueKey.class) != null) {
-                unionUniqueList.add(field.getName());
-            }
+//            if (field.getAnnotation(UnionUniqueKey.class) != null) {
+//                unionUniqueList.add(field.getName());
+//            }
 
-            Reference referenceAnno = field.getAnnotation(Reference.class);
-            if (referenceAnno != null) {
+            ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+            if (manyToOne != null) {
                 tableField.setForeignKey(true);
                 tableField.setReferenceTable(field.getType().getSimpleName());
                 Field fkIdField = ReflectUtil.findByAnno(field.getType(), Id.class);
@@ -61,8 +66,23 @@ abstract class DefaultDatabase implements IDataBase {
                 }
                 tableField.setType(getType(fkIdField));// 根据外键类的id类型重新设置数据类型
                 tableField.setReferenceColumn(fkIdField.getName());
-                tableField.setOnDeleteAction(referenceAnno.onDeleteAction());
-                tableField.setOnUpdateAction(referenceAnno.onUpdateAction());
+                CascadeType[] cascade = manyToOne.cascade();
+                if (cascade.length > 0) {
+                    switch (cascade[0]) {
+                        case ALL:
+                            tableField.setOnDeleteAction(Action.CASCADE);
+                            tableField.setOnUpdateAction(Action.CASCADE);
+                            break;
+                        case DETACH:
+                        case REMOVE:
+                            tableField.setOnDeleteAction(Action.SET_NULL);
+                            tableField.setOnUpdateAction(Action.SET_NULL);
+                            break;
+                        default:
+                            tableField.setOnDeleteAction(Action.NO_ACTION);
+                            tableField.setOnUpdateAction(Action.NO_ACTION);
+                    }
+                }
             }
 
             tableFieldList.add(tableField);
@@ -81,7 +101,7 @@ abstract class DefaultDatabase implements IDataBase {
         List<Pair<String, String>> nameValuePairList = new ArrayList<>();
 
         for (Field field : entity.getClass().getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (isForeignKeyObjectButNotManyToOne(field)) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -95,7 +115,7 @@ abstract class DefaultDatabase implements IDataBase {
 
             field.setAccessible(true);
             try {
-                if (field.getAnnotation(Reference.class) != null) {
+                if (field.getAnnotation(ManyToOne.class) != null) {
                     Object innerEntity = field.get(entity);
                     long idValue = getIdValue(innerEntity);
                     if (idValue > 0) {// 外键id值大于0才把外键id设置到sql语句中
@@ -119,7 +139,7 @@ abstract class DefaultDatabase implements IDataBase {
     public String deleteSql(Object entity) {
         Where where = new Where();
         for (Field field : entity.getClass().getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (isForeignKeyObjectButNotManyToOne(field)) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -137,7 +157,7 @@ abstract class DefaultDatabase implements IDataBase {
         Where where = new Where();
 
         for (Field field : entity.getClass().getDeclaredFields()) {
-            if (field.getAnnotation(Ignore.class) != null) {
+            if (isForeignKeyObjectButNotManyToOne(field)) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -147,7 +167,7 @@ abstract class DefaultDatabase implements IDataBase {
             }
             field.setAccessible(true);
             try {
-                if (field.getAnnotation(Reference.class) != null) {
+                if (field.getAnnotation(ManyToOne.class) != null) {
                     Object innerEntity = field.get(entity);
                     long fkIdValue = getIdValue(innerEntity);
                     setValue.add(field.getName(), fkIdValue + "");
@@ -163,8 +183,15 @@ abstract class DefaultDatabase implements IDataBase {
         return getSqlCreator().updateSql(entity.getClass().getSimpleName(), setValue, where);
     }
 
+    private boolean isForeignKeyObjectButNotManyToOne(Field field) {
+        return field.getAnnotation(Transient.class) != null ||
+                field.getAnnotation(OneToMany.class) != null ||
+                field.getAnnotation(ManyToMany.class) != null ||
+                field.getAnnotation(OneToOne.class) != null;
+    }
+
     protected TableField.Type getType(Field field) {
-        if (field.getAnnotation(Reference.class) != null) {
+        if (field.getAnnotation(ManyToOne.class) != null) {
             return null;
         }
 

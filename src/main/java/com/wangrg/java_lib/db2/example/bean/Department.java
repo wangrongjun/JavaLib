@@ -1,8 +1,9 @@
 package com.wangrg.java_lib.db2.example.bean;
 
 
-import com.wangrg.java_lib.db2.Column;
-import com.wangrg.java_lib.db2.Id;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * by wangrongjun on 2017/6/14.
@@ -11,6 +12,7 @@ import com.wangrg.java_lib.db2.Id;
 public class Department {
 
     @Id
+    @GeneratedValue
     private int departmentId;
     @Column(length = 50, nullable = false)
     private String name;

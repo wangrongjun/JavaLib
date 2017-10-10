@@ -1,6 +1,7 @@
 package com.wangrg.java_lib.java_program.student_manage_system.bean;
 
-import com.wangrg.java_lib.db2.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * by wangrongjun on 2017/9/12.
@@ -8,6 +9,7 @@ import com.wangrg.java_lib.db2.Id;
 public class Location {
 
     @Id
+    @GeneratedValue
     private Integer locationId;
     private String country;// 国家
     private String province;// 省（州）

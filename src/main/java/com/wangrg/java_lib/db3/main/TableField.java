@@ -1,6 +1,6 @@
 package com.wangrg.java_lib.db3.main;
 
-import com.wangrg.java_lib.db2.Reference;
+import com.wangrg.java_lib.db.basis.Action;
 
 /**
  * by wangrongjun on 2017/8/21.
@@ -21,8 +21,8 @@ public class TableField {
     private boolean foreignKey;
     private String referenceTable;
     private String referenceColumn;
-    private Reference.Action onDeleteAction;
-    private Reference.Action onUpdateAction;
+    private Action onDeleteAction=Action.NO_ACTION;
+    private Action onUpdateAction=Action.NO_ACTION;
 
     public enum Type {
         NUMBER_INT,
@@ -134,19 +134,19 @@ public class TableField {
         this.referenceColumn = referenceColumn;
     }
 
-    public Reference.Action getOnDeleteAction() {
+    public Action getOnDeleteAction() {
         return onDeleteAction;
     }
 
-    public void setOnDeleteAction(Reference.Action onDeleteAction) {
+    public void setOnDeleteAction(Action onDeleteAction) {
         this.onDeleteAction = onDeleteAction;
     }
 
-    public Reference.Action getOnUpdateAction() {
+    public Action getOnUpdateAction() {
         return onUpdateAction;
     }
 
-    public void setOnUpdateAction(Reference.Action onUpdateAction) {
+    public void setOnUpdateAction(Action onUpdateAction) {
         this.onUpdateAction = onUpdateAction;
     }
 }

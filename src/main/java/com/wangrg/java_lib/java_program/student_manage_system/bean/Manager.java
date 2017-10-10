@@ -1,7 +1,8 @@
 package com.wangrg.java_lib.java_program.student_manage_system.bean;
 
-import com.wangrg.java_lib.db2.Column;
-import com.wangrg.java_lib.db2.Id;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * by wangrongjun on 2017/9/11.
@@ -9,6 +10,7 @@ import com.wangrg.java_lib.db2.Id;
 public class Manager {
 
     @Id
+    @GeneratedValue
     private Integer managerId;
     @Column(length = 20, nullable = false, unique = true)
     private String managerName;

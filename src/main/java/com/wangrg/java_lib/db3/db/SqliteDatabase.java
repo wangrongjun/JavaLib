@@ -3,10 +3,7 @@ package com.wangrg.java_lib.db3.db;
 import com.wangrg.java_lib.db3.db.sql_creator.ISqlCreator;
 import com.wangrg.java_lib.db3.db.sql_creator.SqliteCreator;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * by wangrongjun on 2017/9/11.
@@ -36,18 +33,27 @@ public class SqliteDatabase extends MysqlDatabase {
     }
 
     @Override
-    public long insert(Connection conn, String tableName, boolean autoIncrement, String sql) throws SQLException {
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sql);
-        int id = 0;
-        if (autoIncrement) {
-            ResultSet rs = stat.executeQuery("select seq from sqlite_sequence where name='" + tableName + "'");
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-            rs.close();
-        }
-        stat.close();
+    public long insert(Connection conn, String tableName, String idFieldName, boolean autoIncrement, String sql) throws SQLException {
+//        Statement stat = conn.createStatement();
+//        stat.executeUpdate(sql);
+//        int id = 0;
+//        if (autoIncrement) {
+//            ResultSet rs = stat.executeQuery("select seq from sqlite_sequence where name='" + tableName + "'");
+//            if (rs.next()) {
+//                id = rs.getInt(1);
+//            }
+//            rs.close();
+//        }
+//        stat.close();
+//        return id;
+
+        PreparedStatement ps = conn.prepareStatement(sql, new String[]{idFieldName});
+        ps.executeUpdate();
+        ResultSet rs = ps.getGeneratedKeys();
+        rs.next();
+        int id = rs.getInt(1);
+        rs.close();
+        ps.close();
         return id;
     }
 }

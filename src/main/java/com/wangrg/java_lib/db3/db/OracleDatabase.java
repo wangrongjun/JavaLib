@@ -6,11 +6,7 @@ import com.wangrg.java_lib.java_util.DateUtil;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Date;
 
 /**
@@ -43,20 +39,30 @@ public class OracleDatabase extends DefaultDatabase {
     }
 
     @Override
-    public long insert(Connection conn, String tableName, boolean autoIncrement, String sql)
+    public long insert(Connection conn, String tableName, String idFieldName, boolean autoIncrement, String sql)
             throws SQLException {
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sql);
-        stat.executeUpdate("commit");
-        int id = 0;
-        if (autoIncrement) {
-            ResultSet rs = stat.executeQuery(getSqlCreator().queryAutoIncrementCurrentValue(tableName));
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-            rs.close();
-        }
-        stat.close();
+//        Statement stat = conn.createStatement();
+//        stat.executeUpdate(sql);
+//        stat.executeUpdate("commit");
+//        int id = 0;
+//        if (autoIncrement) {
+//            ResultSet rs = stat.executeQuery(getSqlCreator().queryAutoIncrementCurrentValue(tableName));
+//            if (rs.next()) {
+//                id = rs.getInt(1);
+//            }
+//            rs.close();
+//        }
+//        stat.close();
+//        return id;
+
+        PreparedStatement ps = conn.prepareStatement(sql, new String[]{idFieldName});
+        ps.executeUpdate();
+        ResultSet rs = ps.getGeneratedKeys();
+        rs.next();
+        int id = rs.getInt(1);
+        rs.close();
+        ps.executeUpdate("commit");
+        ps.close();
         return id;
     }
 

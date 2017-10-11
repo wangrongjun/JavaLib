@@ -22,7 +22,7 @@ public interface IDataBase {
     /**
      * @return 如果autoIncrement为false，返回0。否则返回插入后自增的id值
      */
-    long insert(Connection conn, String tableName, boolean autoIncrement, String sql)
+    long insert(Connection conn, String tableName, String idFieldName, boolean autoIncrement, String sql)
             throws SQLException;
 
     /**

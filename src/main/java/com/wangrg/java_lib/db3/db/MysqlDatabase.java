@@ -39,19 +39,28 @@ public class MysqlDatabase extends DefaultDatabase {
     }
 
     @Override
-    public long insert(Connection conn, String tableName, boolean autoIncrement, String sql)
+    public long insert(Connection conn, String tableName, String idFieldName, boolean autoIncrement, String sql)
             throws SQLException {
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-        int id = 0;
-        if (autoIncrement) {
-            ResultSet rs = stat.getGeneratedKeys();
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-            rs.close();
-        }
-        stat.close();
+//        Statement stat = conn.createStatement();
+//        stat.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+//        int id = 0;
+//        if (autoIncrement) {
+//            ResultSet rs = stat.getGeneratedKeys();
+//            if (rs.next()) {
+//                id = rs.getInt(1);
+//            }
+//            rs.close();
+//        }
+//        stat.close();
+//        return id;
+
+        PreparedStatement ps = conn.prepareStatement(sql, new String[]{idFieldName});
+        ps.executeUpdate();
+        ResultSet rs = ps.getGeneratedKeys();
+        rs.next();
+        int id = rs.getInt(1);
+        rs.close();
+        ps.close();
         return id;
     }
 

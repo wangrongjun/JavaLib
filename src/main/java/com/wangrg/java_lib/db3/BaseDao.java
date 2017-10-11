@@ -176,7 +176,7 @@ public class BaseDao<T> implements Dao<T> {
             Field idField = getIdField();
             idField.setAccessible(true);
             boolean autoIncrement = idField.getAnnotation(GeneratedValue.class) != null;
-            long id = db.insert(conn, entity.getClass().getSimpleName(), autoIncrement, sql);
+            long id = db.insert(conn, entity.getClass().getSimpleName(), idField.getName(), autoIncrement, sql);
             if (autoIncrement) {// 如果id是自增，才把insert返回的id设置进entity
                 switch (idField.getType().getSimpleName()) {
                     case "int":

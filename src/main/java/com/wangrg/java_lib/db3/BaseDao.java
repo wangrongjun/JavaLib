@@ -105,10 +105,10 @@ public class BaseDao<T> implements Dao<T> {
         if (printSql) {
             if (printLogHint) {
                 System.out.println();
-                LogUtil.print(sql, BaseDao.class.getName());
+                LogUtil.print(BaseDao.class.getName());
                 System.out.println();
             } else {
-                System.out.println("\n" + sql);
+                System.out.println("\n" + sql + ";");
             }
         }
     }

@@ -36,13 +36,10 @@ public class Query {
      */
     private String[] orderBy = null;
 
-    public static Query build(Where where) {
-        return new Query().where(where);
-    }
-
-    public Query where(Where where) {
-        this.where = where;
-        return this;
+    public static Query where(Where where) {
+        Query query = new Query();
+        query.where = where;
+        return query;
     }
 
     public Query maxQueryForeignKeyLevel(int maxQueryForeignKeyLevel) {

@@ -19,6 +19,6 @@ public class DepartmentDaoImpl extends OADao<Department> implements DepartmentDa
 
     @Override
     public List<Department> queryByName(String name) {
-        return query(Where.build("name", name));
+        return query(Where.eq("name", name));
     }
 }

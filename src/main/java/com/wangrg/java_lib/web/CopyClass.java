@@ -13,7 +13,7 @@ public class CopyClass {
     public static String webappName = "ebook";
     public static String servletPackage = "servlet";
 
-    public static final String buildClassDir = modelName + "\\build\\classes\\main\\";
+    public static final String buildClassDir = modelName + "\\eq\\classes\\main\\";
     public static String WEB_INF_DIR =
             "C:/IDE/apache-tomcat-7.0.67/webapps/" + webappName + "/WEB-INF/";
 
@@ -29,7 +29,7 @@ public class CopyClass {
         }
 
         // 2.把java_lib的java_lib.jar复制到WEB-INF/lib下
-        String fromDir = "C:\\IDE\\android-studio-project\\MyLib\\java_lib\\build\\libs\\java_lib.jar";
+        String fromDir = "C:\\IDE\\android-studio-project\\MyLib\\java_lib\\eq\\libs\\java_lib.jar";
         String toDir = WEB_INF_DIR + "lib/java_lib.jar";
         success = new File(toDir).delete();
         if (!success) {

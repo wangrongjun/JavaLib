@@ -114,6 +114,8 @@ public class MysqlCreator extends DefaultCreator {
                 return "float";
             case NUMBER_DOUBLE:
                 return "double";
+            case BOOLEAN:
+                return "boolean";
             case TEXT:
                 return length == 0 ? "text" : "varchar(" + length + ")";
             case DATE:

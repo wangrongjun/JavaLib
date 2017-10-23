@@ -289,7 +289,7 @@ public class BaseDao<T> implements Dao<T> {
     @Override
     public boolean deleteById(long id) {
         String idName = getIdField().getName();
-        return delete(Where.build(idName, id + ""));
+        return delete(Where.eq(idName, id + ""));
     }
 
     @Override
@@ -528,12 +528,12 @@ public class BaseDao<T> implements Dao<T> {
 
     @Override
     public List<T> query(Where where) {
-        return query(Query.build(where));
+        return query(Query.where(where));
     }
 
     @Override
     public T queryById(long id) {
-        Where where = Where.build(getIdField().getName(), id + "");
+        Where where = Where.eq(getIdField().getName(), id + "");
         List<T> list = query(where);
         if (list != null && list.size() > 0) {
             return list.get(0);

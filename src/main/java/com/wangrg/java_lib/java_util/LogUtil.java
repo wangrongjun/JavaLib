@@ -16,6 +16,12 @@ public class LogUtil {
         return s;
     }
 
+    public static String printError(String msg, String... ignoreClass) {
+        String s = get(msg, 2, Arrays.asList(ignoreClass));
+        System.err.println(s);
+        return s;
+    }
+
     public static String printEntity(Object entity) {
         String s = get(GsonUtil.formatJson(entity), 2, null);
         System.out.println(s);

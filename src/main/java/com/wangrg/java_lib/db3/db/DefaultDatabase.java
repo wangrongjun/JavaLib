@@ -27,9 +27,7 @@ public abstract class DefaultDatabase implements IDataBase {
         List<String> unionUniqueList = new ArrayList<>();
 
         for (Field field : entityClass.getDeclaredFields()) {
-            if (field.getAnnotation(Transient.class) != null ||
-                    field.getAnnotation(OneToMany.class) != null ||
-                    field.getAnnotation(OneToOne.class) != null) {
+            if (shouldIgnoreField(field)) {
                 continue;
             }
 
@@ -44,9 +42,14 @@ public abstract class DefaultDatabase implements IDataBase {
 
             Column columnAnno = field.getAnnotation(Column.class);
             if (columnAnno != null) {
-                tableField.setLength(columnAnno.length());
-//                tableField.setDecimalLength(columnAnno.decimalLength());
-                tableField.setDecimalLength(2);
+                if (columnAnno.length() > 0) {
+                    if (columnAnno.length() == 255) {// 255为@Column length()的默认值
+                        tableField.setLength(0);
+                    } else {
+                        tableField.setLength(columnAnno.length());
+                    }
+                }
+                tableField.setDecimalLength(columnAnno.precision());
                 tableField.setNullable(columnAnno.nullable());
                 tableField.setUnique(columnAnno.unique());
 //                tableField.setDefaultValue(columnAnno.defaultValue());
@@ -56,8 +59,8 @@ public abstract class DefaultDatabase implements IDataBase {
 //                unionUniqueList.add(field.getName());
 //            }
 
-            ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
-            if (manyToOne != null) {
+            if (isForeignKeyObject(field)) {
+
                 tableField.setForeignKey(true);
                 tableField.setReferenceTable(field.getType().getSimpleName());
                 Field fkIdField = ReflectUtil.findByAnno(field.getType(), Id.class);
@@ -66,7 +69,13 @@ public abstract class DefaultDatabase implements IDataBase {
                 }
                 tableField.setType(getType(fkIdField));// 根据外键类的id类型重新设置数据类型
                 tableField.setReferenceColumn(fkIdField.getName());
-                CascadeType[] cascade = manyToOne.cascade();
+                CascadeType[] cascade;
+                if (field.getAnnotation(OneToOne.class) != null) {
+                    cascade = field.getAnnotation(OneToOne.class).cascade();
+                    tableField.setUnique(true);// 由于是一对一，所以要唯一
+                } else {
+                    cascade = field.getAnnotation(ManyToOne.class).cascade();
+                }
                 if (cascade.length > 0) {
                     switch (cascade[0]) {
                         case ALL:
@@ -101,7 +110,7 @@ public abstract class DefaultDatabase implements IDataBase {
         List<Pair<String, String>> nameValuePairList = new ArrayList<>();
 
         for (Field field : entity.getClass().getDeclaredFields()) {
-            if (isForeignKeyObjectButNotManyToOne(field)) {
+            if (shouldIgnoreField(field)) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -115,7 +124,7 @@ public abstract class DefaultDatabase implements IDataBase {
 
             field.setAccessible(true);
             try {
-                if (field.getAnnotation(ManyToOne.class) != null) {
+                if (isForeignKeyObject(field)) {
                     Object innerEntity = field.get(entity);
                     long idValue = getIdValue(innerEntity);
                     if (idValue > 0) {// 外键id值大于0才把外键id设置到sql语句中
@@ -139,7 +148,7 @@ public abstract class DefaultDatabase implements IDataBase {
     public String deleteSql(Object entity) {
         Where where = new Where();
         for (Field field : entity.getClass().getDeclaredFields()) {
-            if (isForeignKeyObjectButNotManyToOne(field)) {
+            if (shouldIgnoreField(field)) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -157,7 +166,7 @@ public abstract class DefaultDatabase implements IDataBase {
         Where where = new Where();
 
         for (Field field : entity.getClass().getDeclaredFields()) {
-            if (isForeignKeyObjectButNotManyToOne(field)) {
+            if (shouldIgnoreField(field)) {
                 continue;
             }
             Id idAnno = field.getAnnotation(Id.class);
@@ -167,10 +176,14 @@ public abstract class DefaultDatabase implements IDataBase {
             }
             field.setAccessible(true);
             try {
-                if (field.getAnnotation(ManyToOne.class) != null) {
+                if (isForeignKeyObject(field)) {
                     Object innerEntity = field.get(entity);
                     long fkIdValue = getIdValue(innerEntity);
-                    setValue.add(field.getName(), fkIdValue + "");
+                    if (fkIdValue == 0) {// 表示需要把外键设置为空
+                        setValue.add(field.getName(), null);
+                    } else {
+                        setValue.add(field.getName(), fkIdValue + "");
+                    }
                 } else {
                     String value = convertInsertOrUpdateValue(field, entity);
                     setValue.add(field.getName(), value);
@@ -183,15 +196,19 @@ public abstract class DefaultDatabase implements IDataBase {
         return getSqlCreator().updateSql(entity.getClass().getSimpleName(), setValue, where);
     }
 
-    private boolean isForeignKeyObjectButNotManyToOne(Field field) {
+    private boolean shouldIgnoreField(Field field) {
         return field.getAnnotation(Transient.class) != null ||
                 field.getAnnotation(OneToMany.class) != null ||
-                field.getAnnotation(ManyToMany.class) != null ||
+                field.getAnnotation(ManyToMany.class) != null;
+    }
+
+    private boolean isForeignKeyObject(Field field) {
+        return field.getAnnotation(ManyToOne.class) != null ||
                 field.getAnnotation(OneToOne.class) != null;
     }
 
     protected TableField.Type getType(Field field) {
-        if (field.getAnnotation(ManyToOne.class) != null) {
+        if (isForeignKeyObject(field)) {
             return null;
         }
 
@@ -208,12 +225,15 @@ public abstract class DefaultDatabase implements IDataBase {
             case "double":
             case "Double":
                 return TableField.Type.NUMBER_DOUBLE;
+            case "boolean":
+            case "Boolean":
+                return TableField.Type.BOOLEAN;
             case "String":
                 return TableField.Type.TEXT;
             case "Date":
                 return TableField.Type.DATE;
             default:
-                throw new RuntimeException("field " + field.getName() + " has error type: " +
+                throw new RuntimeException("field '" + field.getName() + "' has error type: " +
                         field.getType().getSimpleName());
         }
     }

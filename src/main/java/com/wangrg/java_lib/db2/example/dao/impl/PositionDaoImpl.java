@@ -20,6 +20,6 @@ public class PositionDaoImpl extends OADao<Position> implements PositionDao {
 
     @Override
     public List<Position> queryByDepartmentId(int departmentId) {
-        return query(Where.build("department", departmentId + ""));
+        return query(Where.eq("department", departmentId + ""));
     }
 }

@@ -54,14 +54,14 @@ public class HibernateDao<T> implements Dao<T> {
     }
 
     protected Session openSession() {
-        if (openSessionInView) {
-            return threadLocal.get();
-        } else {
+//        if (openSessionInView) {
+//            return threadLocal.get();
+//        } else {
             if (session == null) {
                 session = getSessionFactory().openSession();
             }
             return session;
-        }
+//        }
     }
 
     protected void closeSession() {

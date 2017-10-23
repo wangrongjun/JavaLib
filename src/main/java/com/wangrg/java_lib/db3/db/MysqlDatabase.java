@@ -91,16 +91,17 @@ public class MysqlDatabase extends DefaultDatabase {
 
     @Override
     public void setRsValueToEntity(Field field, Object entity, Object value) throws IllegalAccessException {
-        if (value == null) {
-            field.set(entity, null);
-            return;
-        }
-        if (field.getType().getName().equals("java.util.Date")) {
-            Timestamp timestamp = (Timestamp) value;
-            field.set(entity, new Date(timestamp.getTime()));
-        } else {
-            field.set(entity, value);
-        }
+        field.set(entity, value);
+//        if (value == null) {
+//            field.set(entity, null);
+//            return;
+//        }
+//        if (field.getType().getName().equals("java.util.Date")) {
+//            Timestamp timestamp = (Timestamp) value;
+//            field.set(entity, new Date(timestamp.getTime()));
+//        } else {
+//            field.set(entity, value);
+//        }
     }
 
 }

@@ -29,6 +29,18 @@ public class TextUtil {
         return false;
     }
 
+    public static boolean notEquals(String s, String... strings) {
+        if (strings == null) {
+            return true;
+        }
+        for (String s2 : strings) {
+            if (s.equals(s2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @param postName true:返回后缀（不含点） false：返回前缀（不含点）
      */

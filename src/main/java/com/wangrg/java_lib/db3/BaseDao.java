@@ -4,25 +4,13 @@ import com.wangrg.java_lib.db.connection.Dbcp;
 import com.wangrg.java_lib.db2.Query;
 import com.wangrg.java_lib.db2.Where;
 import com.wangrg.java_lib.db3.db.IDataBase;
-import com.wangrg.java_lib.java_util.GsonUtil;
-import com.wangrg.java_lib.java_util.ListUtil;
-import com.wangrg.java_lib.java_util.LogUtil;
-import com.wangrg.java_lib.java_util.ReflectUtil;
-import com.wangrg.java_lib.java_util.TextUtil;
+import com.wangrg.java_lib.java_util.*;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,14 +78,14 @@ public class BaseDao<T> implements Dao<T> {
 
     private Field idField;
 
-    private Field getIdField() {
+    protected Field getIdField() {
         if (idField == null) {
             idField = ReflectUtil.findByAnno(getEntityClass(), Id.class);
         }
         return idField;
     }
 
-    private String getTableName() {
+    protected String getTableName() {
         return getEntityClass().getSimpleName();
     }
 
@@ -105,10 +93,10 @@ public class BaseDao<T> implements Dao<T> {
         if (printSql) {
             if (printLogHint) {
                 System.out.println();
-                LogUtil.print(BaseDao.class.getName());
+                LogUtil.print(sql, BaseDao.class.getName());
                 System.out.println();
             } else {
-                System.out.println("\n" + sql + ";");
+                System.out.println("\n" + sql + (sql.endsWith(";") ? "" : ";"));
             }
         }
     }
@@ -168,7 +156,7 @@ public class BaseDao<T> implements Dao<T> {
 
     @Override
     public synchronized boolean insert(T entity) {
-        boolean succeed = false;
+        boolean succeed;
         String sql = db.insertSql(entity);
         printSql(sql);
         Connection conn = getConnection();
@@ -211,7 +199,7 @@ public class BaseDao<T> implements Dao<T> {
     @Override
     public boolean deleteById(long id) {
         String idName = getIdField().getName();
-        return delete(Where.build(idName, id + ""));
+        return delete(Where.eq(idName, id + ""));
     }
 
     @Override
@@ -222,7 +210,6 @@ public class BaseDao<T> implements Dao<T> {
     @Override
     public boolean update(T entity) {
         String sql = db.updateSql(entity);
-        printSql(sql);
         return executeUpdate(sql);
     }
 
@@ -263,11 +250,14 @@ public class BaseDao<T> implements Dao<T> {
             while (rs.next()) {
                 T entity = entityClass.newInstance();
                 for (Field field : entityClass.getDeclaredFields()) {
-                    if (field.getAnnotation(Transient.class) != null) {
+                    if (field.getAnnotation(Transient.class) != null ||
+                            field.getAnnotation(OneToMany.class) != null ||
+                            field.getAnnotation(ManyToMany.class) != null) {
                         continue;
                     }
                     field.setAccessible(true);
-                    if (field.getAnnotation(ManyToOne.class) == null) {
+                    if (field.getAnnotation(ManyToOne.class) == null &&
+                            field.getAnnotation(OneToOne.class) == null) {
                         // 正常赋值
                         boolean require = true;
                         if (currentLevel > 0 && field.getAnnotation(Id.class) == null &&
@@ -282,7 +272,14 @@ public class BaseDao<T> implements Dao<T> {
                             }
                         }
                         if (require) {
-                            db.setRsValueToEntity(field, entity, rs.getObject(field.getName()));
+                            Object value;
+                            try {
+                                value = rs.getObject(field.getName());
+                                db.setRsValueToEntity(field, entity, value);
+                            } catch (SQLException e) {
+                                // 如果到这里，说明sql的select子句没有该属性，不需要获取
+//                                e.printStackTrace(System.out);
+                            }
                         }
                     } else {
                         // 查询外键对象并赋值
@@ -291,7 +288,14 @@ public class BaseDao<T> implements Dao<T> {
                         assert innerIdField != null;
                         innerIdField.setAccessible(true);
                         String innerIdName = innerIdField.getName();
-                        Object innerIdValue = rs.getObject(field.getName());
+                        Object innerIdValue;
+                        try {
+                            innerIdValue = rs.getObject(field.getName());
+                        } catch (SQLException e) {
+                            // 如果到这里，说明sql的select子句没有该属性，不需要获取
+//                            e.printStackTrace(System.out);
+                            continue;
+                        }
                         // 如果id<=0，则外键对象为null，没必要去判断忽略和查询外键对象，结束本次循环
                         // 一开始是使用Integer.parseInt()，结果因为数字超出范围而抛异常，改为Long
                         if (innerIdValue == null || Long.parseLong(innerIdValue + "") <= 0) {
@@ -315,7 +319,7 @@ public class BaseDao<T> implements Dao<T> {
                             field.set(entity, innerEntity);
                         } else {// 否则查询外键对象所有属性的值
                             String innerTableName = innerEntityClass.getSimpleName();
-                            Query query = Query.build(Where.build(innerIdName, innerIdValue + ""));
+                            Query query = Query.where(Where.eq(innerIdName, innerIdValue + ""));
                             String innerSql = db.getSqlCreator().querySql(innerTableName, query);
                             List innerEntityList = executeQuery(innerSql, innerEntityClass, conn,
                                     db, currentLevel + 1, maxQueryForeignKeyLevel,
@@ -363,6 +367,10 @@ public class BaseDao<T> implements Dao<T> {
         return list;
     }
 
+    protected List<T> executeQuery(String sql) {
+        return executeQuery(sql, 32, null, null);
+    }
+
     /**
      * @param sql 必须以select count(*) ...开头
      */
@@ -387,6 +395,22 @@ public class BaseDao<T> implements Dao<T> {
         return count;
     }
 
+    public <E> List<E> executeQuery(Class<E> cls, String sql) {
+        List<E> list = new ArrayList<>();
+        printSql(sql);
+        try (Connection conn = getConnection()) {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            list = DbUtil.getResult(cls, rs);
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        printResult(list);
+        return list;
+    }
+
     @Override
     public List<T> query(Query query) {
         String sql = db.getSqlCreator().querySql(getTableName(), query);
@@ -398,12 +422,12 @@ public class BaseDao<T> implements Dao<T> {
 
     @Override
     public List<T> query(Where where) {
-        return query(Query.build(where));
+        return query(Query.where(where));
     }
 
     @Override
     public T queryById(long id) {
-        Where where = Where.build(getIdField().getName(), id + "");
+        Where where = Where.eq(getIdField().getName(), id + "");
         List<T> list = query(where);
         if (list != null && list.size() > 0) {
             return list.get(0);

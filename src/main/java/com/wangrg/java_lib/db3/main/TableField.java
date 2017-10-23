@@ -29,6 +29,7 @@ public class TableField {
         NUMBER_LONG,
         NUMBER_FLOAT,
         NUMBER_DOUBLE,
+        BOOLEAN,
         TEXT,
         DATE
     }

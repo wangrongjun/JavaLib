@@ -88,7 +88,7 @@ public class OracleDatabase extends DefaultDatabase {
             case "Double":
                 return field.get(entity) + "";
             default:
-                throw new RuntimeException("error: type of field " + field.getName() + " is wrong");
+                throw new RuntimeException("error: type of field '" + field.getName() + "' is wrong");
         }
     }
 
@@ -100,7 +100,7 @@ public class OracleDatabase extends DefaultDatabase {
         }
         switch (field.getType().getSimpleName()) {
             case "Date":
-                value = new Date(((Timestamp) value).getTime());
+//                value = new Date(((Timestamp) value).getTime());
                 break;
             case "String":
                 break;

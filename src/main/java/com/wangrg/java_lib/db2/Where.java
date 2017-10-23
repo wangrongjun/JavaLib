@@ -19,7 +19,9 @@ public class Where {
         MORE,
         MORE_EQUAL,
         LIKE,
-        NOT_LIKE
+        NOT_LIKE,
+        IS_NULL,
+        NOT_NULL
     }
 
     /**
@@ -93,42 +95,28 @@ public class Where {
         return this;
     }
 
-    /*
-        public Where add(String name, String value, QueryMode mode, QueryLogic logic) {
-            Expression expression = new Expression(name, value, mode, logic);
-            expressionList.add(expression);
-            return this;
-        }
+    public Where isNull(String name) {
+        expressionList.add(new Expression(name, null, QueryMode.IS_NULL, QueryLogic.AND));
+        return this;
+    }
 
-        public Where add(String name, String value, QueryMode mode) {
-            Expression expression = new Expression(name, value, mode, QueryLogic.AND);
-            expressionList.add(expression);
-            return this;
-        }
+    public Where notNull(String name) {
+        expressionList.add(new Expression(name, null, QueryMode.NOT_NULL, QueryLogic.AND));
+        return this;
+    }
 
-        public Where add(String name, String value, QueryLogic logic) {
-            Expression expression = new Expression(name, value, QueryMode.EQUAL, logic);
-            expressionList.add(expression);
-            return this;
-        }
-
-        public Where add(String name, String value) {
-            Expression expression = new Expression(name, value, QueryMode.EQUAL, QueryLogic.AND);
-            expressionList.add(expression);
-            return this;
-        }
-    */
-
-    public static Where build(String whereName, String whereValue) {
+    public static Where eq(String whereName, String whereValue) {
         return new Where().equal(whereName, whereValue);
     }
 
-    public static Where build(String whereName, int whereValue) {
+    public static Where eq(String whereName, int whereValue) {
         return new Where().equal(whereName, String.valueOf(whereValue));
     }
-    public static Where build(String whereName, long whereValue) {
+
+    public static Where eq(String whereName, long whereValue) {
         return new Where().equal(whereName, String.valueOf(whereValue));
     }
+
     /**
      * @return username='wang' and password='123' or gender='1' or nickname like '%abc%'
      */
@@ -140,7 +128,9 @@ public class Where {
         String sql = "";
         for (int i = 0; i < size(); i++) {
             Expression expression = expressionList.get(i);
-            if (expression.value == null) {// username='null' 无意义，忽略
+            if (expression.value == null &&
+                    expression.queryMode != QueryMode.IS_NULL &&
+                    expression.queryMode != QueryMode.NOT_NULL) {// username='null' 无意义，忽略
                 continue;
             }
             // 1.字段名字
@@ -171,9 +161,17 @@ public class Where {
                 case NOT_LIKE:
                     sql += " not like ";
                     break;
+                case IS_NULL:
+                    sql += " is null";
+                    break;
+                case NOT_NULL:
+                    sql += " is not null";
+                    break;
             }
-            // 3.赋值
-            sql += "'" + expression.value + "'";
+            // 3.如果不是判空和判断非空的条件，就赋值
+            if (expression.queryMode != QueryMode.IS_NULL && expression.queryMode != QueryMode.NOT_NULL) {
+                sql += "'" + expression.value + "'";
+            }
             // 4.如果不是最后一个查询条件，添加查询逻辑
             if (i < size() - 1) {
                 switch (expression.queryLogic) {
@@ -198,7 +196,9 @@ public class Where {
         Expression(String name, String value, QueryMode queryMode,
                    QueryLogic queryLogic) {
             this.name = name;
-            this.value = formatter.format(value);
+            if (value != null) {
+                this.value = formatter.format(value);
+            }
             this.queryMode = queryMode;
             this.queryLogic = queryLogic;
         }

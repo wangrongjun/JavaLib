@@ -14,7 +14,7 @@ public class ManagerDaoImpl extends StudentManageSystemDao<Manager> implements I
 
     @Override
     public Manager queryByName(String managerName) {
-        List<Manager> managerList = query(Where.build("managerName", managerName));
+        List<Manager> managerList = query(Where.eq("managerName", managerName));
         return managerList.size() > 0 ? managerList.get(0) : null;
     }
 

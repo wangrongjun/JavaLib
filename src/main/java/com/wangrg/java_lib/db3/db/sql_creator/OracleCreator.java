@@ -112,6 +112,9 @@ public class OracleCreator extends DefaultCreator {
 
     @Override
     public String wrapLimit(String sql, int offset, int rowCount) {
+        if (offset < 0 || rowCount <= 0) {
+            return sql;
+        }
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
         }
@@ -153,6 +156,8 @@ public class OracleCreator extends DefaultCreator {
                     decimalLength = DefaultTypeLength.ORACLE_DOUBLE_DECIMAL_LENGTH;
                 }
                 return "number(" + length + "," + decimalLength + ")";
+            case BOOLEAN:
+                throw new RuntimeException("Oracle is not support boolean type");
             case TEXT:
                 if (length == 0) {
                     length = DefaultTypeLength.ORACLE_STRING_LENGTH;

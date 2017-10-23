@@ -9,6 +9,12 @@
     <name>JavaLib</name>
     <url>http://maven.apache.org</url>
 
+    <!--把所引用包的版本集中放在这里，这样比较直观-->
+    <properties>
+        <spring.version>4.3.10.RELEASE</spring.version>
+        <aspectj.version>1.7.4</aspectj.version>
+        <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+    </properties>
 
     <dependencies>
 
@@ -143,10 +149,13 @@
         </dependency>
 
 
+        <!--Struts2-->
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-core</artifactId>
             <version>2.3.31</version>
+            <!--Struts2与Hibernate分别依赖的javassist的版本一般不一致-->
+            <!--为了避免冲突，设置Struts2不自动添加javassist。-->
             <exclusions>
                 <exclusion>
                     <artifactId>javassist</artifactId>
@@ -156,10 +165,28 @@
         </dependency>
 
 
+        <!--Hibernate-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>5.2.10.Final</version>
+        </dependency>
+
+        <!--Spring-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
 
         <!--<dependency>-->
@@ -169,9 +196,9 @@
         <!--</dependency>-->
 
         <!--<dependency>-->
-            <!--<groupId>org.jfree</groupId>-->
-            <!--<artifactId>jfreechart</artifactId>-->
-            <!--<artifactId>1.0.19</artifactId>-->
+        <!--<groupId>org.jfree</groupId>-->
+        <!--<artifactId>jfreechart</artifactId>-->
+        <!--<artifactId>1.0.19</artifactId>-->
         <!--</dependency>-->
 
     </dependencies>

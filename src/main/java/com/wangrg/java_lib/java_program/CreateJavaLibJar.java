@@ -51,7 +51,7 @@ public class CreateJavaLibJar {
     }
 
     public static class Config {
-        static String javaLibJarPath = "C:\\IDE\\android-studio-project\\MyLib\\java_lib\\build\\libs\\java_lib.jar";
+        static String javaLibJarPath = "C:\\IDE\\android-studio-project\\MyLib\\java_lib\\eq\\libs\\java_lib.jar";
         static String javaLibSourceDir = "C:\\IDE\\android-studio-project\\MyLib\\java_lib\\src\\main\\java\\";
     }
 

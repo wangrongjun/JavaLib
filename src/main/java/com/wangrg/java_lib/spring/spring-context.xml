@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--扫描注解-->
+    <context:annotation-config/>
+
+    <!--<context:component-scan base-package="com.wangrg.bean"/>-->
+
+    <!--<bean class="com.wangrg.bean.Address"/>-->
+    <!--<bean class="com.wangrg.dao.impl.UserDaoImpl" scope="prototype"/>-->
+    <!--<bean class="com.wangrg.bean.User"/>-->
+
+    <!--
+        <bean class="com.wangrg.bean.User">
+            <property name="sex" value="1"/>
+            <property name="id" value="10"/>
+            <property name="name" value="wang"/>
+            <property name="address" ref="address"/>
+            <property name="hobbies">
+                <list>
+                    <value>1</value>
+                    <value>2</value>
+                </list>
+            </property>
+            <property name="addressList">
+                <list>
+                    <ref bean="address"/>
+                    <ref bean="address"/>
+                </list>
+            </property>
+            <property name="addressSet">
+                <set>
+                    <ref bean="address"/>
+                    <ref bean="address"/>
+                </set>
+            </property>
+            <property name="addressMap">
+                <map>
+                    <entry key="1" value-ref="address"/>
+                    <entry key="2" value-ref="address"/>
+                </map>
+            </property>
+        </bean>
+    -->
+
+
+</beans>

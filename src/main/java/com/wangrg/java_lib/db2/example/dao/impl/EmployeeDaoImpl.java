@@ -40,7 +40,7 @@ public class EmployeeDaoImpl extends OADao<Employee> implements EmployeeDao {
                 more("salary", "4500").and().equal("gender", Employee.GENDER_MAN + "").
                 or().
                 less("salary", "4500").and().equal("gender", Employee.GENDER_WOMAN + "");
-        return query(Query.build(where).maxQueryForeignKeyLevel(1));
+        return query(Query.where(where).maxQueryForeignKeyLevel(1));
     }
 
 }

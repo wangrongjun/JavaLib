@@ -1,5 +1,6 @@
 package com.wangrg.java_lib.java_util;
 
+import com.wangrg.java_lib.db3.DbUtil;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.format.Border;
@@ -8,6 +9,9 @@ import jxl.write.*;
 import jxl.write.Number;
 import org.junit.Test;
 
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -77,8 +81,15 @@ public class ExcelUtil {
                             sheet1.addCell(new DateTime(j, i + 1, (Date) field.get(entity)));
                             break;
                         default:
-                            throw new RuntimeException("can not resolve type: " +
-                                    field.getType().getName() + " " + field.getName());
+                            if (field.getAnnotation(ManyToOne.class) != null ||
+                                    field.getAnnotation(OneToOne.class) != null) {
+                                Field idField = DbUtil.getForeignKeyIdField(field);
+                                idField.setAccessible(true);
+                                String idValue = String.valueOf(idField.get(entity));
+                                sheet1.addCell(new Number(j, i + 1, Long.parseLong(idValue)));
+                            }
+//                            throw new RuntimeException("can not resolve type: " +
+//                                    field.getType().getName() + " " + field.getName());
                     }
                 }
             }

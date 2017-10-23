@@ -8,7 +8,7 @@ import sun.misc.BASE64Decoder;
  * http://wenku.baidu.com/link?url=mFM27h3pZRHLkB-bAaZPqERS7do1qHiv8tl7EVoyWzQUvPpNsb08eMqJPMyf2sM1jxVlV8KPmgKsE_Qvo8X5fDjMu1PkEE7D1HIRw09GRSC
  * 转化qq旋风、迅雷、快车的专用下载链接为普通http的下载链接
  * 如果找不到 sun.misc.BASE64Decoder 类，用以下步骤可解决 
- * 右键项目-》属性-》java build path-》jre System Library-》access rules-》resolution选择accessible，下面填上** 点击确定即可！！！ 
+ * 右键项目-》属性-》java eq path-》jre System Library-》access rules-》resolution选择accessible，下面填上** 点击确定即可！！！ 
  */
 public class TurnToHttpUtil {
 

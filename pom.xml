@@ -13,6 +13,7 @@
     <properties>
         <spring.version>4.3.10.RELEASE</spring.version>
         <aspectj.version>1.7.4</aspectj.version>
+        <springmvc.version>4.3.10.RELEASE</springmvc.version>
         <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
     </properties>
 
@@ -187,6 +188,20 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
+        </dependency>
+
+        <!--SpringMVC-->
+        <!--会自动依赖spring-web核心模块-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${springmvc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.4</version>
         </dependency>
 
         <!--<dependency>-->

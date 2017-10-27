@@ -11,6 +11,10 @@ import java.io.InputStreamReader;
  */
 public class StreamUtil {
 
+    public static String readInputStream(InputStream is) throws IOException {
+        return readInputStream(is, null);
+    }
+
     public static String readInputStream(InputStream is, String charsetName) throws IOException {
         if (is == null) {
             return null;

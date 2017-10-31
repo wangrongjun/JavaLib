@@ -7,10 +7,6 @@ import com.wangrj.java_lib.db3.main.TableField;
 import com.wangrj.java_lib.db3.main.UpdateSetValue;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.db2.Where;
-import com.wangrj.java_lib.db3.main.TableField;
-import com.wangrj.java_lib.java_util.ReflectUtil;
-import com.wangrj.java_lib.java_util.TextUtil;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;

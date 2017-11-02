@@ -22,7 +22,7 @@ public class C {
 
     public static int SQSTACK_MAXSIZE = 100;
 
-    public static String preCode = "public class Fun implements com.wangrg.java_lib.demo.calculator.util.Compiler.FunInterface{"
+    public static String preCode = "public class Fun implements com.wangrj.java_lib.demo.calculator.util.Compiler.FunInterface{"
             + " @Override " + "public double fun(double n1, double n2) {";
 
     public static String postCode = "}}";

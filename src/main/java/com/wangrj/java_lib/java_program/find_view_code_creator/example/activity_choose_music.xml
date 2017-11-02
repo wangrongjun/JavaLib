@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.wangrg.android_lib.view.ToolBarView
+    <com.wangrj.android_lib.view.ToolBarView
         android:userId="@+userId/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

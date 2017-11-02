@@ -138,7 +138,7 @@ public class BaseDao<T> implements Dao<T> {
     private static void printSql(String sql) {
         if (printSql) {
             System.out.println();
-            LogUtil.print(sql, "com.wangrg.java_lib.db2.BaseDao");
+            LogUtil.print(sql, "com.wangrj.java_lib.db2.BaseDao");
             System.out.println();
         }
     }

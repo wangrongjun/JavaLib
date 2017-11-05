@@ -17,13 +17,16 @@ import freemarker.template.TemplateException;
 public class FreeMakerUtil {
 
     /**
+     * 使用示例：
+     * FreeMakerUtil.convert(new File("E:/"), "index.ftl",
+     * dataModel, new FileWriter("E:/output.html"));
+     *
      * @param root         模版文件所在的根目录
-     * @param htmlFileName 模版文件名
+     * @param fileName     模版文件名
      * @param dataModel    数据模型
      * @param outputWriter 结果输出流
-     * @throws IOException
      */
-    public static void convert(File root, String htmlFileName, Map<String, Object> dataModel,
+    public static void convert(File root, String fileName, Map<String, Object> dataModel,
                                Writer outputWriter) throws IOException, TemplateException {
         // 负责管理FreeMarker模板的Configuration实例
         Configuration cfg = new Configuration();
@@ -33,7 +36,7 @@ public class FreeMakerUtil {
         // 设置模版文件的根目录
         cfg.setTemplateLoader(new FileTemplateLoader(root));
         // 获取模板文件
-        Template template = cfg.getTemplate(htmlFileName);
+        Template template = cfg.getTemplate(fileName);
         // 获取模板文件的字符编码
 //        template.getEncoding();
         // 合并数据模型和模板，并将结果输出到out中

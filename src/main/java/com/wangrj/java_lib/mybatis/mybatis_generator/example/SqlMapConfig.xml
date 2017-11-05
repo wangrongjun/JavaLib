@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <!-- 更新时允许为空值 -->
+        <setting name="jdbcTypeForNull" value="NULL"/>
+        <!-- 打印日志，包括sql，传入参数，结果集等信息 -->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <!--<typeAliases>-->
+    <!--<package name="com.handsome.shop.bean"/>-->
+    <!--<package name="com.handsome.shop.dao"/>-->
+    <!--</typeAliases>-->
+
+    <environments default="development">
+        <environment id="development">
+            <!--事务管理的类型-->
+            <transactionManager type="JDBC"/>
+            <!--数据源-->
+            <dataSource type="POOLED">
+                <property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+                <property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+                <property name="username" value="wang"/>
+                <property name="password" value="123"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <package name="com.wangrj.java_lib.mybatis.mybatis_generator.example.dao"/>
+    </mappers>
+
+</configuration>

@@ -2,11 +2,10 @@ package com.wangrj.java_lib.math.combination;
 
 import com.wangrj.java_lib.java_util.ComparatorUtil;
 import com.wangrj.java_lib.java_util.ListUtil;
-import com.wangrj.java_lib.java_util.ComparatorUtil;
-import com.wangrj.java_lib.java_util.ListUtil;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 

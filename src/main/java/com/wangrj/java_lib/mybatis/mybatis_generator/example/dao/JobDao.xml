@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.JobDao">
+
+    <!--
+    TODO:
+    1.为每一个属性添加对应的查询方法，可以设置executions列表和requires列表进行筛选
+    2.如果没有外键对象，查询就指定resultType，否则指定resultMap
+    -->
+
+    <!-- +++++++++++++ 以下是MybatisDao的通用方法 +++++++++++++ -->
+
+    <resultMap id="defaultMap" type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job">
+        <id column="jobId" property="jobId"/>
+        <result column="jobName" property="jobName"/>
+    </resultMap>
+
+    <sql id="whereSql">
+        <where>
+            <if test="jobId!=null">
+                AND jobId=#{jobId}
+            </if>
+            <if test="jobName!=null">
+                AND jobName=#{jobName}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insert" parameterType="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job">
+        INSERT INTO Job(
+        jobId,jobName
+        ) VALUES (
+        #{jobId},#{jobName}
+        )
+        <selectKey keyProperty="jobId" resultType="int">
+            SELECT sequence_Job.currval FROM dual
+        </selectKey>
+    </insert>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM Job WHERE jobId=#{id}
+    </delete>
+
+    <update id="update" parameterType="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job">
+        UPDATE Job
+        <set>
+            <if test="jobId!=null">
+                jobId=#{jobId},
+            </if>
+            <if test="jobName!=null">
+                jobName=#{jobName},
+            </if>
+        </set>
+        WHERE jobId=#{jobId}
+    </update>
+
+    <!--必须在全局配置中设置<setting username="jdbcTypeForNull" value="NULL"/>，否则报错-->
+    <update id="updateContainsNull">
+        UPDATE Job SET
+        jobId=#{jobId},jobName=#{jobName}
+        WHERE jobId=#{jobId}
+    </update>
+
+    <select id="queryById" parameterType="long" resultMap="defaultMap">
+        SELECT * FROM Job WHERE jobId=#{id}
+    </select>
+
+    <select id="queryAll" resultMap="defaultMap">
+        SELECT * FROM Job
+    </select>
+
+    <select id="queryAllLimit" resultMap="defaultMap">
+        SELECT * FROM (SELECT full_result_set.*,rownum rn FROM (
+
+        SELECT * FROM Job
+
+        ) full_result_set WHERE rownum<![CDATA[<=]]>#{arg1}
+        ) WHERE rn>#{arg0}
+    </select>
+
+    <select id="queryAllCount" resultType="int">
+        SELECT count(1) FROM Job
+    </select>
+
+    <select id="query" resultMap="defaultMap">
+        SELECT * FROM Job
+        <include refid="whereSql"/>
+    </select>
+
+    <select id="queryLimit" parameterType="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job" resultMap="defaultMap">
+        SELECT * FROM (SELECT full_result_set.*,rownum rn FROM (
+
+        SELECT * FROM Job
+        <where>
+            <if test="arg0.jobId!=null">
+                AND jobId=#{arg0.jobId}
+            </if>
+            <if test="arg0.jobName!=null">
+                AND jobName=#{arg0.jobName}
+            </if>
+        </where>
+
+        ) full_result_set WHERE rownum<![CDATA[<=]]>#{arg2}
+        ) WHERE rn>#{arg1}
+    </select>
+
+    <select id="queryCount" resultType="int">
+        SELECT count(1) FROM Job
+        <include refid="whereSql"/>
+    </select>
+
+</mapper>

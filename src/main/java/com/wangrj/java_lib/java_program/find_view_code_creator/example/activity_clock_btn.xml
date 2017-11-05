@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:userId="@+userId/btn_main"
+    android:id="@+id/btn_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
-        android:userId="@+userId/btn_repeat_mode"
+        android:id="@+id/btn_repeat_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_trans_gray_selector"
@@ -25,7 +25,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:userId="@+userId/tv_repeat_mode"
+            android:id="@+id/tv_repeat_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -41,7 +41,7 @@
         android:background="@color/dark_gray" />
 
     <LinearLayout
-        android:userId="@+userId/btn_music"
+        android:id="@+id/btn_music"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_trans_gray_selector"
@@ -60,7 +60,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:userId="@+userId/tv_music_path"
+            android:id="@+id/tv_music_path"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -94,7 +94,7 @@
             android:textSize="18sp" />
 
         <EditText
-            android:userId="@+userId/et_content"
+            android:id="@+id/et_content"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_marginTop="5dp"

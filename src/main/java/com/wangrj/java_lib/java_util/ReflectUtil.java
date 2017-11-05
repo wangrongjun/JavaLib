@@ -4,6 +4,7 @@ import com.wangrj.java_lib.test.JavaLibTestClass;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -167,7 +168,25 @@ public class ReflectUtil {
         for (Field field : fields) {
             field.setAccessible(true);
             String type = field.getType().getName();
-            Object value = getValue.get(field);
+            Object value;
+            switch (type) {
+                case "int":
+                case "java.lang.Integer":
+                case "long":
+                case "java.lang.Long":
+                case "float":
+                case "java.lang.Float":
+                case "double":
+                case "java.lang.Double":
+                case "boolean":
+                case "java.lang.Boolean":
+                case "java.lang.String":
+                case "java.util.Date":
+                    value = getValue.get(field, true);
+                    break;
+                default:
+                    value = getValue.get(field, false);
+            }
             if (value == null) {
                 continue;
             }
@@ -193,6 +212,9 @@ public class ReflectUtil {
                     case "java.lang.Boolean":
                         field.setBoolean(obj, Boolean.parseBoolean(String.valueOf(value)));
                         break;
+                    case "java.lang.String":
+                        field.set(obj, value);
+                        break;
                     case "java.util.Date":
                         if (checkExtends(Date.class, value.getClass())) {// 如果value是Date的子类
                             field.set(obj, value);
@@ -209,7 +231,7 @@ public class ReflectUtil {
             } catch (Exception e) {
                 e.printStackTrace(System.out);
                 if (!ignoreMismatch) {
-                    throw new RuntimeException("set mismatch value \"" + value + "\" to field " +
+                    throw new RuntimeException("set mismatch value '" + value + "' to field " +
                             field.getType().getSimpleName() + " " + field.getName());
                 }
             }
@@ -228,7 +250,7 @@ public class ReflectUtil {
     }
 
     public interface GetValue {
-        Object get(Field field);
+        Object get(Field field, boolean isBasicType);
     }
 
 }

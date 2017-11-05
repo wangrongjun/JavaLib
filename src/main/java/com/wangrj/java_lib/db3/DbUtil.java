@@ -1,8 +1,6 @@
 package com.wangrj.java_lib.db3;
 
-import com.wangrj.java_lib.db3.db.MysqlDatabase;
-import com.wangrj.java_lib.db3.db.OracleDatabase;
-import com.wangrj.java_lib.java_util.ReflectUtil;
+import com.wangrj.java_lib.db3.db.IDataBase;
 import com.wangrj.java_lib.db3.db.MysqlDatabase;
 import com.wangrj.java_lib.db3.db.OracleDatabase;
 import com.wangrj.java_lib.java_util.ReflectUtil;
@@ -39,6 +37,38 @@ public class DbUtil {
                 )).getConnection();
     }
 
+    public static <T> List<T> getResult(Class<T> entityClass, ResultSet rs) throws SQLException {
+        List<T> entityList = new ArrayList<>();
+        while (rs.next()) {
+            T entity = ReflectUtil.setObjectValue(entityClass, false, new ReflectUtil.GetValue() {
+                @Override
+                public Object get(Field field, boolean isBasicType) {
+                    try {
+                        return rs.getObject(field.getName());
+                    } catch (SQLException ignored) {
+                    }
+                    return null;
+                }
+            });
+            entityList.add(entity);
+        }
+        return entityList;
+    }
+
+    public static Field getForeignKeyIdField(Field field) {
+        if (field.getAnnotation(ManyToOne.class) == null &&
+                field.getAnnotation(OneToOne.class) == null) {
+            return null;
+        }
+        Field[] foreignKeyClassFields = field.getType().getDeclaredFields();
+        for (Field f : foreignKeyClassFields) {
+            if (f.getAnnotation(Id.class) != null) {
+                return f;
+            }
+        }
+        return null;
+    }
+
     /**
      * @param obj 包含各种Dao成员变量的测试类实例
      */
@@ -66,36 +96,72 @@ public class DbUtil {
         }
     }
 
-    public static <T> List<T> getResult(Class<T> entityClass, ResultSet rs) throws SQLException {
-        List<T> entityList = new ArrayList<>();
-        while (rs.next()) {
-            T entity = ReflectUtil.setObjectValue(entityClass, false, new ReflectUtil.GetValue() {
-                @Override
-                public Object get(Field field) {
-                    try {
-                        return rs.getObject(field.getName());
-                    } catch (SQLException ignored) {
-                    }
-                    return null;
-                }
-            });
-            entityList.add(entity);
-        }
-        return entityList;
+    public enum DbType {
+        Mysql,
+        Oracle
     }
 
-    public static Field getForeignKeyIdField(Field field) {
-        if (field.getAnnotation(ManyToOne.class) == null &&
-                field.getAnnotation(OneToOne.class) == null) {
-            return null;
+    /**
+     * 移除并创建表。按照列表倒序移除表，按照列表正序创建表。
+     * 例如：classList：Job,User，User持有Job的引用。执行顺序如下：
+     * 1.移除User表
+     * 2.移除Job表
+     * 3.创建Job表
+     * 4.创建User表
+     */
+    public static void dropAndCreate(DbType dbType, String dbName,
+                                     String user, String pass, Class... classList) {
+        IDataBase dataBase;
+        switch (dbType) {
+            case Mysql:
+                dataBase = new MysqlDatabase(dbName);
+                break;
+            case Oracle:
+                dataBase = new OracleDatabase(dbName);
+                break;
+            default:
+                throw new RuntimeException("dbType is error: " + dbType);
         }
-        Field[] foreignKeyClassFields = field.getType().getDeclaredFields();
-        for (Field f : foreignKeyClassFields) {
-            if (f.getAnnotation(Id.class) != null) {
-                return f;
+        for (int i = classList.length - 1; i >= 0; i--) {
+            Class cls = classList[i];
+            class TempDao extends BaseDao {
+                @Override
+                protected Class getEntityClass() {
+                    if (entityClass == null) {
+                        entityClass = cls;
+                    }
+                    return entityClass;
+                }
+
+                private TempDao() {
+                    super(new Config().
+                            setDb(dataBase).
+                            setUsername(user).
+                            setPassword(pass));
+                }
             }
+            new TempDao().dropTable();
         }
-        return null;
+        for (int i = 0; i < classList.length; i++) {
+            Class cls = classList[i];
+            class TempDao extends BaseDao {
+                @Override
+                protected Class getEntityClass() {
+                    if (entityClass == null) {
+                        entityClass = cls;
+                    }
+                    return entityClass;
+                }
+
+                private TempDao() {
+                    super(new Config().
+                            setDb(dataBase).
+                            setUsername(user).
+                            setPassword(pass));
+                }
+            }
+            new TempDao().createTable();
+        }
     }
 
 }

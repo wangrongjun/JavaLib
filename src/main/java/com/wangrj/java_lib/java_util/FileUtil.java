@@ -1,19 +1,8 @@
 package com.wangrj.java_lib.java_util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class FileUtil {
 
@@ -94,9 +83,41 @@ public class FileUtil {
                 }
             }
         }
-
     }
 
+    /**
+     * 使用队列实现文件夹复制，效率比copyDir的递归算法要高得多
+     */
+    public static void copyDirWithQueue(File fromDir, File toDir) throws IOException {
+        if (fromDir == null || !fromDir.exists()) {
+            throw new FileNotFoundException();
+        }
+        if (!fromDir.isDirectory()) {
+            FileUtil.copy(fromDir, toDir);
+            return;
+        }
+        // E:/root：a( a1(a12(a12.txt)),a2(),a3.txt ), b(), c.txt
+        Queue<File> queue = new ArrayDeque<>();
+        queue.offer(fromDir);
+        String absoluteFromDir = fromDir.getAbsolutePath();// E:/root
+        String absoluteToDir = toDir.getAbsolutePath();// E:/rootCopy
+        while (!queue.isEmpty()) {
+            File file = queue.poll();// E:/root/a/a1
+            String fromPath = file.getAbsolutePath();// E:/root/a/a1
+            // 由于绝对地址的开头一般格式为E:\，有冒号，所以下面的替换只可能替换fromPath头部，不可能替换中间和尾部
+            String toPath = fromPath.replace(absoluteFromDir, absoluteToDir);// E:/rootCopy/a/a1
+            if (file.isDirectory()) {
+                new File(toPath).mkdir();
+                File[] childList = file.listFiles();
+                assert childList != null;
+                for (File child : childList) {
+                    queue.offer(child);
+                }
+            } else {
+                FileUtil.copy(new File(fromPath), new File(toPath));
+            }
+        }
+    }
 
     public static Object readObject(String path) {
         try {

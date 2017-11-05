@@ -145,6 +145,13 @@
             <version>5.2.10.Final</version>
         </dependency>
 
+        <!--Mybatis-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+
     </dependencies>
 
     <!--如果没有以下内容，会报错：Error:java: Compilation failed: internal java compiler error-->

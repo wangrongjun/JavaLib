@@ -10,7 +10,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:userId="@+userId/tv_time"
+            android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -20,7 +20,7 @@
             android:textSize="36sp" />
 
         <TextView
-            android:userId="@+userId/tv_repeat_mode"
+            android:id="@+id/tv_repeat_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -30,7 +30,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:userId="@+userId/tv_content"
+            android:id="@+id/tv_content"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
@@ -44,7 +44,7 @@
             android:textSize="14sp" />
 
         <ImageView
-            android:userId="@+userId/btn_clock_state"
+            android:id="@+id/btn_clock_state"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"

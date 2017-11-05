@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import static junit.framework.TestCase.assertEquals;
@@ -105,44 +105,38 @@ public class DateUtil {
     }
 
     /**
-     * @param dateText 格式如：yyyy-MM-dd HH:mm:ss 或 yyyy-MM-dd
+     * 支持转换的格式如下：
+     * 1.yyyy-MM-dd
+     * 2.yyyy-M-d
+     * 3.yyyy-MM-dd HH:mm:ss
+     * 4.yyyy-M-d H:m:s
      */
     public static Date toDate(String dateText) throws DateTextSyntaxErrorException {
-        if (!dateText.matches("[\\d]+-[\\d]+-[\\d]+") &&
-                !dateText.matches("[\\d]+-[\\d]+-[\\d]+ [\\d]+:[\\d]+:[\\d]+")) {
+        String datePattern = null;
+        if (dateText.matches("[\\d]{4}-[\\d]{1,2}-[\\d]{1,2}")) {
+            datePattern = "yyyy-MM-dd";
+        }
+        if (dateText.matches("[\\d]{4}-[\\d]{1,2}-[\\d]{1,2} [\\d]{1,2}:[\\d]{1,2}:[\\d]{1,2}")) {
+            datePattern = "yyyy-MM-dd HH:mm:ss";
+        }
+        if (datePattern == null) {
             throw new DateTextSyntaxErrorException(dateText);
         }
-
-        Calendar calendar = Calendar.getInstance();
         try {
-            if (dateText.contains(" ")) {
-                String[] strings = dateText.split(" ");
-                String[] dateList = strings[0].split("-");
-                int year = Integer.parseInt(dateList[0]);
-                int month = Integer.parseInt(dateList[1]);
-                int day = Integer.parseInt(dateList[2]);
-                String[] timeList = strings[1].split(":");
-                int hour = Integer.parseInt(timeList[0]);
-                int minute = Integer.parseInt(timeList[1]);
-                int second = Integer.parseInt(timeList[2]);
-                calendar.set(year, month - 1, day, hour, minute, second);
-            } else {
-                String[] dateList = dateText.split("-");
-                int year = Integer.parseInt(dateList[0]);
-                int month = Integer.parseInt(dateList[1]);
-                int day = Integer.parseInt(dateList[2]);
-                calendar.set(year, month - 1, day, 0, 0, 0);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new DateTextSyntaxErrorException(dateText);
+            return new SimpleDateFormat(datePattern).parse(dateText);
+        } catch (ParseException e) {
+            throw new DateTextSyntaxErrorException(e);
         }
-        return calendar.getTime();
     }
 
     public static class DateTextSyntaxErrorException extends RuntimeException {
+        DateTextSyntaxErrorException(Throwable cause) {
+            super(cause);
+        }
+
         DateTextSyntaxErrorException(String date) {
             super(date);
+
         }
     }
 
@@ -158,19 +152,29 @@ public class DateUtil {
 
     @Test
     public void testToDateAndToDateTimeText() throws DateTextSyntaxErrorException {
-        assertEquals("2015-12-03 12:34:10", toDateTimeText(toDate("2015-12-03 12:34:10")));//正常
-        assertEquals("2017-02-03 00:54:30", toDateTimeText(toDate("2017-02-03 00:54:30")));//正常
+        assertEquals("2015-12-03 00:00:00", toDateTimeText(toDate("2015-12-03")));//正常
+        assertEquals("2015-12-03 00:00:00", toDateTimeText(toDate("2015-12-03")));//正常
+        assertEquals("1995-12-03 00:00:00", toDateTimeText(toDate("1995-12-03")));//正常
+        assertEquals("2017-02-03 12:54:30", toDateTimeText(toDate("2017-02-03 12:54:30")));//正常
+        assertEquals("2017-02-03 00:04:03", toDateTimeText(toDate("2017-2-3 0:4:3")));//正常
+        assertEquals("2017-02-03 23:04:03", toDateTimeText(toDate("2017-2-3 23:4:3")));//正常
+        try {
+            toDateTimeText(toDate("015-01-03 12:34:10"));//格式错误，应该抛异常
+            fail("should throw DateTextSyntaxErrorException, actually doesn't throw");
+        } catch (DateTextSyntaxErrorException e) {
+            e.printStackTrace(System.out);
+        }
         try {
             toDateTimeText(toDate("2015-01-03_12:34:10"));//格式错误，应该抛异常
             fail("should throw DateTextSyntaxErrorException, actually doesn't throw");
         } catch (DateTextSyntaxErrorException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         try {
-            toDateTimeText(toDate("2015-01-a3 12:34:10"));//格式错误，应该抛异常
+            toDateTimeText(toDate("2015-01-a3 12:34:10"));//非数字，应该抛异常
             fail("should throw DateTextSyntaxErrorException, actually doesn't throw");
         } catch (DateTextSyntaxErrorException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 

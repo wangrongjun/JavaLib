@@ -2,8 +2,6 @@ package com.wangrj.java_lib.db3;
 
 import com.wangrj.java_lib.db2.Query;
 import com.wangrj.java_lib.db2.Where;
-import com.wangrj.java_lib.db2.Query;
-import com.wangrj.java_lib.db2.Where;
 
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package com.wangrj.java_lib.hibernate;
 
 import com.wangrj.java_lib.java_util.ReflectUtil;
-import com.wangrj.java_lib.java_util.ReflectUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

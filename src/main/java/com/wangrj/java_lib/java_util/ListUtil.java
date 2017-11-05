@@ -29,13 +29,18 @@ public class ListUtil {
      * 浅克隆
      */
     public static <T> List<T> clone(List<T> list) {
-        return clone(list, 0, list.size());
+//        方法一：
+//        List<T> destList = new ArrayList<>();
+//        destList.addAll(list);
+//        return destList;
+//        方法二：
+        return new ArrayList<>(list);
     }
 
     /**
      * 指定范围的浅克隆
      *
-     * @param endIndex 当endIndex=等于列表长度时，相当于克隆整个列表
+     * @param endIndex 当endIndex等于列表长度时，相当于克隆整个列表。注意，不包括endIndex。
      */
     public static <T> List<T> clone(List<T> list, int beginIndex, int endIndex) {
         List<T> newList;

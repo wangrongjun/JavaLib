@@ -25,13 +25,13 @@ public interface MybatisDao<T> {
 
     List<T> queryAll();
 
-    List<T> queryAllLimit(int begin, int end);
+    List<T> queryAllLimit(int offset, int rowCount);
 
     int queryAllCount();
 
     List<T> query(T entity);
 
-    List<T> queryLimit(T entity, int begin, int end);
+    List<T> queryLimit(T entity, int offset, int rowCount);
 
     int queryCount(T entity);
 

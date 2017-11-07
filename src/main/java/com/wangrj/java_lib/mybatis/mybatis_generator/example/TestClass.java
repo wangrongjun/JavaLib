@@ -1,12 +1,16 @@
 package com.wangrj.java_lib.mybatis.mybatis_generator.example;
 
+import com.wangrj.java_lib.constant.JavaLibConstant;
 import com.wangrj.java_lib.db3.DbUtil;
 import com.wangrj.java_lib.java_util.DateUtil;
+import com.wangrj.java_lib.java_util.ListUtil;
 import com.wangrj.java_lib.java_util.LogUtil;
+import com.wangrj.java_lib.mybatis.mybatis_generator.MybatisCreator;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.JobDao;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.UserInfoDao;
+import freemarker.template.TemplateException;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -15,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
@@ -27,8 +32,21 @@ public class TestClass {
     private JobDao jobDao;
     private UserInfoDao userInfoDao;
 
+    public static void main(String[] args) throws IOException, TemplateException {
+        String daoPackageName = TestClass.class.getPackage().getName() + ".dao";
+        String daoPackageDir = JavaLibConstant.classDir(TestClass.class) + "dao\\";
+
+        String jobDaoName = daoPackageName + ".JobDao";
+        new MybatisCreator().createMapper(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.xml"));
+        new MybatisCreator().createDao(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.java"));
+
+        String userInfoDaoName = daoPackageName + ".UserInfoDao";
+        new MybatisCreator().createMapper(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.xml"));
+        new MybatisCreator().createDao(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.java"));
+    }
+
     @Test
-    public void test() {
+    public void testAll() {
         testInsert();
         testDelete();
         testUpdate();
@@ -39,8 +57,8 @@ public class TestClass {
 
     @Test
     public void testInsert() {
-        DbUtil.dropAndCreate(DbUtil.DbType.Oracle, "orcl", "wang", "123",
-                Job.class, UserInfo.class);
+        DbUtil.dropAndCreateTables(DbUtil.DbType.Oracle, "orcl", "wang", "123",
+                ListUtil.build(Job.class, UserInfo.class));
 
         Job 程序员 = new Job("程序员");
         Job 销售员 = new Job("销售员");
@@ -87,20 +105,20 @@ public class TestClass {
 
     @Test
     public void testQuery() {
-        LogUtil.printEntity(userInfoDao.queryById(2));
+//        LogUtil.printEntity(userInfoDao.queryById(2));
 
-        LogUtil.printEntity(userInfoDao.queryAllLimit(0, 4));
-        LogUtil.printEntity(userInfoDao.queryAllLimit(4, 8));
-        LogUtil.printEntity(userInfoDao.queryAllCount());
-
-        UserInfo userInfo = new UserInfo();
-        userInfo.setRegDate(d("2016-1-2"));
-        LogUtil.printEntity(userInfoDao.query(userInfo));
-
-        userInfo = new UserInfo();
-        userInfo.setJob(new Job(1));
-        LogUtil.printEntity(userInfoDao.queryCount(userInfo));
-        LogUtil.printEntity(userInfoDao.queryLimit(userInfo, 2, 6));
+        LogUtil.printEntity(userInfoDao.queryAllLimit(1, 3));
+//        LogUtil.printEntity(userInfoDao.queryAllLimit(4, 4));
+//        LogUtil.printEntity(userInfoDao.queryAllCount());
+//
+//        UserInfo userInfo = new UserInfo();
+//        userInfo.setRegDate(d("2016-1-2"));
+//        LogUtil.printEntity(userInfoDao.query(userInfo));
+//
+//        userInfo = new UserInfo();
+//        userInfo.setJob(new Job(1));
+//        LogUtil.printEntity(userInfoDao.queryCount(userInfo));
+//        LogUtil.printEntity(userInfoDao.queryLimit(userInfo, 2, 6));
     }
 
     @Before

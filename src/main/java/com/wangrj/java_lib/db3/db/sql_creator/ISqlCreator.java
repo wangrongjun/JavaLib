@@ -5,9 +5,6 @@ import com.wangrj.java_lib.db2.Query;
 import com.wangrj.java_lib.db2.Where;
 import com.wangrj.java_lib.db3.main.TableField;
 import com.wangrj.java_lib.db3.main.UpdateSetValue;
-import com.wangrj.java_lib.db2.Query;
-import com.wangrj.java_lib.db2.Where;
-import com.wangrj.java_lib.db3.main.TableField;
 
 import java.util.List;
 

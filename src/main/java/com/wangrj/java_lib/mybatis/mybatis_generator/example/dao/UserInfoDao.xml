@@ -3,13 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.UserInfoDao">
 
-    <!--
-    TODO:
-    1.为每一个属性添加对应的查询方法，可以设置executions列表和requires列表进行筛选
-    2.如果没有外键对象，查询就指定resultType，否则指定resultMap
-    -->
 
-    <!-- +++++++++++++ 以下是MybatisDao的通用方法 +++++++++++++ -->
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- +++++++++++++ 以下是MybatisCreator生成的默认方法 +++++++++++++ -->
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
     <resultMap id="defaultMap" type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo">
         <id column="userId" property="userId"/>
@@ -60,19 +57,19 @@
         UPDATE UserInfo
         <set>
             <if test="userId!=null">
-                userId=#{userId},
+            userId=#{userId},
             </if>
             <if test="username!=null">
-                username=#{username},
+            username=#{username},
             </if>
             <if test="sex!=null">
-                sex=#{sex},
+            sex=#{sex},
             </if>
             <if test="regDate!=null">
-                regDate=#{regDate},
+            regDate=#{regDate},
             </if>
             <if test="job!=null">
-                job=#{job.jobId},
+            job=#{job.jobId},
             </if>
         </set>
         WHERE userId=#{userId}
@@ -81,7 +78,11 @@
     <!--必须在全局配置中设置<setting username="jdbcTypeForNull" value="NULL"/>，否则报错-->
     <update id="updateContainsNull">
         UPDATE UserInfo SET
-        userId=#{userId},username=#{username},sex=#{sex},regDate=#{regDate},job=#{job.jobId}
+            userId=#{userId},
+            username=#{username},
+            sex=#{sex},
+            regDate=#{regDate},
+            job=#{job.jobId}
         WHERE userId=#{userId}
     </update>
 
@@ -98,8 +99,8 @@
 
         SELECT * FROM UserInfo
 
-        ) full_result_set WHERE rownum<![CDATA[<=]]>#{arg1}
-        ) WHERE rn>#{arg0}
+        ) full_result_set WHERE rownum<![CDATA[<=]]>${arg0+arg1}
+        ) WHERE rn>${arg0}
     </select>
 
     <select id="queryAllCount" resultType="int">
@@ -133,8 +134,8 @@
             </if>
         </where>
 
-        ) full_result_set WHERE rownum<![CDATA[<=]]>#{arg2}
-        ) WHERE rn>#{arg1}
+        ) full_result_set WHERE rownum<![CDATA[<=]]>${arg1+arg2}
+        ) WHERE rn>${arg1}
     </select>
 
     <select id="queryCount" resultType="int">

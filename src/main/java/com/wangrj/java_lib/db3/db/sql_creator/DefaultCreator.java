@@ -4,7 +4,6 @@ import com.wangrj.java_lib.data_structure.Pair;
 import com.wangrj.java_lib.db2.Where;
 import com.wangrj.java_lib.db3.main.UpdateSetValue;
 import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.db2.Where;
 
 import java.util.List;
 
@@ -44,20 +43,34 @@ public abstract class DefaultCreator implements ISqlCreator {
         return sql;
     }
 
-    protected String createUnionUniqueKeySql(String tableName, List<String> unionUniqueList) {
-        // 例子：alter table SC add constraint union_uq_SC_s_c unique (student,course)
+    // TODO delete
+//    protected String createUnionUniqueKeySql(String tableName, List<String> unionUniqueList) {
+//        // 例子：alter table SC add constraint union_uq_SC_s_c unique (student,course)
+//        if (unionUniqueList == null || unionUniqueList.size() == 0) {
+//            return null;
+//        }
+//        String uniqueKeyName = "union_uq_" + tableName;
+//        String uniqueFieldList = "";
+//        for (String uniqueFieldName : unionUniqueList) {
+//            uniqueKeyName += "_" + uniqueFieldName.substring(0, 1);// 联合主键名字过长的话会出错，所以使用缩写
+//            uniqueFieldList += uniqueFieldName + ",";
+//        }
+//        uniqueFieldList = uniqueFieldList.substring(0, uniqueFieldList.length() - 1);
+//        return "alter table SC add constraint " +
+//                uniqueKeyName + " unique (" + uniqueFieldList + ")";
+//    }
+
+    protected String createUnionUniqueKeySql(List<String> unionUniqueList) {
+        // 例子：constraint union_uq unique (student,course)
         if (unionUniqueList == null || unionUniqueList.size() == 0) {
             return null;
         }
-        String uniqueKeyName = "union_uq_" + tableName;
         String uniqueFieldList = "";
         for (String uniqueFieldName : unionUniqueList) {
-            uniqueKeyName += "_" + uniqueFieldName.substring(0, 1);// 联合主键名字过长的话会出错，所以使用缩写
             uniqueFieldList += uniqueFieldName + ",";
         }
         uniqueFieldList = uniqueFieldList.substring(0, uniqueFieldList.length() - 1);
-        return "alter table SC add constraint " +
-                uniqueKeyName + " unique (" + uniqueFieldList + ")";
+        return "constraint union_uq unique (" + uniqueFieldList + ")";
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.wangrj.java_lib.mybatis.mybatis_generator.example.bean;
 
+import com.wangrj.java_lib.db3.main.UnionUniqueKey;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -14,7 +16,9 @@ public class UserInfo {
     @GeneratedValue
     private Integer userId;
     private String username;
+    @UnionUniqueKey
     private Integer sex;
+    @UnionUniqueKey
     private Date regDate;
     @ManyToOne
     private Job job;

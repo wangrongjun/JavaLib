@@ -1,8 +1,6 @@
 package com.wangrj.java_lib.java_util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.Map;
 
 import freemarker.cache.FileTemplateLoader;
@@ -15,6 +13,18 @@ import freemarker.template.TemplateException;
  */
 
 public class FreeMakerUtil {
+
+    public static void create(String fltText, Map<String, Object> dataModel, Writer writer)
+            throws IOException, TemplateException {
+        Template template = new Template(null, new StringReader(fltText), new Configuration());
+        template.process(dataModel, writer);
+    }
+
+    public static void create(File fltFile, Map<String, Object> dataModel, Writer writer)
+            throws IOException, TemplateException {
+        Template template = new Template(null, new FileReader(fltFile), new Configuration());
+        template.process(dataModel, writer);
+    }
 
     /**
      * 使用示例：

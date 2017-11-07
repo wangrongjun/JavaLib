@@ -26,6 +26,22 @@ public class ListUtil {
     }
 
     /**
+     * 如果有Null，就跳过
+     */
+    @SafeVarargs
+    public static <T> List<T> buildWithoutNull(T... elementList) {
+        List<T> list = new ArrayList<>();
+        if (elementList != null && elementList.length > 0) {
+            for (T t : elementList) {
+                if (t != null) {
+                    list.add(t);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
      * 浅克隆
      */
     public static <T> List<T> clone(List<T> list) {

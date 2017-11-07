@@ -4,6 +4,7 @@ import com.wangrj.java_lib.data_structure.Pair;
 import com.wangrj.java_lib.db.basis.Action;
 import com.wangrj.java_lib.db2.Where;
 import com.wangrj.java_lib.db3.main.TableField;
+import com.wangrj.java_lib.db3.main.UnionUniqueKey;
 import com.wangrj.java_lib.db3.main.UpdateSetValue;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
@@ -55,9 +56,9 @@ public abstract class DefaultDatabase implements IDataBase {
 //                tableField.setDefaultValue(columnAnno.defaultValue());
             }
 
-//            if (field.getAnnotation(UnionUniqueKey.class) != null) {
-//                unionUniqueList.add(field.getName());
-//            }
+            if (field.getAnnotation(UnionUniqueKey.class) != null) {
+                unionUniqueList.add(field.getName());
+            }
 
             if (isForeignKeyObject(field)) {
 

@@ -70,10 +70,10 @@ public class DbUtil {
     }
 
     /**
-     * @param obj 包含各种Dao成员变量的测试类实例
+     * @param testClassInstance 包含各种Dao成员变量的测试类实例
      */
-    public static void dropAndCreateTables(Object obj) throws Exception {
-        Field[] fields = obj.getClass().getDeclaredFields();
+    public static void dropAndCreateTables(Object testClassInstance) throws Exception {
+        Field[] fields = testClassInstance.getClass().getDeclaredFields();
         for (int i = fields.length - 1; i >= 0; i--) {
             Field field = fields[i];
             if (!field.getName().endsWith("Dao")) {
@@ -82,7 +82,7 @@ public class DbUtil {
             field.setAccessible(true);// 获取权限：读取obj里面设置为private的xxDao变量
             Method dropTable = field.getType().getMethod("dropTable");
             dropTable.setAccessible(true);
-            dropTable.invoke(field.get(obj));
+            dropTable.invoke(field.get(testClassInstance));
         }
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
@@ -92,7 +92,7 @@ public class DbUtil {
             field.setAccessible(true);
             Method createTable = field.getType().getMethod("createTable");
             createTable.setAccessible(true);
-            createTable.invoke(field.get(obj));
+            createTable.invoke(field.get(testClassInstance));
         }
     }
 
@@ -109,8 +109,8 @@ public class DbUtil {
      * 3.创建Job表
      * 4.创建User表
      */
-    public static void dropAndCreate(DbType dbType, String dbName,
-                                     String user, String pass, Class... classList) {
+    public static void dropAndCreateTables(DbType dbType, String dbName,
+                                           String user, String pass, List<Class> classList) {
         IDataBase dataBase;
         switch (dbType) {
             case Mysql:
@@ -122,8 +122,8 @@ public class DbUtil {
             default:
                 throw new RuntimeException("dbType is error: " + dbType);
         }
-        for (int i = classList.length - 1; i >= 0; i--) {
-            Class cls = classList[i];
+        for (int i = classList.size() - 1; i >= 0; i--) {
+            Class cls = classList.get(i);
             class TempDao extends BaseDao {
                 @Override
                 protected Class getEntityClass() {
@@ -142,8 +142,8 @@ public class DbUtil {
             }
             new TempDao().dropTable();
         }
-        for (int i = 0; i < classList.length; i++) {
-            Class cls = classList[i];
+        for (int i = 0; i < classList.size(); i++) {
+            Class cls = classList.get(i);
             class TempDao extends BaseDao {
                 @Override
                 protected Class getEntityClass() {

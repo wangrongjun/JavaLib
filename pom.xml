@@ -157,6 +157,16 @@
     <!--如果没有以下内容，会报错：Error:java: Compilation failed: internal java compiler error-->
     <build>
         <finalName>JavaLib</finalName>
+        <!--配置src/main/java为资源目录，这样该目录下（包括子目录）的资源文件就可以发布到target/classes下-->
+        <!--这样可以避免因为没发布使得Mybatis读不到xxDao的映射文件-->
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

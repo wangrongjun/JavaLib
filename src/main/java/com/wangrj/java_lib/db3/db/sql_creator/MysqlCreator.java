@@ -6,7 +6,6 @@ import com.wangrj.java_lib.db2.Where;
 import com.wangrj.java_lib.db3.main.TableField;
 import com.wangrj.java_lib.java_util.ListUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.db3.main.TableField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,8 @@ public class MysqlCreator extends DefaultCreator {
         String createTableSql = "create table if not exists " + tableName + "(";
         List<String> createForeignKeySqlList = new ArrayList<>();
 
-        for (TableField tableField : tableFieldList) {
+        for (int i = 0; i < tableFieldList.size(); i++) {
+            TableField tableField = tableFieldList.get(i);
             createTableSql += "\n\t" + tableField.getName() + " " + getType(tableField);
             if (tableField.isPrimaryKey()) {
                 if (tableField.isAutoIncrement()) {
@@ -52,13 +52,15 @@ public class MysqlCreator extends DefaultCreator {
                 );
                 createForeignKeySqlList.add(sql);
             }
-            createTableSql += ",";
+            createTableSql += i < tableFieldList.size() - 1 ? "," : "";
         }
+        String unionUniqueKeySql = createUnionUniqueKeySql(unionUniqueList);
+        if (unionUniqueKeySql != null) {
+            createTableSql += ",\n\t" + unionUniqueKeySql;
+        }
+        createTableSql += "\n)";
 
-        createTableSql = createTableSql.substring(0, createTableSql.length() - 1) + "\n)";
-
-        // 在BaseDao的executeUpdate中，会判空，所以这里不用考虑sql为空的问题
-        List<String> sqlList = ListUtil.build(createTableSql, createUnionUniqueKeySql(tableName, unionUniqueList));
+        List<String> sqlList = ListUtil.build(createTableSql);
         sqlList.addAll(createForeignKeySqlList);
         return sqlList;
     }

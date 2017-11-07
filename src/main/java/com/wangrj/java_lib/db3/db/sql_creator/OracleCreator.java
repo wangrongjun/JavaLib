@@ -6,7 +6,6 @@ import com.wangrj.java_lib.db3.DefaultTypeLength;
 import com.wangrj.java_lib.db3.main.TableField;
 import com.wangrj.java_lib.java_util.ListUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.db3.main.TableField;
 
 import java.util.List;
 
@@ -23,7 +22,8 @@ public class OracleCreator extends DefaultCreator {
         String pkName = null;
         boolean autoIncrement = true;
 
-        for (TableField tableField : tableFieldList) {
+        for (int i = 0; i < tableFieldList.size(); i++) {
+            TableField tableField = tableFieldList.get(i);
             createTableSql += "\n\t" + tableField.getName() + " " + getType(tableField);
             if (tableField.isPrimaryKey()) {
                 pkName = tableField.getName();
@@ -44,9 +44,13 @@ public class OracleCreator extends DefaultCreator {
                 createTableSql += " references " + tableField.getReferenceTable() +
                         "(" + tableField.getReferenceColumn() + ")";
             }
-            createTableSql += ",";
+            createTableSql += i < tableFieldList.size() - 1 ? "," : "";
         }
-        createTableSql = createTableSql.substring(0, createTableSql.length() - 1) + "\n)";
+        String unionUniqueKeySql = createUnionUniqueKeySql(unionUniqueList);
+        if (unionUniqueKeySql != null) {
+            createTableSql += ",\n\t" + unionUniqueKeySql;
+        }
+        createTableSql += "\n)";
 
         String createSequenceSql = "create sequence sequence_" + tableName;
 
@@ -57,12 +61,11 @@ public class OracleCreator extends DefaultCreator {
                 "\t\t\tfrom dual;\n" +
                 "\tend;";
 
-        return ListUtil.build(
+        return ListUtil.buildWithoutNull(
                 createTableSql,
-                unionUniqueList.size() > 0 ? createUnionUniqueKeySql(tableName, unionUniqueList) : null,
                 autoIncrement ? createSequenceSql : null,
-                autoIncrement ? createTriggerSql : null,
-                "commit"
+                autoIncrement ? createTriggerSql : null
+//                "commit"
         );
     }
 
@@ -74,8 +77,8 @@ public class OracleCreator extends DefaultCreator {
         return ListUtil.build(
                 dropTriggerSql,
                 dropSequenceSql,
-                dropTableSql,
-                "commit"
+                dropTableSql
+//                "commit"
         );
     }
 

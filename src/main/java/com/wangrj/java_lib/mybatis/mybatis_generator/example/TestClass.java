@@ -105,20 +105,20 @@ public class TestClass {
 
     @Test
     public void testQuery() {
-//        LogUtil.printEntity(userInfoDao.queryById(2));
+        LogUtil.printEntity(userInfoDao.queryById(2));
 
         LogUtil.printEntity(userInfoDao.queryAllLimit(1, 3));
-//        LogUtil.printEntity(userInfoDao.queryAllLimit(4, 4));
-//        LogUtil.printEntity(userInfoDao.queryAllCount());
-//
-//        UserInfo userInfo = new UserInfo();
-//        userInfo.setRegDate(d("2016-1-2"));
-//        LogUtil.printEntity(userInfoDao.query(userInfo));
-//
-//        userInfo = new UserInfo();
-//        userInfo.setJob(new Job(1));
-//        LogUtil.printEntity(userInfoDao.queryCount(userInfo));
-//        LogUtil.printEntity(userInfoDao.queryLimit(userInfo, 2, 6));
+        LogUtil.printEntity(userInfoDao.queryAllLimit(4, 4));
+        LogUtil.printEntity(userInfoDao.queryAllCount());
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setRegDate(d("2016-1-2"));
+        LogUtil.printEntity(userInfoDao.query(userInfo));
+
+        userInfo = new UserInfo();
+        userInfo.setJob(new Job(1));
+        LogUtil.printEntity(userInfoDao.queryCount(userInfo));
+        LogUtil.printEntity(userInfoDao.queryLimit(userInfo, 2, 6));
     }
 
     @Before

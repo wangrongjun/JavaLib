@@ -1,5 +1,7 @@
 package com.wangrj.java_lib.mybatis;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**
@@ -25,13 +27,13 @@ public interface MybatisDao<T> {
 
     List<T> queryAll();
 
-    List<T> queryAllLimit(int offset, int rowCount);
+    List<T> queryAllLimit(@Param("offset") int offset, @Param("rowCount") int rowCount);
 
     int queryAllCount();
 
     List<T> query(T entity);
 
-    List<T> queryLimit(T entity, int offset, int rowCount);
+    List<T> queryLimit(@Param("entity") T entity, @Param("offset") int offset, @Param("rowCount") int rowCount);
 
     int queryCount(T entity);
 

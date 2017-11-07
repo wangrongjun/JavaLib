@@ -99,8 +99,8 @@
 
         SELECT * FROM UserInfo
 
-        ) full_result_set WHERE rownum<![CDATA[<=]]>${arg0+arg1}
-        ) WHERE rn>${arg0}
+        ) full_result_set WHERE rownum<![CDATA[<=]]>${offset + rowCount}
+        ) WHERE rn>${offset}
     </select>
 
     <select id="queryAllCount" resultType="int">
@@ -117,25 +117,25 @@
 
         SELECT * FROM UserInfo
         <where>
-            <if test="arg0.userId!=null">
-                AND userId=#{arg0.userId}
+            <if test="entity.userId!=null">
+                AND userId=#{entity.userId}
             </if>
-            <if test="arg0.username!=null">
-                AND username=#{arg0.username}
+            <if test="entity.username!=null">
+                AND username=#{entity.username}
             </if>
-            <if test="arg0.sex!=null">
-                AND sex=#{arg0.sex}
+            <if test="entity.sex!=null">
+                AND sex=#{entity.sex}
             </if>
-            <if test="arg0.regDate!=null">
-                AND regDate=#{arg0.regDate}
+            <if test="entity.regDate!=null">
+                AND regDate=#{entity.regDate}
             </if>
-            <if test="arg0.job!=null">
-                AND job=#{arg0.job.jobId}
+            <if test="entity.job!=null">
+                AND job=#{entity.job.jobId}
             </if>
         </where>
 
-        ) full_result_set WHERE rownum<![CDATA[<=]]>${arg1+arg2}
-        ) WHERE rn>${arg1}
+        ) full_result_set WHERE rownum<![CDATA[<=]]>${offset + rowCount}
+        ) WHERE rn>${offset}
     </select>
 
     <select id="queryCount" resultType="int">

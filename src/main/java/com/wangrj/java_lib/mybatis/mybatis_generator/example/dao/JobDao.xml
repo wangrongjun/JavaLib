@@ -69,8 +69,8 @@
 
         SELECT * FROM Job
 
-        ) full_result_set WHERE rownum<![CDATA[<=]]>${arg0+arg1}
-        ) WHERE rn>${arg0}
+        ) full_result_set WHERE rownum<![CDATA[<=]]>${offset + rowCount}
+        ) WHERE rn>${offset}
     </select>
 
     <select id="queryAllCount" resultType="int">
@@ -87,16 +87,16 @@
 
         SELECT * FROM Job
         <where>
-            <if test="arg0.jobId!=null">
-                AND jobId=#{arg0.jobId}
+            <if test="entity.jobId!=null">
+                AND jobId=#{entity.jobId}
             </if>
-            <if test="arg0.jobName!=null">
-                AND jobName=#{arg0.jobName}
+            <if test="entity.jobName!=null">
+                AND jobName=#{entity.jobName}
             </if>
         </where>
 
-        ) full_result_set WHERE rownum<![CDATA[<=]]>${arg1+arg2}
-        ) WHERE rn>${arg1}
+        ) full_result_set WHERE rownum<![CDATA[<=]]>${offset + rowCount}
+        ) WHERE rn>${offset}
     </select>
 
     <select id="queryCount" resultType="int">

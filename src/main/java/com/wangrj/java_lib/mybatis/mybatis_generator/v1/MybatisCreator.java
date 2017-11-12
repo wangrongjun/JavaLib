@@ -1,4 +1,4 @@
-package com.wangrj.java_lib.mybatis.mybatis_generator;
+package com.wangrj.java_lib.mybatis.mybatis_generator.v1;
 
 import com.wangrj.java_lib.constant.JavaLibConstant;
 import com.wangrj.java_lib.java_util.FreeMakerUtil;
@@ -29,10 +29,10 @@ import java.util.Map;
 public class MybatisCreator {
 
     private static final String mapperFltFilePath = JavaLibConstant.srcDir() +
-            "com/wangrj/java_lib/mybatis/mybatis_generator/templates/mapper.ftl";
+            "com/wangrj/java_lib/mybatis/mybatis_generator/v1/templates/mapper.ftl";
 
     private static final String daoFltFilePath = JavaLibConstant.srcDir() +
-            "com/wangrj/java_lib/mybatis/mybatis_generator/templates/dao.ftl";
+            "com/wangrj/java_lib/mybatis/mybatis_generator/v1/templates/dao.ftl";
 
     private boolean createAnno = false;// dao是否生成 @Repository和 @MapperScan 注解
 
@@ -65,7 +65,8 @@ public class MybatisCreator {
                 continue;
             }
             if (field.getAnnotation(Id.class) != null) {// 如果是主键
-                fieldInfoList.add(new FieldInfo(1, field.getName()));
+                boolean idAutoCreate = field.getAnnotation(GeneratedValue.class) != null;
+                fieldInfoList.add(new FieldInfo(1, field.getName(), idAutoCreate));
 
             } else if (field.getAnnotation(ManyToOne.class) != null ||
                     field.getAnnotation(OneToOne.class) != null) {// 如果是外键对象

@@ -1,4 +1,4 @@
-package com.wangrj.java_lib.mybatis;
+package com.wangrj.java_lib.mybatis.mybatis_generator.v1;
 
 import org.apache.ibatis.annotations.Param;
 

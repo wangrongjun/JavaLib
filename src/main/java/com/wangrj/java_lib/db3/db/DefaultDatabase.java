@@ -4,7 +4,7 @@ import com.wangrj.java_lib.data_structure.Pair;
 import com.wangrj.java_lib.db.basis.Action;
 import com.wangrj.java_lib.db2.Where;
 import com.wangrj.java_lib.db3.main.TableField;
-import com.wangrj.java_lib.db3.main.UnionUniqueKey;
+import com.wangrj.java_lib.db3.anno.UnionUniqueKey;
 import com.wangrj.java_lib.db3.main.UpdateSetValue;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;

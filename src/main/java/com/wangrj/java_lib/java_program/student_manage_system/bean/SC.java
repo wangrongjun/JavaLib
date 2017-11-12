@@ -1,6 +1,6 @@
 package com.wangrj.java_lib.java_program.student_manage_system.bean;
 
-import com.wangrj.java_lib.db3.main.UnionUniqueKey;
+import com.wangrj.java_lib.db3.anno.UnionUniqueKey;
 
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;

@@ -3,12 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.UserInfoDao">
 
-
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <!-- +++++++++++++ 以下是MybatisCreator生成的默认方法 +++++++++++++ -->
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-    <resultMap id="defaultMap" type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo">
+    <resultMap id="singleMap" type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo">
         <id column="userId" property="userId"/>
         <result column="username" property="username"/>
         <result column="sex" property="sex"/>
@@ -18,129 +13,7 @@
         </association>
     </resultMap>
 
-    <sql id="whereSql">
-        <where>
-            <if test="userId!=null">
-                AND userId=#{userId}
-            </if>
-            <if test="username!=null">
-                AND username=#{username}
-            </if>
-            <if test="sex!=null">
-                AND sex=#{sex}
-            </if>
-            <if test="regDate!=null">
-                AND regDate=#{regDate}
-            </if>
-            <if test="job!=null">
-                AND job=#{job.jobId}
-            </if>
-        </where>
-    </sql>
-
-    <insert id="insert" parameterType="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo">
-        INSERT INTO UserInfo(
-        userId,username,sex,regDate,job
-        ) VALUES (
-        #{userId},#{username},#{sex},#{regDate},#{job.jobId}
-        )
-        <selectKey keyProperty="userId" resultType="int">
-            SELECT sequence_UserInfo.currval FROM dual
-        </selectKey>
-    </insert>
-
-    <delete id="deleteById" parameterType="long">
-        DELETE FROM UserInfo WHERE userId=#{id}
-    </delete>
-
-    <update id="update" parameterType="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo">
-        UPDATE UserInfo
-        <set>
-            <if test="userId!=null">
-            userId=#{userId},
-            </if>
-            <if test="username!=null">
-            username=#{username},
-            </if>
-            <if test="sex!=null">
-            sex=#{sex},
-            </if>
-            <if test="regDate!=null">
-            regDate=#{regDate},
-            </if>
-            <if test="job!=null">
-            job=#{job.jobId},
-            </if>
-        </set>
-        WHERE userId=#{userId}
-    </update>
-
-    <!--必须在全局配置中设置<setting username="jdbcTypeForNull" value="NULL"/>，否则报错-->
-    <update id="updateContainsNull">
-        UPDATE UserInfo SET
-            userId=#{userId},
-            username=#{username},
-            sex=#{sex},
-            regDate=#{regDate},
-            job=#{job.jobId}
-        WHERE userId=#{userId}
-    </update>
-
-    <select id="queryById" parameterType="long" resultMap="defaultMap">
-        SELECT * FROM UserInfo WHERE userId=#{id}
-    </select>
-
-    <select id="queryAll" resultMap="defaultMap">
-        SELECT * FROM UserInfo
-    </select>
-
-    <select id="queryAllLimit" resultMap="defaultMap">
-        SELECT * FROM (SELECT full_result_set.*,rownum rn FROM (
-
-        SELECT * FROM UserInfo
-
-        ) full_result_set WHERE rownum<![CDATA[<=]]>${offset + rowCount}
-        ) WHERE rn>${offset}
-    </select>
-
-    <select id="queryAllCount" resultType="int">
-        SELECT count(1) FROM UserInfo
-    </select>
-
-    <select id="query" resultMap="defaultMap">
-        SELECT * FROM UserInfo
-        <include refid="whereSql"/>
-    </select>
-
-    <select id="queryLimit" parameterType="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo" resultMap="defaultMap">
-        SELECT * FROM (SELECT full_result_set.*,rownum rn FROM (
-
-        SELECT * FROM UserInfo
-        <where>
-            <if test="entity.userId!=null">
-                AND userId=#{entity.userId}
-            </if>
-            <if test="entity.username!=null">
-                AND username=#{entity.username}
-            </if>
-            <if test="entity.sex!=null">
-                AND sex=#{entity.sex}
-            </if>
-            <if test="entity.regDate!=null">
-                AND regDate=#{entity.regDate}
-            </if>
-            <if test="entity.job!=null">
-                AND job=#{entity.job.jobId}
-            </if>
-        </where>
-
-        ) full_result_set WHERE rownum<![CDATA[<=]]>${offset + rowCount}
-        ) WHERE rn>${offset}
-    </select>
-
-    <select id="queryCount" resultType="int">
-        SELECT count(1) FROM UserInfo
-        <include refid="whereSql"/>
-    </select>
+    <resultMap id="multiMap" extends="singleMap"
+               type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo"/>
 
 </mapper>

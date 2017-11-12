@@ -1,4 +1,4 @@
-package com.wangrj.java_lib.db3.main;
+package com.wangrj.java_lib.db3.anno;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

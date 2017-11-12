@@ -5,11 +5,11 @@ import com.wangrj.java_lib.db3.DbUtil;
 import com.wangrj.java_lib.java_util.DateUtil;
 import com.wangrj.java_lib.java_util.ListUtil;
 import com.wangrj.java_lib.java_util.LogUtil;
-import com.wangrj.java_lib.mybatis.mybatis_generator.MybatisCreator;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.JobDao;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.UserInfoDao;
+import com.wangrj.java_lib.mybatis.mybatis_generator.v2.MybatisDaoCreator;
 import freemarker.template.TemplateException;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -36,6 +36,7 @@ public class TestClass {
         String daoPackageName = TestClass.class.getPackage().getName() + ".dao";
         String daoPackageDir = JavaLibConstant.classDir(TestClass.class) + "dao\\";
 
+        /*
         String jobDaoName = daoPackageName + ".JobDao";
         new MybatisCreator().createMapper(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.xml"));
         new MybatisCreator().createDao(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.java"));
@@ -43,6 +44,11 @@ public class TestClass {
         String userInfoDaoName = daoPackageName + ".UserInfoDao";
         new MybatisCreator().createMapper(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.xml"));
         new MybatisCreator().createDao(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.java"));
+        */
+
+        MybatisDaoCreator creator = new MybatisDaoCreator();
+        creator.createDao(Job.class, JobDao.class.getName(), new FileWriter(daoPackageDir + "JobDao.java"));
+        creator.createDao(UserInfo.class, UserInfoDao.class.getName(), new FileWriter(daoPackageDir + "UserInfoDao.java"));
     }
 
     @Test
@@ -89,26 +95,33 @@ public class TestClass {
     public void testUpdateContainsNull() {
         UserInfo userInfo = new UserInfo(2);
         userInfoDao.updateContainsNull(userInfo);
+        userInfo.setUsername("hello");
+        userInfoDao.update(userInfo);
         testQueryAll();
     }
 
     @Test
     public void testDelete() {
-        userInfoDao.deleteById(3);
+        userInfoDao.deleteById(1);
         testQueryAll();
     }
 
     @Test
     public void testQueryAll() {
-        userInfoDao.queryAll();
+        userInfoDao.queryAll("sex", "userId");
     }
 
     @Test
     public void testQuery() {
+        userInfoDao.queryAllCount();
+        userInfoDao.queryCount(new UserInfo(5));
+
+        userInfoDao.queryAll("sex desc", "username desc");
+
         LogUtil.printEntity(userInfoDao.queryById(2));
 
-        LogUtil.printEntity(userInfoDao.queryAllLimit(1, 3));
-        LogUtil.printEntity(userInfoDao.queryAllLimit(4, 4));
+//        LogUtil.printEntity(userInfoDao.queryAllLimit(1, 3));
+//        LogUtil.printEntity(userInfoDao.queryAllLimit(4, 4));
         LogUtil.printEntity(userInfoDao.queryAllCount());
 
         UserInfo userInfo = new UserInfo();
@@ -118,7 +131,7 @@ public class TestClass {
         userInfo = new UserInfo();
         userInfo.setJob(new Job(1));
         LogUtil.printEntity(userInfoDao.queryCount(userInfo));
-        LogUtil.printEntity(userInfoDao.queryLimit(userInfo, 2, 6));
+//        LogUtil.printEntity(userInfoDao.queryLimit(userInfo, 2, 6));
     }
 
     @Before

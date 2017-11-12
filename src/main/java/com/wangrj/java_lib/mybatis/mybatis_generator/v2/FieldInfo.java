@@ -1,25 +1,19 @@
-package com.wangrj.java_lib.mybatis.mybatis_generator;
+package com.wangrj.java_lib.mybatis.mybatis_generator.v2;
 
 /**
  * by wangrongjun on 2017/11/5.
  */
 public class FieldInfo {
 
-    private int type;// 0：基本数据类型。1：主键。2：外键对象类型
+    private int type;// 0：基本数据类型。1：主键。2：外键对象类型。
     private String name;
+    private String getter;// 属性的getter方法名，如getUserId
     private String fkClassName;// 外键对象的类名，如com.bean.Job
     private String fkIdName;// 外键对象的id名，如jobId
 
-    public FieldInfo(int type, String name) {
-        this.type = type;
+    public FieldInfo(String name, String getter) {
         this.name = name;
-    }
-
-    public FieldInfo(int type, String name, String fkClassName, String fkIdName) {
-        this.type = type;
-        this.name = name;
-        this.fkClassName = fkClassName;
-        this.fkIdName = fkIdName;
+        this.getter = getter;
     }
 
     public int getType() {
@@ -38,6 +32,14 @@ public class FieldInfo {
         this.name = name;
     }
 
+    public String getGetter() {
+        return getter;
+    }
+
+    public void setGetter(String getter) {
+        this.getter = getter;
+    }
+
     public String getFkClassName() {
         return fkClassName;
     }
@@ -53,4 +55,5 @@ public class FieldInfo {
     public void setFkIdName(String fkIdName) {
         this.fkIdName = fkIdName;
     }
+
 }

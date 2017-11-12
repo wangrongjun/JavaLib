@@ -18,30 +18,6 @@ import java.util.Map;
  */
 public class MdCreator {
 
-    static class A {
-        void a() {
-        }
-
-        static void as() {
-        }
-    }
-
-    static class B extends A {
-        void a() {
-            a();
-            as();
-            bs();
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            super.finalize();
-        }
-
-        static void bs() {
-        }
-    }
-
     public static class Row {
         String type;
         String question;
@@ -80,37 +56,20 @@ public class MdCreator {
         }
     }
 
-//    public static class SelectQuestion{
-//        String questionHeader;
-//        String question;
-//        String selectA;
-//        String selectB;
-//        String selectC;
-//        String selectD;
-//        String answer;
-//    }
-//
-//    public static class JudgeQuestion{
-//        String questionHeader;
-//        String question;
-//        String selectA;
-//    }
-//
-//    public static class SimpleAskQuestion{
-//
-//    }
-
     @Test
     public void create() throws Exception {
-        List<Row> rowList = ExcelUtil.excelIn(Row.class, "E:/new.xls");
-        createMarkdown(rowList);
+//        String title = "101软件开发工程师（JAVA）部分题库-1";
+        String title = "101软件开发工程师（JAVA）部分题库-2";
+        List<Row> rowList = ExcelUtil.excelIn(Row.class, "E:/" + title + ".xls");
+        createMarkdown(title, rowList);
     }
 
-    public void createMarkdown(List<Row> rowList) throws IOException, TemplateException {
+    public void createMarkdown(String title, List<Row> rowList) throws IOException, TemplateException {
         Map<String, Object> dataModel = new HashMap<>();
+        dataModel.put("title", title);
         dataModel.put("rowList", rowList);
         String path = JavaLibConstant.srcDir() + "com/wangrj/java_lib/test/question.ftl";
-        FreeMakerUtil.create(new File(path), dataModel, new FileWriter("E:/out.md"));
+        FreeMakerUtil.create(new File(path), dataModel, new FileWriter("E:/" + title + ".md"));
     }
 
 }

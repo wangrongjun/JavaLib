@@ -3,16 +3,23 @@ package com.wangrj.java_lib.db3.db;
 import com.wangrj.java_lib.data_structure.Pair;
 import com.wangrj.java_lib.db.basis.Action;
 import com.wangrj.java_lib.db2.Where;
+import com.wangrj.java_lib.db3.anno.DefaultValue;
+import com.wangrj.java_lib.db3.main.NameConverter;
 import com.wangrj.java_lib.db3.main.TableField;
 import com.wangrj.java_lib.db3.anno.UnionUniqueKey;
 import com.wangrj.java_lib.db3.main.UpdateSetValue;
+import com.wangrj.java_lib.java_util.FileUtil;
+import com.wangrj.java_lib.java_util.JavaCodeParser;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
 
 import javax.persistence.*;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * by wangrongjun on 2017/8/23.
@@ -20,9 +27,19 @@ import java.util.List;
 
 public abstract class DefaultDatabase implements IDataBase {
 
+    private boolean defineComment = true;// 是否获取源码的代码注释并定义到数据库中
+    private NameConverter converter = new NameConverter.DefaultConverter();// 实体类属性名 -> 字段名 转换器
+
     @Override
     public List<String> createTableSql(Class entityClass) {
-        String tableName = entityClass.getSimpleName();
+        String tableName = converter.toTableName(entityClass);
+
+        Map<String, String> nameCommentMap = new HashMap<>();
+        if (defineComment) {
+            nameCommentMap = getComment(entityClass);
+        }
+
+        String tableComment = nameCommentMap.get(entityClass.getSimpleName());
 
         List<TableField> tableFieldList = new ArrayList<>();
         List<String> unionUniqueList = new ArrayList<>();
@@ -32,7 +49,9 @@ public abstract class DefaultDatabase implements IDataBase {
                 continue;
             }
 
-            TableField tableField = new TableField(field.getName(), getType(field));
+            String columnName = converter.toColumnName(field);
+
+            TableField tableField = new TableField(columnName, getType(field));
 
             if (field.getAnnotation(Id.class) != null) {
                 tableField.setPrimaryKey(true);
@@ -53,23 +72,37 @@ public abstract class DefaultDatabase implements IDataBase {
                 tableField.setDecimalLength(columnAnno.precision());
                 tableField.setNullable(columnAnno.nullable());
                 tableField.setUnique(columnAnno.unique());
-//                tableField.setDefaultValue(columnAnno.defaultValue());
             }
 
+            // 定义默认值
+            DefaultValue defaultValueAnno = field.getAnnotation(DefaultValue.class);
+            if (defaultValueAnno != null) {
+                tableField.setDefaultValue(defaultValueAnno.value());
+            }
+
+            // 定义联合唯一键
             if (field.getAnnotation(UnionUniqueKey.class) != null) {
-                unionUniqueList.add(field.getName());
+                unionUniqueList.add(columnName);
+            }
+
+            // 定义注释
+            String comment = nameCommentMap.get(field.getName());
+            if (comment != null) {
+                tableField.setComment(comment);
             }
 
             if (isForeignKeyObject(field)) {
 
                 tableField.setForeignKey(true);
-                tableField.setReferenceTable(field.getType().getSimpleName());
+
+                String referenceTableName = converter.toTableName(field.getType());
+                tableField.setReferenceTable(referenceTableName);
                 Field fkIdField = ReflectUtil.findByAnno(field.getType(), Id.class);
                 if (fkIdField == null) {
                     throw new RuntimeException("reference object doesn't has id");
                 }
                 tableField.setType(getType(fkIdField));// 根据外键类的id类型重新设置数据类型
-                tableField.setReferenceColumn(fkIdField.getName());
+                tableField.setReferenceColumn(converter.toColumnName(fkIdField));
                 CascadeType[] cascade;
                 if (field.getAnnotation(OneToOne.class) != null) {
                     cascade = field.getAnnotation(OneToOne.class).cascade();
@@ -98,12 +131,13 @@ public abstract class DefaultDatabase implements IDataBase {
             tableFieldList.add(tableField);
         }
 
-        return getSqlCreator().createTableSql(tableName, tableFieldList, unionUniqueList);
+        return getSqlCreator().createTableSql(tableName, tableComment, tableFieldList, unionUniqueList);
     }
 
     @Override
     public List<String> dropTableSql(Class entityClass) {
-        return getSqlCreator().dropTableSql(entityClass.getSimpleName());
+        String tableName = converter.toTableName(entityClass);
+        return getSqlCreator().dropTableSql(tableName);
     }
 
     @Override
@@ -274,6 +308,27 @@ public abstract class DefaultDatabase implements IDataBase {
     }
 
     /**
+     * 尝试从各种途径获取代码注释
+     *
+     * @return 键是实体类名和属性名，值是注释
+     */
+    protected Map<String, String> getComment(Class entityClass) {
+        String classPath = entityClass.getName().replace(".", "/");
+        String[] possiblePaths = new String[]{// 所有可能的路径
+                "src/" + classPath + ".java",
+                "src/main/java/" + classPath + ".java"
+        };
+        for (String path : possiblePaths) {
+            File javaFile = new File(path);
+            if (javaFile.exists()) {
+                String javaCode = FileUtil.read(javaFile);
+                return JavaCodeParser.getDocument(entityClass, javaCode);
+            }
+        }
+        return new HashMap<>();
+    }
+
+    /**
      * 防止输入的值中含有非法字符如单引号，斜杠等。防止sql注入攻击。
      * 原理：单引号中间的内容有可能引起歧义的只有内容里的单引号和斜杠。
      * 只要对内容里的单引号和斜杠进行转义，理论上可以防止任意方式的sql注入攻击。
@@ -282,4 +337,12 @@ public abstract class DefaultDatabase implements IDataBase {
         return value.replace("\\", "\\\\").replace("'", "\\'");
     }
 
+    public DefaultDatabase setNameConverter(NameConverter converter) {
+        this.converter = converter;
+        return this;
+    }
+
+    public void setDefineComment(boolean defineComment) {
+        this.defineComment = defineComment;
+    }
 }

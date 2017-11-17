@@ -3,6 +3,7 @@ package com.wangrj.java_lib.db3.db.sql_creator;
 import com.wangrj.java_lib.db2.Query;
 import com.wangrj.java_lib.db2.TableUtil;
 import com.wangrj.java_lib.db2.Where;
+import com.wangrj.java_lib.db3.DefaultTypeLength;
 import com.wangrj.java_lib.db3.main.TableField;
 import com.wangrj.java_lib.java_util.ListUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
@@ -16,9 +17,11 @@ import java.util.List;
 
 public class MysqlCreator extends DefaultCreator {
     @Override
-    public List<String> createTableSql(String tableName, List<TableField> tableFieldList,
+    public List<String> createTableSql(String tableName, String tableComment,
+                                       List<TableField> tableFieldList,
                                        List<String> unionUniqueList) {
         String createTableSql = "create table if not exists " + tableName + "(";
+        // 对于MySQL而言，在表中直接定义外键（refercences），虽然不报错，但无效。所以需要额外定义。
         List<String> createForeignKeySqlList = new ArrayList<>();
 
         for (int i = 0; i < tableFieldList.size(); i++) {
@@ -41,6 +44,9 @@ public class MysqlCreator extends DefaultCreator {
             if (!TextUtil.isEmpty(tableField.getDefaultValue())) {
                 createTableSql += " default '" + tableField.getDefaultValue() + "'";
             }
+            if (!TextUtil.isEmpty(tableField.getComment())) {
+                createTableSql += " comment '" + tableField.getComment() + "'";
+            }
             if (tableField.isForeignKey()) {
                 String sql = TableUtil.foreignKeySql(
                         tableName,
@@ -59,6 +65,10 @@ public class MysqlCreator extends DefaultCreator {
             createTableSql += ",\n\t" + unionUniqueKeySql;
         }
         createTableSql += "\n)";
+
+        if (tableComment != null) {
+            createTableSql += " comment='" + tableComment + "'";
+        }
 
         List<String> sqlList = ListUtil.build(createTableSql);
         sqlList.addAll(createForeignKeySqlList);
@@ -120,7 +130,11 @@ public class MysqlCreator extends DefaultCreator {
             case BOOLEAN:
                 return "boolean";
             case TEXT:
-                return length == 0 ? "text" : "varchar(" + length + ")";
+                if (length == 0) {
+                    return "varchar(" + DefaultTypeLength.MYSQL_STRING_LENGTH + ")";
+                } else if (length == Integer.MAX_VALUE) {
+                    return "text";
+                }
             case DATE:
                 return "datetime";
             default:

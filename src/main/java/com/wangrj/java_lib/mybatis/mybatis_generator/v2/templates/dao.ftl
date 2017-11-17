@@ -15,30 +15,6 @@ import org.springframework.stereotype.Repository;
 </#if>
 public interface ${daoSimpleName} {
 
-/*
-<#-- 由于resultMap的子标签必须按照id,result,association的顺序，所以只能分成两个循环 -->
-<resultMap id="singleMap" type="${pojoName}">
-<#list fields as field>
-    <#if field.type==0>
-    <result column="${field.name}" property="${field.name}"/>
-    </#if>
-    <#if field.type==1>
-    <id column="${field.name}" property="${field.name}"/>
-    </#if>
-</#list>
-<#list fields as field>
-    <#if field.type==2>
-    <association property="${field.name}" javaType="${field.fkClassName}">
-        <id column="${field.name}" property="${field.fkIdName}"/>
-    </association>
-    </#if>
-</#list>
-</resultMap>
-
-<resultMap id="multiMap" type="${pojoName}" extends="singleMap"/>
-
-*/
-
     @SelectProvider(type = Builder.class, method = "queryByIdSql")
     <#if haveFk>@ResultMap("singleMap")</#if><#if !haveFk>@ResultType(${pojoSimpleName}.class)</#if>
     ${pojoSimpleName} queryById(${pojoIdType} ${pojoIdName});
@@ -61,7 +37,7 @@ public interface ${daoSimpleName} {
     // MySQL自增主键的配置：@Options(useGeneratedKeys = true, keyProperty = "userId")
     // 如果Oracle不是使用触发器生成id，可以把currval改为nextval，同时设置before=true
     <#if insertReturnKeyAnno==0>
-    @SelectKey(statement = "SELECT sequence_${pojoSimpleName}.currval FROM dual", keyProperty = "${pojoIdName}",
+    @SelectKey(statement = "SELECT sequence_${tableName}.currval FROM dual", keyProperty = "${pojoIdName}",
             before = false, resultType = int.class)
     </#if>
     <#if insertReturnKeyAnno==1>@Options(useGeneratedKeys = true, keyProperty = "${pojoIdName}")</#if>
@@ -87,15 +63,15 @@ public interface ${daoSimpleName} {
         public String queryByIdSql(Integer userId) {
             return new SQL() {{
                 SELECT("*");
-                FROM("${pojoSimpleName}");
-                WHERE("${pojoIdName}=${r'#'}{id}");
+                FROM("${tableName}");
+                WHERE("${pojoIdColumnName}=${r'#'}{id}");
             }}.toString();
         }
 
         public String queryAllSql(@Param("orderByList") String... orderByList) {
             return new SQL() {{
                 SELECT("*");
-                FROM("${pojoSimpleName}");
+                FROM("${tableName}");
                 ORDER_BY(orderByList);
             }}.toString();
         }
@@ -103,9 +79,9 @@ public interface ${daoSimpleName} {
         public String querySql(@Param("${pojoVarName}") ${pojoSimpleName} ${pojoVarName}, @Param("orderByList") String... orderByList) {
             return new SQL() {{
                 SELECT("*");
-                FROM("${pojoSimpleName}");
+                FROM("${tableName}");
                 <#list fields as field>
-                if (${pojoVarName}.${field.getter}() != null) WHERE("${field.name}=${r'#'}{${pojoVarName}.${field.name}<#if field.type==2>.${field.fkIdName}</#if>}");
+                if (${pojoVarName}.${field.getter}() != null) WHERE("${field.columnName}=${r'#'}{${pojoVarName}.${field.propertyName}<#if field.type==2>.${field.fkIdName}</#if>}");
                 </#list>
                 ORDER_BY(orderByList);
             }}.toString();
@@ -114,31 +90,31 @@ public interface ${daoSimpleName} {
         public String queryAllCountSql() {
             return new SQL() {{
                 SELECT("count(1)");
-                FROM("${pojoSimpleName}");
+                FROM("${tableName}");
             }}.toString();
         }
 
         public String queryCountSql(${pojoSimpleName} ${pojoVarName}) {
             return new SQL() {{
                 SELECT("count(1)");
-                FROM("${pojoSimpleName}");
+                FROM("${tableName}");
                 <#list fields as field>
-                if (${pojoVarName}.${field.getter}() != null) WHERE("${field.name}=${r'#'}{${field.name}<#if field.type==2>.${field.fkIdName}</#if>}");
+                if (${pojoVarName}.${field.getter}() != null) WHERE("${field.columnName}=${r'#'}{${field.propertyName}<#if field.type==2>.${field.fkIdName}</#if>}");
                 </#list>
             }}.toString();
         }
 
         public String insertSql() {
             return new SQL() {{
-                INSERT_INTO("${pojoSimpleName}");
+                INSERT_INTO("${tableName}");
                 INTO_COLUMNS(
                 <#list fields as field>
-                <#if field.type!=3 && (field.type!=1 || !autoIncrement)>"${field.name}"<#if field_has_next>, </#if></#if>
+                <#if field.type!=3 && (field.type!=1 || !autoIncrement)>"${field.columnName}"<#if field_has_next>, </#if></#if>
                 </#list>
                 );
                 INTO_VALUES(
                 <#list fields as field>
-                <#if field.type!=3 && (field.type!=1 || !autoIncrement)>"${r'#'}{${field.name}<#if field.type==2>.${field.fkIdName}</#if>}"<#if field_has_next>, </#if></#if>
+                <#if field.type!=3 && (field.type!=1 || !autoIncrement)>"${r'#'}{${field.propertyName}<#if field.type==2>.${field.fkIdName}</#if>}"<#if field_has_next>, </#if></#if>
                 </#list>
                 );
             }}.toString();
@@ -146,34 +122,34 @@ public interface ${daoSimpleName} {
 
         public String deleteSql() {
             return new SQL() {{
-                DELETE_FROM("${pojoSimpleName}");
-                WHERE("${pojoIdName} = ${r'#'}{id}");
+                DELETE_FROM("${tableName}");
+                WHERE("${pojoIdColumnName} = ${r'#'}{id}");
             }}.toString();
         }
 
         public String updateSql(${pojoSimpleName} ${pojoVarName}) {
             return new SQL() {{
-                UPDATE("${pojoSimpleName}");
+                UPDATE("${tableName}");
                 <#list fields as field>
                     <#if field.type!=1 && field.type!=3>
-                    if (${pojoVarName}.${field.getter}() != null) SET("${field.name}=${r'#'}{${field.name}<#if field.type==2>.${field.fkIdName}</#if>}");
+                    if (${pojoVarName}.${field.getter}() != null) SET("${field.columnName}=${r'#'}{${field.propertyName}<#if field.type==2>.${field.fkIdName}</#if>}");
                     </#if>
                 </#list>
-                WHERE("${pojoIdName}=${r'#'}{${pojoIdName}}");
+                WHERE("${pojoIdColumnName}=${r'#'}{${pojoIdName}}");
             }}.toString();
         }
 
         public String updateContainsNullSql() {
             return new SQL() {{
-                UPDATE("${pojoSimpleName}");
+                UPDATE("${tableName}");
                 SET(
                 <#list fields as field>
                     <#if field.type!=1 && field.type!=3>
-                        "${field.name}=${r'#'}{${field.name}<#if field.type==2>.${field.fkIdName}</#if>}"<#if field_has_next>, </#if>
+                        "${field.columnName}=${r'#'}{${field.propertyName}<#if field.type==2>.${field.fkIdName}</#if>}"<#if field_has_next>, </#if>
                     </#if>
                 </#list>
                 );
-                WHERE("${pojoIdName}=${r'#'}{${pojoIdName}}");
+                WHERE("${pojoIdColumnName}=${r'#'}{${pojoIdName}}");
             }}.toString();
         }
     }

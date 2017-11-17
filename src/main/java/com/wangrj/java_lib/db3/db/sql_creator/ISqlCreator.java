@@ -14,7 +14,8 @@ import java.util.List;
 
 public interface ISqlCreator {
 
-    List<String> createTableSql(String tableName, List<TableField> fieldTypeList,
+    List<String> createTableSql(String tableName, String tableComment,
+                                List<TableField> fieldTypeList,
                                 List<String> unionUniqueList);
 
     List<String> dropTableSql(String tableName);

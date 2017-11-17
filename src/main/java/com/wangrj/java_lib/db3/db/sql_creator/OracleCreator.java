@@ -16,7 +16,8 @@ import java.util.List;
 public class OracleCreator extends DefaultCreator {
 
     @Override
-    public List<String> createTableSql(String tableName, List<TableField> tableFieldList,
+    public List<String> createTableSql(String tableName,String tableComment,
+                                       List<TableField> tableFieldList,
                                        List<String> unionUniqueList) {
         String createTableSql = "create table " + tableName + "(";
         String pkName = null;

@@ -1,6 +1,5 @@
 package com.wangrj.java_lib.db3;
 
-import com.wangrj.java_lib.db3.db.IDataBase;
 import com.wangrj.java_lib.db3.db.MysqlDatabase;
 import com.wangrj.java_lib.db3.db.OracleDatabase;
 import com.wangrj.java_lib.java_util.ReflectUtil;
@@ -70,7 +69,7 @@ public class DbUtil {
     }
 
     /**
-     * @param testClassInstance 包含各种Dao成员变量的测试类实例
+     * @param testClassInstance 包含各种Dao成员变量的测试类实例。其中dao必须继承v3.BaseDao
      */
     public static void dropAndCreateTables(Object testClassInstance) throws Exception {
         Field[] fields = testClassInstance.getClass().getDeclaredFields();
@@ -96,9 +95,30 @@ public class DbUtil {
         }
     }
 
-    public enum DbType {
-        Mysql,
-        Oracle
+    /**
+     * 本方法的局限性是测试类中的 dao 必须有 queryById 方法且返回 List 集合对象
+     */
+    public static void dropAndCreateTables(Config config, Object testClassInstance) {
+        List<Class> pojoClassList = new ArrayList<>();
+        Field[] fields = testClassInstance.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getName().endsWith("Dao")) {
+                Class pojoClass = null;
+                try {
+                    pojoClass = field.getType().getDeclaredMethod("queryById", Integer.class).getReturnType();
+                } catch (NoSuchMethodException ignored) {
+                }
+                try {
+                    pojoClass = field.getType().getDeclaredMethod("queryById", Long.class).getReturnType();
+                } catch (NoSuchMethodException ignored) {
+                }
+                if (pojoClass == null) {
+                    throw new RuntimeException(new NoSuchMethodException("queryById"));
+                }
+                pojoClassList.add(pojoClass);
+            }
+        }
+        dropAndCreateTables(config, pojoClassList);
     }
 
     /**
@@ -109,19 +129,7 @@ public class DbUtil {
      * 3.创建Job表
      * 4.创建User表
      */
-    public static void dropAndCreateTables(DbType dbType, String dbName,
-                                           String user, String pass, List<Class> classList) {
-        IDataBase dataBase;
-        switch (dbType) {
-            case Mysql:
-                dataBase = new MysqlDatabase(dbName);
-                break;
-            case Oracle:
-                dataBase = new OracleDatabase(dbName);
-                break;
-            default:
-                throw new RuntimeException("dbType is error: " + dbType);
-        }
+    public static void dropAndCreateTables(Config config, List<Class> classList) {
         for (int i = classList.size() - 1; i >= 0; i--) {
             Class cls = classList.get(i);
             class TempDao extends BaseDao {
@@ -134,10 +142,7 @@ public class DbUtil {
                 }
 
                 private TempDao() {
-                    super(new Config().
-                            setDb(dataBase).
-                            setUsername(user).
-                            setPassword(pass));
+                    super(config);
                 }
             }
             new TempDao().dropTable();
@@ -154,10 +159,7 @@ public class DbUtil {
                 }
 
                 private TempDao() {
-                    super(new Config().
-                            setDb(dataBase).
-                            setUsername(user).
-                            setPassword(pass));
+                    super(config);
                 }
             }
             new TempDao().createTable();

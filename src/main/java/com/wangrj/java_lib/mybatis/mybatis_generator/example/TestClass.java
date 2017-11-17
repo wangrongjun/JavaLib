@@ -1,7 +1,11 @@
 package com.wangrj.java_lib.mybatis.mybatis_generator.example;
 
 import com.wangrj.java_lib.constant.JavaLibConstant;
+import com.wangrj.java_lib.db3.Config;
 import com.wangrj.java_lib.db3.DbUtil;
+import com.wangrj.java_lib.db3.db.DefaultDatabase;
+import com.wangrj.java_lib.db3.db.OracleDatabase;
+import com.wangrj.java_lib.db3.main.NameConverter;
 import com.wangrj.java_lib.java_util.DateUtil;
 import com.wangrj.java_lib.java_util.ListUtil;
 import com.wangrj.java_lib.java_util.LogUtil;
@@ -9,7 +13,6 @@ import com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.UserInfo;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.JobDao;
 import com.wangrj.java_lib.mybatis.mybatis_generator.example.dao.UserInfoDao;
-import com.wangrj.java_lib.mybatis.mybatis_generator.v2.MybatisDaoCreator;
 import freemarker.template.TemplateException;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -37,18 +40,23 @@ public class TestClass {
         String daoPackageDir = JavaLibConstant.classDir(TestClass.class) + "dao\\";
 
         /*
+        // 版本一
+        com.wangrj.java_lib.mybatis.mybatis_generator.v1.MybatisCreator creator1 =
+                new com.wangrj.java_lib.mybatis.mybatis_generator.v1.MybatisCreator();
         String jobDaoName = daoPackageName + ".JobDao";
-        new MybatisCreator().createMapper(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.xml"));
-        new MybatisCreator().createDao(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.java"));
-
+        creator1.createMapper(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.xml"));
+        creator1.createDao(Job.class, jobDaoName, new FileWriter(daoPackageDir + "JobDao.java"));
         String userInfoDaoName = daoPackageName + ".UserInfoDao";
-        new MybatisCreator().createMapper(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.xml"));
-        new MybatisCreator().createDao(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.java"));
+        creator1.createMapper(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.xml"));
+        creator1.createDao(UserInfo.class, userInfoDaoName, new FileWriter(daoPackageDir + "UserInfoDao.java"));
         */
 
-        MybatisDaoCreator creator = new MybatisDaoCreator();
-        creator.createDao(Job.class, JobDao.class.getName(), new FileWriter(daoPackageDir + "JobDao.java"));
-        creator.createDao(UserInfo.class, UserInfoDao.class.getName(), new FileWriter(daoPackageDir + "UserInfoDao.java"));
+        // 版本2
+        com.wangrj.java_lib.mybatis.mybatis_generator.v2.MybatisCreator creator2 =
+                new com.wangrj.java_lib.mybatis.mybatis_generator.v2.MybatisCreator()
+                        .setNameConverter(new NameConverter.HumpToUnderlineConverter());
+        creator2.createDao(Job.class, JobDao.class.getName(), new FileWriter(daoPackageDir + "JobDao.java"));
+        creator2.createDao(UserInfo.class, UserInfoDao.class.getName(), new FileWriter(daoPackageDir + "UserInfoDao.java"));
     }
 
     @Test
@@ -63,8 +71,10 @@ public class TestClass {
 
     @Test
     public void testInsert() {
-        DbUtil.dropAndCreateTables(DbUtil.DbType.Oracle, "orcl", "wang", "123",
-                ListUtil.build(Job.class, UserInfo.class));
+        DefaultDatabase db = new OracleDatabase("orcl").
+                setNameConverter(new NameConverter.HumpToUnderlineConverter());
+        Config config = new Config().setUsername("wang").setPassword("123").setDb(db);
+        DbUtil.dropAndCreateTables(config, ListUtil.build(Job.class, UserInfo.class));
 
         Job 程序员 = new Job("程序员");
         Job 销售员 = new Job("销售员");
@@ -108,7 +118,7 @@ public class TestClass {
 
     @Test
     public void testQueryAll() {
-        userInfoDao.queryAll("sex", "userId");
+        userInfoDao.queryAll("sex");
     }
 
     @Test

@@ -148,7 +148,7 @@ public class ReflectUtil {
 
     /**
      * 获取参数类的第一个泛型的类对象
-     * 如参数为Dao<User>.class，则返回User.class
+     * 如参数为Dao.class，泛型是User，则返回User.class
      */
     public static Class getGenericClass(Class cls) {
         ParameterizedType type = (ParameterizedType) cls.getGenericSuperclass();

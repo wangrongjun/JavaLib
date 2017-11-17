@@ -10,8 +10,8 @@ public interface JobDao {
 
 /*
 <resultMap id="singleMap" type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job">
-    <id column="jobId" property="jobId"/>
-    <result column="jobName" property="jobName"/>
+    <id column="job_id" property="jobId"/>
+    <result column="job_name" property="jobName"/>
 </resultMap>
 
 <resultMap id="multiMap" type="com.wangrj.java_lib.mybatis.mybatis_generator.example.bean.Job" extends="singleMap"/>
@@ -39,7 +39,7 @@ public interface JobDao {
     @InsertProvider(type = Builder.class, method = "insertSql")
     // MySQL自增主键的配置：@Options(useGeneratedKeys = true, keyProperty = "userId")
     // 如果Oracle不是使用触发器生成id，可以把currval改为nextval，同时设置before=true
-    @SelectKey(statement = "SELECT sequence_Job.currval FROM dual", keyProperty = "jobId",
+    @SelectKey(statement = "SELECT sequence_job.currval FROM dual", keyProperty = "jobId",
             before = false, resultType = int.class)
     
     int insert(Job job);
@@ -64,15 +64,15 @@ public interface JobDao {
         public String queryByIdSql(Integer userId) {
             return new SQL() {{
                 SELECT("*");
-                FROM("Job");
-                WHERE("jobId=#{id}");
+                FROM("job");
+                WHERE("job_id=#{id}");
             }}.toString();
         }
 
         public String queryAllSql(@Param("orderByList") String... orderByList) {
             return new SQL() {{
                 SELECT("*");
-                FROM("Job");
+                FROM("job");
                 ORDER_BY(orderByList);
             }}.toString();
         }
@@ -80,9 +80,9 @@ public interface JobDao {
         public String querySql(@Param("job") Job job, @Param("orderByList") String... orderByList) {
             return new SQL() {{
                 SELECT("*");
-                FROM("Job");
-                if (job.getJobId() != null) WHERE("jobId=#{job.jobId}");
-                if (job.getJobName() != null) WHERE("jobName=#{job.jobName}");
+                FROM("job");
+                if (job.getJobId() != null) WHERE("job_id=#{job.jobId}");
+                if (job.getJobName() != null) WHERE("job_name=#{job.jobName}");
                 ORDER_BY(orderByList);
             }}.toString();
         }
@@ -90,25 +90,25 @@ public interface JobDao {
         public String queryAllCountSql() {
             return new SQL() {{
                 SELECT("count(1)");
-                FROM("Job");
+                FROM("job");
             }}.toString();
         }
 
         public String queryCountSql(Job job) {
             return new SQL() {{
                 SELECT("count(1)");
-                FROM("Job");
-                if (job.getJobId() != null) WHERE("jobId=#{jobId}");
-                if (job.getJobName() != null) WHERE("jobName=#{jobName}");
+                FROM("job");
+                if (job.getJobId() != null) WHERE("job_id=#{jobId}");
+                if (job.getJobName() != null) WHERE("job_name=#{jobName}");
             }}.toString();
         }
 
         public String insertSql() {
             return new SQL() {{
-                INSERT_INTO("Job");
+                INSERT_INTO("job");
                 INTO_COLUMNS(
                 
-                "jobName"
+                "job_name"
                 );
                 INTO_VALUES(
                 
@@ -119,26 +119,26 @@ public interface JobDao {
 
         public String deleteSql() {
             return new SQL() {{
-                DELETE_FROM("Job");
-                WHERE("jobId = #{id}");
+                DELETE_FROM("job");
+                WHERE("job_id = #{id}");
             }}.toString();
         }
 
         public String updateSql(Job job) {
             return new SQL() {{
-                UPDATE("Job");
-                    if (job.getJobName() != null) SET("jobName=#{jobName}");
-                WHERE("jobId=#{jobId}");
+                UPDATE("job");
+                    if (job.getJobName() != null) SET("job_name=#{jobName}");
+                WHERE("job_id=#{jobId}");
             }}.toString();
         }
 
         public String updateContainsNullSql() {
             return new SQL() {{
-                UPDATE("Job");
+                UPDATE("job");
                 SET(
-                        "jobName=#{jobName}"
+                        "job_name=#{jobName}"
                 );
-                WHERE("jobId=#{jobId}");
+                WHERE("job_id=#{jobId}");
             }}.toString();
         }
     }

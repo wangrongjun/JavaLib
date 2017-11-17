@@ -17,12 +17,21 @@ public class TableField {
     private boolean unique = false;
     private boolean nullable = true;
     private String defaultValue;
+    private String comment;// 字段的comment注释
 
     private boolean foreignKey;
     private String referenceTable;
     private String referenceColumn;
-    private Action onDeleteAction=Action.NO_ACTION;
-    private Action onUpdateAction=Action.NO_ACTION;
+    private Action onDeleteAction = Action.NO_ACTION;
+    private Action onUpdateAction = Action.NO_ACTION;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public enum Type {
         NUMBER_INT,

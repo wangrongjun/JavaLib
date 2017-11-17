@@ -213,29 +213,43 @@ public class MathUtil {
     }
 
     /**
-     * 得到left至right范围内的n个不重复随机整数（包括left和right）。
+     * 得到 left 至 right 范围内的 n 个不重复随机整数（包括 left 和 right ）。
+     * <p>
+     * 思路：假设生成 [7,9] 的 3 个不重复随机序列。
+     * 第 1 轮从 [0,2] 中生成随机数 1 ，从有序序列 7,8,9 中取出 8
+     * 第 2 轮从 [0,1] 中生成随机数 1 ，从有序序列 7,9   中取出 9
+     * 第 3 轮从 [0,0] 中生成随机数 0 ，从有序序列 7     中取出 7
      *
-     * @return 当left>right或n过大时返回null。
+     * @return 当 left > right 或 n 过大时返回 null 。
      */
     public static List<Integer> randomList(int left, int right, int n) {
         if (left > right || left < 0 || right <= 0) return null;
         if (right - left <= n - 2) return null;
-        List<Integer> list = new ArrayList<>();
-        while (n > 0) {
-            int random = random(left, right);
-            boolean exists = false;
-            for (int i : list) {
-                if (i == random) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                list.add(random);
-                n--;
-            }
+        List<Integer> remainList = new ArrayList<>();// 剩下的数字
+        List<Integer> resultList = new ArrayList<>();// 返回的随机数字序列
+        // 假设 left=7, right=9, n=2
+        for (int i = 0; i < right - left + 1; i++) {// i 从 0 到 2
+            remainList.add(left + i);
         }
-        return list;
+        // 此时 remainList = 7,8,9
+        while (resultList.size() < n) {// 只要随机数字序列没达到要求的数量，就继续生成
+            int random = random(0, remainList.size() - 1);// 循环第1,2,3次：r(0,2), r(0,1), r(0,0)
+            // 假设循环第 1,2,3 次 random 分别为 1,1,0
+            Integer randomNumber = remainList.get(random);// 循环第 1,2,3 次 randomNumber 为 8,9,7
+            resultList.add(randomNumber);
+            remainList.remove(randomNumber);
+        }
+        return resultList;
+    }
+
+    @Test
+    public void testRandomList() {
+        for (int i = 0; i < 10; i++) {
+            long t1 = System.currentTimeMillis();
+            System.out.println(randomList(1, 10000, 10000));
+            long t2 = System.currentTimeMillis();
+            System.out.println((t2 - t1) + " ms\n\n");
+        }
     }
 
     public static int pow(int a, int b) {

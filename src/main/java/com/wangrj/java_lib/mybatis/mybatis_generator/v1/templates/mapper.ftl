@@ -21,7 +21,7 @@
     </#list>
     <#list fields as field>
         <#if field.type==2>
-        <association property="${field.name}" javaType="${field.fkClassName}">
+        <association property="${field.name}" javaType="${field.fkTableName}">
             <id column="${field.name}" property="${field.fkIdName}"/>
         </association>
         </#if>

@@ -1,7 +1,6 @@
 package com.wangrj.java_lib.db3.db;
 
 import com.wangrj.java_lib.db3.db.sql_creator.ISqlCreator;
-import com.wangrj.java_lib.db3.db.sql_creator.ISqlCreator;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -37,7 +36,6 @@ public interface IDataBase {
      * 把value设置到entity中的field（非主键）属性
      */
     void setRsValueToEntity(Field field, Object entity, Object value) throws IllegalAccessException;
-
 
 // --------------------------以下是根据entity构建sql语句的方法--------------------------------------
 

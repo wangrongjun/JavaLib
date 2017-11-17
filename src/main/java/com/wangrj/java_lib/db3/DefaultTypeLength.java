@@ -7,6 +7,15 @@ package com.wangrj.java_lib.db3;
 public class DefaultTypeLength {
 
     /**
+     * String成员变量不指定长度时的默认长度
+     * 例如：String name -> varchar(50)
+     * <p>
+     * 如果长度设置为0，则类型为varchar(50)
+     * 如果长度设置为Integer.MAX_VALUE，则类型为text
+     */
+    public static int MYSQL_STRING_LENGTH = 50;
+
+    /**
      * int或Integer成员变量不指定总长度和小数长度时的默认总长度
      * 例如：int salary -> number(10,0)
      */

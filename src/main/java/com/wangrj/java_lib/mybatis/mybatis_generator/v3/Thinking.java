@@ -26,13 +26,16 @@ public class Thinking {
     }
 
     interface I<T> {
+
+
+
         default Class getGenericClass() {
             Class interFace = this.getClass().getInterfaces()[0];
             ParameterizedType type;
             try {
                 type = (ParameterizedType) interFace.getGenericInterfaces()[0];
             } catch (ClassCastException e) {
-                System.err.println("interface [" + interFace.getName() + "] should has a generic type at I");
+                System.err.println("interface [" + interFace.getName() + "] should has a generic type");
                 return Object.class;
             }
             Type[] types = type.getActualTypeArguments();
@@ -42,6 +45,7 @@ public class Thinking {
             }
             return genericClass;
         }
+
     }
 
     interface A extends I<User> {

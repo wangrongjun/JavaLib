@@ -27,8 +27,6 @@ public class Thinking {
 
     interface I<T> {
 
-
-
         default Class getGenericClass() {
             Class interFace = this.getClass().getInterfaces()[0];
             ParameterizedType type;

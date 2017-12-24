@@ -96,6 +96,8 @@ public class DbUtil {
     }
 
     /**
+     * 移除并创建表
+     * <p>
      * 本方法的局限性是测试类中的 dao 必须有 queryById 方法且返回 List 集合对象
      */
     public static void dropAndCreateTables(Config config, Object testClassInstance) {
@@ -123,11 +125,12 @@ public class DbUtil {
 
     /**
      * 移除并创建表。按照列表倒序移除表，按照列表正序创建表。
-     * 例如：classList：Job,User，User持有Job的引用。执行顺序如下：
-     * 1.移除User表
+     * <p>
+     * 例如：classList：Job,Emp，Emp持有Job的引用。执行顺序如下：
+     * 1.移除Emp表
      * 2.移除Job表
      * 3.创建Job表
-     * 4.创建User表
+     * 4.创建Emp表
      */
     public static void dropAndCreateTables(Config config, List<Class> classList) {
         for (int i = classList.size() - 1; i >= 0; i--) {

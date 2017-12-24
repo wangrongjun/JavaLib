@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class DeleteConflictFile {
 
     private static final String CONFLICT_FILE_NAME_REGEX =
-            "(.+)的冲突文件 \\d{4}-\\d{2}-\\d{2} \\d{2}-\\d{2}-\\d{2}-\\d{3}(\\..*)?";
+            "(.+)的冲突文件 \\d+-\\d+-\\d+ \\d+-\\d+-\\d+-\\d+(\\..*)?";
 
     private static final String helloWorld = "" +
             " ----- 搜索并处理天翼云的重复文件 ------\n" +
@@ -32,11 +32,12 @@ public class DeleteConflictFile {
         System.out.println(helloWorld);
         System.out.println("请输入目录地址：");
         String searchDir = new Scanner(System.in).next();
-        if (!new File(searchDir).exists()) {
+        File searchFolder = new File(searchDir);
+        if (!searchFolder.exists()) {
             System.out.println("目录不存在");
             return;
         }
-        File conflictFileMoveFolder = new File(searchDir + File.separator + "ConflictFiles");
+        File conflictFileMoveFolder = new File(searchFolder.getParent(), "ConflictFiles");
         List<File> conflictFileList = searchConflictFile(searchDir);
 
         if (conflictFileList.size() > 0) {

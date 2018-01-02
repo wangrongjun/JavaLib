@@ -161,6 +161,7 @@ public class ReflectUtil {
 
     /**
      * 给obj赋值
+     * 如果值为null，不会报错，只是不为当前属性赋值。
      */
     public static void setObjectValue(Object obj, boolean ignoreMismatch, GetValue getValue) {
         Field[] fields = obj.getClass().getDeclaredFields();
@@ -181,6 +182,7 @@ public class ReflectUtil {
                 case "java.lang.Boolean":
                 case "java.lang.String":
                 case "java.util.Date":
+                case "java.lang.Enum":
                     value = getValue.get(field, true);
                     break;
                 default:
@@ -234,10 +236,14 @@ public class ReflectUtil {
                         break;
                 }
             } catch (Exception e) {
-                e.printStackTrace(System.out);
+                System.err.println(e.toString());
+                String errorMsg = "set mismatch value '" + value + "' to field " +
+                        field.getType().getSimpleName() + " " + field.getName();
                 if (!ignoreMismatch) {
-                    throw new RuntimeException("set mismatch value '" + value + "' to field " +
-                            field.getType().getSimpleName() + " " + field.getName());
+                    throw new RuntimeException(errorMsg);
+                } else {
+                    LogUtil.print(errorMsg);
+
                 }
             }
         }

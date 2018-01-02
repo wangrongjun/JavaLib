@@ -223,6 +223,12 @@ public class ReflectUtil {
                             field.set(obj, date);
                         }
                         break;
+                    case "java.lang.Enum":
+                        Enum enumValue = null;
+                        Class<? extends Enum> cls = (Class<? extends Enum>) field.getType();
+                        enumValue = Enum.valueOf(cls, value.toString());
+                        field.set(obj, enumValue);
+                        break;
                     default:
                         field.set(obj, value);
                         break;

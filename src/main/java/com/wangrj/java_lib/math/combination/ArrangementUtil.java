@@ -5,7 +5,6 @@ import com.wangrj.java_lib.java_util.ListUtil;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class ArrangementUtil {
     @Test
     public void testDictionarySequence() {
         List<List<Integer>> list = arrangementDictionarySequence(
-                ListUtil.build(4, 1, 2, 3, 8, 7, 6, 5),
+                ListUtil.build(1, 2, 3),
                 ComparatorUtil.IntegerComparator);
         print(list);
     }

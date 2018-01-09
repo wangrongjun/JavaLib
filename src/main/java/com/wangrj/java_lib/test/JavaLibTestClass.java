@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 public class JavaLibTestClass {
 
     public static void main(String[] args) throws FileNotFoundException {
-        System.out.println("world111111");
+        System.out.println("hello 1234");
     }
 
 }

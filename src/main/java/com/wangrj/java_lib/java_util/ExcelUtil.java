@@ -1,7 +1,6 @@
 package com.wangrj.java_lib.java_util;
 
 import com.wangrj.java_lib.db3.DbUtil;
-import com.wangrj.java_lib.db3.DbUtil;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.format.Border;
@@ -10,7 +9,6 @@ import jxl.write.*;
 import jxl.write.Number;
 import org.junit.Test;
 
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.io.FileInputStream;
@@ -215,12 +213,12 @@ public class ExcelUtil {
             userList.add(user);
         }
 
-        excelOut(userList, "E:/jxl_test.xls");
+        excelOut(userList, "E:/Test/jxl_test.xls");
     }
 
     @Test
     public void testExcelIn() throws Exception {
-        List<User> userList = excelIn(User.class, "E:/jxl_test.xls");
+        List<User> userList = excelIn(User.class, "E:/Test/jxl_test.xls");
         LogUtil.printEntity(userList);
     }
 

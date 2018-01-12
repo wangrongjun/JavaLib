@@ -152,6 +152,22 @@
             <version>3.4.4</version>
         </dependency>
 
+        <!--Apacha POI xls-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <!--公司正在使用的版本-->
+            <version>3.8</version>
+        </dependency>
+
+        <!--读写CSV-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <!--公司版本-->
+            <version>1.4</version>
+        </dependency>
+
     </dependencies>
 
     <!--如果没有以下内容，会报错：Error:java: Compilation failed: internal java compiler error-->

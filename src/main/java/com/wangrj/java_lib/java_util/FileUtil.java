@@ -254,6 +254,8 @@ public class FileUtil {
 
     /**
      * 迭代获取指定目录下所有符合要求的文件和文件夹
+     *
+     * @param filter 文件过滤器。如果为空，则不过滤
      */
     public static List<File> findChildrenUnderDir(File rootFile, FileFilter filter) {
         if (rootFile == null || !rootFile.exists()) {
@@ -264,7 +266,7 @@ public class FileUtil {
         stack.push(rootFile);
         while (!stack.empty()) {
             File currentFile = stack.pop();
-            if (filter.accept(currentFile)) {
+            if (filter == null || filter.accept(currentFile)) {
                 fileList.add(currentFile);
             }
             File[] files = currentFile.listFiles();

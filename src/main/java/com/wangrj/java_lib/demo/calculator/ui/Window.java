@@ -6,7 +6,6 @@ import com.wangrj.java_lib.demo.calculator.datastruct.SignsManager;
 import com.wangrj.java_lib.demo.calculator.util.Compiler;
 import com.wangrj.java_lib.demo.calculator.util.MyFile;
 import com.wangrj.java_lib.demo.calculator.util.Util;
-import com.wangrj.java_lib.demo.calculator.util.Compiler;
 
 import java.awt.BorderLayout;
 import java.awt.TextArea;
@@ -57,7 +56,7 @@ public class Window extends JFrame implements ActionListener {
     private JRadioButton rbtnPre, rbtnIn;
 
     public static void main(String[] args) {
-        new Window("���������Զ����������");
+        new Window("计算器（自定义运算符）");
     }
 
     public Window(String title) {
@@ -89,16 +88,16 @@ public class Window extends JFrame implements ActionListener {
 
     private void initMenu() {
 
-        itemWelcome = new JMenuItem("��ӭʹ��");
+        itemWelcome = new JMenuItem("欢迎使用");
         itemWelcome.addActionListener(this);
-        menuCal = new JMenu("������");
+        menuCal = new JMenu("计算器");
         menuCal.add(itemWelcome);
 
-        itemUseHelp = new JMenuItem("ʹ��˵��");
+        itemUseHelp = new JMenuItem("使用说明");
         itemUseHelp.addActionListener(this);
-        itemAbout = new JMenuItem("��������");
+        itemAbout = new JMenuItem("关于作者");
         itemAbout.addActionListener(this);
-        menuHelp = new JMenu("����");
+        menuHelp = new JMenu("帮助");
 
         menuHelp.add(itemUseHelp);
         menuHelp.add(itemAbout);
@@ -113,9 +112,9 @@ public class Window extends JFrame implements ActionListener {
 
     private void initCalculateArea() {
 
-        rbtnPre = new JRadioButton("ǰ׺");
+        rbtnPre = new JRadioButton("前缀");
         rbtnPre.addActionListener(this);
-        rbtnIn = new JRadioButton("��׺");
+        rbtnIn = new JRadioButton("中缀");
         rbtnIn.addActionListener(this);
         bgPreOrIn = new ButtonGroup();
         bgPreOrIn.add(rbtnPre);
@@ -123,7 +122,7 @@ public class Window extends JFrame implements ActionListener {
         rbtnPre.setSelected(true);
         rbtnIn.setSelected(false);
 
-        checkBoxHasParameter = new JCheckBox("�Ƿ񺬲���");
+        checkBoxHasParameter = new JCheckBox("是否含参数");
         checkBoxHasParameter.setSelected(false);
         checkBoxHasParameter.addActionListener(this);
 
@@ -138,11 +137,11 @@ public class Window extends JFrame implements ActionListener {
         textResult = new TextField();
         textResult.setEditable(false);
 
-        btnClear = new JButton("���");
+        btnClear = new JButton("清空");
         btnClear.addActionListener(this);
-        btnCalculate = new JButton("����");
+        btnCalculate = new JButton("计算");
         btnCalculate.addActionListener(this);
-        btnMergeConst = new JButton("�ϲ�������");
+        btnMergeConst = new JButton("合并常数项");
         btnMergeConst.addActionListener(this);
 
         Box boxHorRbtn = Box.createHorizontalBox();
@@ -162,27 +161,27 @@ public class Window extends JFrame implements ActionListener {
         Box baseBox = Box.createVerticalBox();
         baseBox.add(boxHorRbtn);
         baseBox.add(Box.createVerticalStrut(20));
-        baseBox.add(new JLabel("ǰ׺���ʽ���Կո�ֿ�"));
+        baseBox.add(new JLabel("前缀表达式，以空格分开"));
         baseBox.add(textPreExpr);
         baseBox.add(Box.createVerticalStrut(20));
 
-        baseBox.add(new JLabel("��׺���ʽ"));
+        baseBox.add(new JLabel("中缀表达式"));
         baseBox.add(textInExpr);
         baseBox.add(Box.createVerticalStrut(20));
 
-        baseBox.add(new JLabel("�����б��ÿո�ֿ�"));
-        baseBox.add(new JLabel("��a=1 b=2 c=3"));
+        baseBox.add(new JLabel("参数列表，用空格分开"));
+        baseBox.add(new JLabel("如a=1 b=2 c=3"));
         baseBox.add(textParameter);
         baseBox.add(Box.createVerticalStrut(20));
 
         baseBox.add(boxHorBtn);
         baseBox.add(Box.createVerticalStrut(20));
 
-        baseBox.add(new JLabel("��׺���ʽ"));
+        baseBox.add(new JLabel("后缀表达式"));
         baseBox.add(textPostExpr);
         baseBox.add(Box.createVerticalStrut(20));
 
-        baseBox.add(new JLabel("���"));
+        baseBox.add(new JLabel("结果"));
         baseBox.add(textResult);
 
         JPanel panel = new JPanel();
@@ -192,11 +191,11 @@ public class Window extends JFrame implements ActionListener {
 
     private void initSignArea() {
 
-        btnUpdate = new JButton("�޸ĸ������");
+        btnUpdate = new JButton("修改该运算符");
         btnUpdate.addActionListener(this);
-        btnDelete = new JButton("ɾ���������");
+        btnDelete = new JButton("删除该运算符");
         btnDelete.addActionListener(this);
-        btnCreate = new JButton("�½������>>");
+        btnCreate = new JButton("新建运算符>>");
         btnCreate.addActionListener(this);
 
         comboBox = new JComboBox<>(new String[]{});
@@ -205,7 +204,7 @@ public class Window extends JFrame implements ActionListener {
         JPanel panel = new JPanel();
         Box box = Box.createVerticalBox();
         box.add(Box.createVerticalStrut(40));
-        JTextField textField = new JTextField("���� ����\t���ȼ� Ŀ");
+        JTextField textField = new JTextField("符号 名称\t优先级 目");
         textField.setEditable(false);
         box.add(textField);
         box.add(comboBox);
@@ -236,28 +235,28 @@ public class Window extends JFrame implements ActionListener {
 
         textSign = new TextField(1);
         textName = new TextField(5);
-        box.add(new JLabel("����:"));
+        box.add(new JLabel("符号:"));
         box.add(Box.createHorizontalStrut(10));
         box.add(textSign);
         box.add(Box.createHorizontalStrut(20));
-        box.add(new JLabel("����:"));
+        box.add(new JLabel("名称:"));
         box.add(Box.createHorizontalStrut(20));
         box.add(textName);
         baseBox.add(box);
 
         box = Box.createHorizontalBox();
         bgOperateNum = new ButtonGroup();
-        rbtnDouble = new JRadioButton("˫Ŀ");
-        rbtnSigle = new JRadioButton("��Ŀ");
+        rbtnDouble = new JRadioButton("双目");
+        rbtnSigle = new JRadioButton("单目");
         rbtnDouble.setSelected(true);
         bgOperateNum.add(rbtnSigle);
         bgOperateNum.add(rbtnDouble);
-        btnSave = new JButton("�޸�");
+        btnSave = new JButton("修改");
         btnSave.addActionListener(this);
         box.add(rbtnDouble);
         box.add(rbtnSigle);
         box.add(Box.createHorizontalStrut(20));
-        box.add(new JLabel("���ȼ�(1-20):"));
+        box.add(new JLabel("优先级(1-20):"));
         textPrior = new TextField(2);
         box.add(textPrior);
         box.add(btnSave);
@@ -294,19 +293,19 @@ public class Window extends JFrame implements ActionListener {
             MyJOptionPane.showInfoPane(C.programmerInfo);
 
         } else if (e.getSource() == itemUseHelp) {
-            MyJOptionPane.showInfoPane("ʹ��˵����\n" + MyFile.readHelp());
+            MyJOptionPane.showInfoPane("使用说明：\n" + MyFile.readHelp());
 
-            // ǰ׺
+            // 前缀
         } else if (e.getSource() == rbtnPre) {
             textPreExpr.setEditable(true);
             textInExpr.setEditable(false);
 
-            // ��׺
+            // 中缀
         } else if (e.getSource() == rbtnIn) {
             textPreExpr.setEditable(false);
             textInExpr.setEditable(true);
 
-            // �Ƿ񺬲���
+            // 是否含参数
         } else if (e.getSource() == checkBoxHasParameter) {
             if (checkBoxHasParameter.isSelected()) {
                 textParameter.setEditable(true);
@@ -314,7 +313,7 @@ public class Window extends JFrame implements ActionListener {
                 textParameter.setEditable(false);
             }
 
-            // ����
+            // 计算
         } else if (e.getSource() == btnCalculate) {
 
             try {
@@ -324,13 +323,13 @@ public class Window extends JFrame implements ActionListener {
                         .getText();
                 if (strExpr.length() > 0) {
 
-                    // ǰ׺(��׺)���ʽ������ʽ���Ͷ���
+                    // 前缀(中缀)表达式构造表达式类型对象
                     expr = new Expression(strExpr, isPre);
 
                     textPreExpr.setText(expr.writePreExpr() + "");
                     textPostExpr.setText(expr.writePostExpr() + "");
 
-                    if (checkBoxHasParameter.isSelected()) {// ���ʽ����
+                    if (checkBoxHasParameter.isSelected()) {// 表达式含参
                         Util.assignParameterFromText(expr.exprTree,
                                 textParameter.getText());
                     }
@@ -342,7 +341,7 @@ public class Window extends JFrame implements ActionListener {
                 e1.printStackTrace();
             }
 
-            // ���
+            // 清除
         } else if (e.getSource() == btnClear) {
             if (rbtnPre.isSelected()) {
                 textPreExpr.setText(" ");
@@ -356,7 +355,7 @@ public class Window extends JFrame implements ActionListener {
             textParameter.setText(" ");
             textParameter.setText("");
 
-            // �ϲ�������
+            // 合并常数项
         } else if (e.getSource() == btnMergeConst) {
             if (expr != null) {
                 expr.mergeConst();
@@ -364,18 +363,18 @@ public class Window extends JFrame implements ActionListener {
                 textPostExpr.setText(expr.writePostExpr() + "");
             }
 
-            // �޸�
+            // 修改
         } else if (e.getSource() == btnUpdate) {
             if (SignsManager.isEmpty()) {
                 return;
             }
             textSign.setEditable(false);
-            btnSave.setText("�޸�");
+            btnSave.setText("修改");
             UpdateUI.updateSignUI(textSign, textName, textPrior, textCode,
                     rbtnDouble, rbtnSigle,
                     SignsManager.getSignByStrSign(getSelectedSign()));
 
-            // ɾ��
+            // 删除
         } else if (e.getSource() == btnDelete) {
             if (SignsManager.isEmpty()) {
                 return;
@@ -383,10 +382,10 @@ public class Window extends JFrame implements ActionListener {
             SignsManager.delete(getSelectedSign());
             UpdateUI.updateJComboBox(SignsManager.getSigns(), comboBox);
 
-            // �½�
+            // 新建
         } else if (e.getSource() == btnCreate) {
             textSign.setEditable(true);
-            btnSave.setText("�½�");
+            btnSave.setText("新建");
             UpdateUI.clearSignUI(textSign, textName, textPrior, textCode,
                     rbtnDouble);
 
@@ -424,7 +423,7 @@ public class Window extends JFrame implements ActionListener {
                 + C.postCode)) {
             MyJOptionPane.showErrorPane(C.TIP_COMPILE_ERROR);
         } else {
-            if (btnSave.getText().equals("�½�")) {
+            if (btnSave.getText().equals("新建")) {
 
                 if (!SignsManager.exist(sign)) {
                     SignsManager.add(sign, name, operateNum, prior, midCode);
@@ -434,7 +433,7 @@ public class Window extends JFrame implements ActionListener {
                     MyJOptionPane.showErrorPane(C.TIP_SIGN_EXISTED_ERROR);
                 }
 
-            } else if (btnSave.getText().equals("�޸�")) {
+            } else if (btnSave.getText().equals("修改")) {
                 SignsManager.update(sign, name, operateNum, prior, midCode);
                 UpdateUI.updateJComboBox(SignsManager.getSigns(), comboBox);
                 MyJOptionPane.showInfoPane(C.TIP_UPDATE_SUCCESS);

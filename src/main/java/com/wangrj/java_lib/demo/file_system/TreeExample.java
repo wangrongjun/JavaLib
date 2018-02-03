@@ -7,27 +7,27 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- * Java Swing��״���JTree��ʹ�÷��� http://www.cnblogs.com/taoweiji/archive/2013/02/08/2909214.html
+ * Java Swing树状组件JTree的使用方法 http://www.cnblogs.com/taoweiji/archive/2013/02/08/2909214.html
  */
 public class TreeExample {
 
     public static void main(String[] args) {
 
-        // ����û�и��ڵ���ӽڵ㡢���������ӽڵ�����ڵ㣬��ʹ��ָ�����û�����������г�ʼ����
+        // 创建没有父节点和子节点、但允许有子节点的树节点，并使用指定的用户对象对它进行初始化。
         // public DefaultMutableTreeNode(Object userObject)
-        DefaultMutableTreeNode node1 = new DefaultMutableTreeNode("�����");
-        node1.add(new DefaultMutableTreeNode(new User("С��")));
-        node1.add(new DefaultMutableTreeNode(new User("С��")));
-        node1.add(new DefaultMutableTreeNode(new User("С��")));
+        DefaultMutableTreeNode node1 = new DefaultMutableTreeNode("软件部");
+        node1.add(new DefaultMutableTreeNode(new User("小花")));
+        node1.add(new DefaultMutableTreeNode(new User("小虎")));
+        node1.add(new DefaultMutableTreeNode(new User("小龙")));
 
-        DefaultMutableTreeNode node2 = new DefaultMutableTreeNode("���۲�");
-        node2.add(new DefaultMutableTreeNode(new User("СҶ")));
-        node2.add(new DefaultMutableTreeNode(new User("С��")));
-        node2.add(new DefaultMutableTreeNode(new User("С��")));
+        DefaultMutableTreeNode node2 = new DefaultMutableTreeNode("销售部");
+        node2.add(new DefaultMutableTreeNode(new User("小叶")));
+        node2.add(new DefaultMutableTreeNode(new User("小雯")));
+        node2.add(new DefaultMutableTreeNode(new User("小夏")));
 
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode("ְԱ����");
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode("职员管理");
 
-        top.add(new DefaultMutableTreeNode(new User("�ܾ���")));
+        top.add(new DefaultMutableTreeNode(new User("总经理")));
         top.add(node1);
         top.add(node2);
         final JTree tree = new JTree(top);
@@ -37,7 +37,7 @@ public class TreeExample {
         f.setSize(400, 600);
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // ���ѡ���¼�
+        // 添加选择事件
         tree.addTreeSelectionListener(new TreeSelectionListener() {
 
             @Override
@@ -51,7 +51,7 @@ public class TreeExample {
                 Object object = node.getUserObject();
                 if (node.isLeaf()) {
                     User user = (User) object;
-                    System.out.println("��ѡ���ˣ�" + user.toString());
+                    System.out.println("你选择了：" + user.toString());
                 }
 
             }
@@ -65,7 +65,7 @@ public class TreeExample {
             name = n;
         }
 
-        // �ص���toString���ڵ����ʾ�ı�����toString
+        // 重点在toString，节点的显示文本就是toString
         public String toString() {
             return name;
         }

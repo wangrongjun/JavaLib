@@ -3,8 +3,8 @@ package com.wangrj.java_lib.java_program;
 import com.wangrj.java_lib.java_util.FileUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -18,30 +18,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-
 /**
- * by ���ٿ� on 2016/8/30.
+ * by 王荣俊 on 2016/8/30.
  * <p/>
- * �������������飺�����������Ҫԭ���Ƕ���ʱʹ��FileUtil.read()���������û�����ñ����ʽ��
- * ���Բ����˿����������õ�utf-8��ʽ����ȡ�������ҳ������Ϊgbk�������Ͳ��������ˡ�
+ * 关于乱码解决经验：出现乱码的主要原因是读入时使用FileUtil.read()，这个方法没有设置编码格式，
+ * 所以采用了开发环境设置的utf-8格式来读取。而这个页面设置为gbk，这样就产生乱码了。
  * <p/>
- * ����������ϸ���ƶ�ȡ����ı����ʽΪgbk
+ * 解决方案：严格控制读取保存的编码格式为gbk
  */
 public class ReplaceStringWindow extends JFrame implements ActionListener {
 
     private JTextField tfOldString = new JTextField();
     private JTextField tfNewString = new JTextField();
-    private JButton btnReplace = new JButton("�滻");
-    private JButton btnClear = new JButton("����");
-    private JTextArea taDrag = new JTextArea("���϶��ı��ļ�������\n");
+    private JButton btnReplace = new JButton("替换");
+    private JButton btnClear = new JButton("清屏");
+    private JTextArea taDrag = new JTextArea("请拖动文本文件到这里\n");
 
     private String textFilePath;
 
@@ -63,8 +54,8 @@ public class ReplaceStringWindow extends JFrame implements ActionListener {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(null);
 
-        JLabel labelOldString = new JLabel("���ַ���:", JLabel.RIGHT);
-        JLabel labelNewString = new JLabel("���ַ���:", JLabel.RIGHT);
+        JLabel labelOldString = new JLabel("旧字符串:", JLabel.RIGHT);
+        JLabel labelNewString = new JLabel("新字符串:", JLabel.RIGHT);
 
         labelOldString.setBounds(0, 0, 100, 30);
         tfOldString.setBounds(110, 0, 240, 30);
@@ -106,10 +97,10 @@ public class ReplaceStringWindow extends JFrame implements ActionListener {
                             List fileList = (List) transferable.getTransferData(flavor);
                             if (fileList != null && fileList.size() > 0) {
                                 File file = (File) fileList.get(0);
-                                taDrag.append("��ѡ����" + file.getAbsolutePath() + "\n");
+                                taDrag.append("已选定：" + file.getAbsolutePath() + "\n");
                                 textFilePath = file.getAbsolutePath();
                             } else {
-                                taDrag.append("�쳣����fileList==null!!!");
+                                taDrag.append("异常错误：fileList==null!!!");
                             }
 
                         } catch (UnsupportedFlavorException | IOException e) {
@@ -138,12 +129,12 @@ public class ReplaceStringWindow extends JFrame implements ActionListener {
     private void replace() {
 
         if (TextUtil.isEmpty(textFilePath)) {
-            taDrag.append("��ѡ���ı��ļ���\n");
+            taDrag.append("请选择文本文件！\n");
             return;
         }
 
         if (!new File(textFilePath).exists()) {
-            taDrag.append("�ı��ļ������ڣ�\n");
+            taDrag.append("文本文件不存在！\n");
             return;
         }
 
@@ -151,7 +142,7 @@ public class ReplaceStringWindow extends JFrame implements ActionListener {
         String newString = tfNewString.getText();
 
         if (TextUtil.isEmpty(oldString, newString)) {
-            taDrag.append("�������¾��ַ�����\n");
+            taDrag.append("请输入新旧字符串！\n");
             return;
         }
 
@@ -160,7 +151,7 @@ public class ReplaceStringWindow extends JFrame implements ActionListener {
             text = text.replace(oldString, newString);
 
             save(textFilePath, text);
-            taDrag.append("�滻�ɹ�������\n");
+            taDrag.append("替换成功！！！\n");
 
         } catch (Exception e) {
             e.printStackTrace();

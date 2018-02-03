@@ -2,40 +2,24 @@ package com.wangrj.java_lib.java_program.carton_title_parser;
 
 import com.wangrj.java_lib.java_util.ConfigUtil;
 import com.wangrj.java_lib.java_util.FileUtil;
+import com.wangrj.java_lib.java_util.TextUtil;
 import com.wangrj.java_lib.swing.JOptionPaneUtil;
-import com.wangrj.java_lib.java_util.TextUtil;
-
-import com.wangrj.java_lib.java_util.FileUtil;
-import com.wangrj.java_lib.java_util.TextUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.awt.Dimension;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileFilter;
-
 /**
- * by ���ٿ� on 2016/7/26.
+ * by 王荣俊 on 2016/7/26.
  */
 public class ParserWindow extends JFrame implements ActionListener {
 
-    private static final String TITLE = "�������������������ͨ���ٶȰٿƣ�";
+    private static final String TITLE = "动漫各集标题解析程序（通过百度百科）";
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
@@ -43,19 +27,19 @@ public class ParserWindow extends JFrame implements ActionListener {
     private static final int MODE_PATH = 1;
     private int mode;
 
-    JLabel labelUrl = new JLabel("�ٶȰٿ���ַ��");
-    JComboBox cbMode = new JComboBox<>(new Object[]{"�ٶȰٿ�", "html�ļ�"});
+    JLabel labelUrl = new JLabel("百度百科网址：");
+    JComboBox cbMode = new JComboBox<>(new Object[]{"百度百科", "html文件"});
     JTextField tfUrl = new JTextField();
-    JComboBox cbColumn = new JComboBox<>(new Object[]{"��1��", "��2��", "��3��", "��4��", "��5��"});
-    JButton btnParse1 = new JButton("����1");
-    JButton btnParse2 = new JButton("����2");
-    JButton btnParseDelete = new JButton("ɾ���ո��������");
+    JComboBox cbColumn = new JComboBox<>(new Object[]{"第1列", "第2列", "第3列", "第4列", "第5列"});
+    JButton btnParse1 = new JButton("解析1");
+    JButton btnParse2 = new JButton("解析2");
+    JButton btnParseDelete = new JButton("删除空格左边文字");
     final JTextArea taResult = new JTextArea();
 
-    JMenuItem openFileMenu = new JMenuItem("��html�ļ�");
-    JMenuItem exitMenu = new JMenuItem("�˳�");
-    JMenuItem useMenu = new JMenuItem("ʹ�÷���");
-    JMenuItem aboutMenu = new JMenuItem("����");
+    JMenuItem openFileMenu = new JMenuItem("打开html文件");
+    JMenuItem exitMenu = new JMenuItem("退出");
+    JMenuItem useMenu = new JMenuItem("使用方法");
+    JMenuItem aboutMenu = new JMenuItem("关于");
 
     static {
         ConfigUtil.read(Config.class, "parserConfig.txt", true);
@@ -77,16 +61,16 @@ public class ParserWindow extends JFrame implements ActionListener {
     private void setMode(int mode) {
         this.mode = mode;
         if (mode == MODE_URL) {
-            labelUrl.setText("�ٶȰٿ���ַ��");
+            labelUrl.setText("百度百科网址：");
         } else if (mode == MODE_PATH) {
-            labelUrl.setText("html�ļ�·����");
+            labelUrl.setText("html文件路径：");
         }
     }
 
     public void initMenu() {
         JMenuBar menuBar = new JMenuBar();
-        JMenu menu1 = new JMenu("�ļ�");
-        JMenu menu2 = new JMenu("����");
+        JMenu menu1 = new JMenu("文件");
+        JMenu menu2 = new JMenu("帮助");
 
         menu1.add(openFileMenu);
         menu1.addSeparator();
@@ -145,8 +129,8 @@ public class ParserWindow extends JFrame implements ActionListener {
     }
 
     /**
-     * 1:�����ٶȰٿƵĸ�������
-     * 2:�����ٶȰٿƵķּ�����
+     * 1:解析百度百科的各话制作
+     * 2:解析百度百科的分集剧情
      */
     private int parseMode = 1;
 
@@ -192,7 +176,7 @@ public class ParserWindow extends JFrame implements ActionListener {
 
     private void openHtmlFile() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("ѡ��html�ļ�");
+        fileChooser.setDialogTitle("选择html文件");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setCurrentDirectory(new File(Config.defaultDir));
         fileChooser.setMultiSelectionEnabled(false);

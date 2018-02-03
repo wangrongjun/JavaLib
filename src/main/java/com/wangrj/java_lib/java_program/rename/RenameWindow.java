@@ -1,9 +1,8 @@
 package com.wangrj.java_lib.java_program.rename;
 
 import com.wangrj.java_lib.java_util.ConfigUtil;
+import com.wangrj.java_lib.java_util.TextUtil;
 import com.wangrj.java_lib.swing.JOptionPaneUtil;
-import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.java_util.TextUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -27,30 +26,30 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 /**
- * by ���ٿ� on 2016/7/26.
+ * by 王荣俊 on 2016/7/26.
  */
 public class RenameWindow extends JFrame implements ActionListener {
 
-    private static final String TITLE = "����ļ�����������";
+    private static final String TITLE = "多个文件重命名程序";
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 600;
 
     private int mode;
     private Renamer renamer;
 
-    JMenuItem exitMenu = new JMenuItem("�˳�");
-    JMenuItem useMenu = new JMenuItem("���ʹ��");
-    JMenuItem aboutMenu = new JMenuItem("����");
+    JMenuItem exitMenu = new JMenuItem("退出");
+    JMenuItem useMenu = new JMenuItem("如何使用");
+    JMenuItem aboutMenu = new JMenuItem("关于");
 
-    JButton btnChooseDir = new JButton("ѡ��Ŀ¼");
+    JButton btnChooseDir = new JButton("选择目录");
     JTextField tfDir = new JTextField();
-    JButton btnPreview = new JButton("Ԥ��");
-    JButton btnPerform = new JButton("ִ��");
-    JComboBox cbMode = new JComboBox<>(new Object[]{"�滻", "׷��ǰ��׺"});
+    JButton btnPreview = new JButton("预览");
+    JButton btnPerform = new JButton("执行");
+    JComboBox cbMode = new JComboBox<>(new Object[]{"替换", "追加前后缀"});
     JTextField tfPrefix = new JTextField(Config.defaultPrefix);
     JTextField tfSuffix = new JTextField();
     JTextField tfIncrementBegin = new JTextField(Config.defaultIncrementBegin);
-    JCheckBox cbIgnoreFileSuffix = new JCheckBox("���޸��ļ���׺��");
+    JCheckBox cbIgnoreFileSuffix = new JCheckBox("不修改文件后缀名");
 
     final JTextArea taRenameText = new JTextArea();
     final JTextArea taPreview = new JTextArea();
@@ -75,8 +74,8 @@ public class RenameWindow extends JFrame implements ActionListener {
 
     public void initMenu() {
         JMenuBar menuBar = new JMenuBar();
-        JMenu menu1 = new JMenu("�ļ�");
-        JMenu menu2 = new JMenu("����");
+        JMenu menu1 = new JMenu("文件");
+        JMenu menu2 = new JMenu("帮助");
 
         menu1.addSeparator();
         menu1.add(exitMenu);
@@ -97,17 +96,17 @@ public class RenameWindow extends JFrame implements ActionListener {
         add(new JScrollPane(taPreview), BorderLayout.CENTER);
 
         taPreview.setEditable(false);
-        taRenameText.setText("�������ı���������һ�ж�Ӧһ���ļ������滻");
+        taRenameText.setText("重命名文本输入区，一行对应一个文件名的替换");
     }
 
     public void initTopPanel() {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(null);
 
-        JLabel labelMode = new JLabel("������ģʽ", JLabel.RIGHT);
-        JLabel labelPrefix = new JLabel("ǰ׺", JLabel.RIGHT);
-        JLabel labelSuffix = new JLabel("��׺", JLabel.RIGHT);
-        JLabel labelIncrement = new JLabel("��������ƥ���[auto_increment]����ʼλ�ü���ʽ��");
+        JLabel labelMode = new JLabel("重命名模式", JLabel.RIGHT);
+        JLabel labelPrefix = new JLabel("前缀", JLabel.RIGHT);
+        JLabel labelSuffix = new JLabel("后缀", JLabel.RIGHT);
+        JLabel labelIncrement = new JLabel("递增数字匹配符[auto_increment]，起始位置及格式：");
 
         btnChooseDir.setBounds(0, 0, 90, 30);
         tfDir.setBounds(100, 0, 400, 30);
@@ -169,23 +168,23 @@ public class RenameWindow extends JFrame implements ActionListener {
     }
 
     /**
-     * Ԥ��
+     * 预览
      */
     private void perform() {
         btnPerform.setEnabled(false);
         if (renamer != null) {
             String errorList = renamer.rename();
             if (TextUtil.isEmpty(errorList)) {
-                JOptionPaneUtil.showInfo("�������ɹ���");
+                JOptionPaneUtil.showInfo("重命名成功！");
             } else {
-                JOptionPaneUtil.showInfo("������ʧ�ܣ�");
+                JOptionPaneUtil.showInfo("重命名失败！");
                 taPreview.setText(errorList);
             }
         }
     }
 
     /**
-     * ִ������
+     * 执行命名
      */
     private void preview() {
         String dir = tfDir.getText();
@@ -204,16 +203,16 @@ public class RenameWindow extends JFrame implements ActionListener {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                taPreview.setText("�ļ�Ϊ�գ�����\n\n" + e.toString());
+                taPreview.setText("文件为空！！！\n\n" + e.toString());
             }
         } else {
-            taPreview.setText("��ѡ��Ŀ¼");
+            taPreview.setText("请选择目录");
         }
     }
 
     private void chooseDir() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("ѡ��html�ļ�");
+        fileChooser.setDialogTitle("选择html文件");
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setCurrentDirectory(new File(Config.defaultDir));

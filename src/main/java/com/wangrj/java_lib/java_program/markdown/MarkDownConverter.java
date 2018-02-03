@@ -1,7 +1,6 @@
 package com.wangrj.java_lib.java_program.markdown;
 
 import com.wangrj.java_lib.java_util.FileUtil;
-import com.wangrj.java_lib.java_util.FileUtil;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,7 +18,7 @@ public class MarkDownConverter {
     }
 
     /**
-     * Ҫ�㣺1. \r\n\r\n��Ϊ�ָ����ָ��ɶ���ı���Ԫ
+     * 要点：1. \r\n\r\n作为分隔符分隔成多个文本单元
      */
     public static String convert(String markdown) {
         String html = "";
@@ -44,13 +43,13 @@ public class MarkDownConverter {
                         groups[i] = matcher.group(i);
                     }
                     if (rule.getContext().isMatchCompletely()) {
-                        // �ı�Ҫ����ȫƥ��������ʽ��������ı�����ʼλ�ÿ�ʼƥ�䣬ֻƥ��һ�Σ�
-                        if (matcher.matches()) {// ƥ��ɹ����ı���ȫ�滻
+                        // 文本要求完全匹配正则表达式（必须从文本的起始位置开始匹配，只匹配一次）
+                        if (matcher.matches()) {// 匹配成功，文本完全替换
                             line = rule.getConverter().convert(groups, findIndex, findCount);
                         }
-                        break;// �����Ƿ�ƥ��ɹ���ֻƥ��һ�Σ�����Ҫ�˳�
+                        break;// 无论是否匹配成功，只匹配一次，所以要退出
                     } else {
-                        // �ı���Ҫ����ȫƥ��������ʽ�����ô��ı�����ʼλ�ÿ�ʼƥ�䣬��ƥ���Σ�
+                        // 文本不要求完全匹配正则表达式（不用从文本的起始位置开始匹配，可匹配多次）
                         line = line.replace(groups[0],
                                 rule.getConverter().convert(groups, findIndex++, findCount));
                     }

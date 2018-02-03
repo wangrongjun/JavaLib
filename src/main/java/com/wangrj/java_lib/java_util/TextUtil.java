@@ -29,6 +29,18 @@ public class TextUtil {
         return false;
     }
 
+    public static boolean isNotEmpty(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    public static boolean isNotBlank(String s) {
+        return isNotEmpty(s) && isNotEmpty(s.trim());
+    }
+
+    public static boolean isBlank(String s) {
+        return isEmpty(s) || isEmpty(s.trim());
+    }
+
     public static boolean notEquals(String s, String... strings) {
         if (strings == null) {
             return true;

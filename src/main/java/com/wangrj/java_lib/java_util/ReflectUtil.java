@@ -1,9 +1,5 @@
 package com.wangrj.java_lib.java_util;
 
-import com.wangrj.java_lib.test.JavaLibTestClass;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +10,7 @@ import java.util.List;
  */
 public class ReflectUtil {
 
+    @SuppressWarnings("unchecked")
     public static Field findByAnno(Class entityClass, Class annoClass) {
         for (Field field : entityClass.getDeclaredFields()) {
             if (field.getAnnotation(annoClass) != null) {
@@ -100,35 +97,6 @@ public class ReflectUtil {
         return strFields;
     }
 
-    @Test
-    public void testCheckExtends() {
-        Assert.assertEquals(true, checkExtends(LogUtil.class, B.class));
-        Assert.assertEquals(true, checkExtends(LogUtil.class, C.class));
-        Assert.assertEquals(true, checkExtends(B.class, C.class));
-
-        Assert.assertEquals(true, checkExtends(LogUtil.class, LogUtil.class));
-        Assert.assertEquals(true, checkExtends(B.class, B.class));
-        Assert.assertEquals(true, checkExtends(C.class, C.class));
-
-        Assert.assertEquals(false, checkExtends(B.class, LogUtil.class));
-        Assert.assertEquals(false, checkExtends(C.class, LogUtil.class));
-        Assert.assertEquals(false, checkExtends(C.class, B.class));
-
-        Assert.assertEquals(true, checkExtends(Object.class, B.class));
-        Assert.assertEquals(false, checkExtends(B.class, Object.class));
-        Assert.assertEquals(false, checkExtends(JavaLibTestClass.class, LogUtil.class));
-        Assert.assertEquals(false, checkExtends(B.class, JavaLibTestClass.class));
-    }
-
-    static class A {
-    }
-
-    static class B extends A {
-    }
-
-    static class C extends B {
-    }
-
     /**
      * 检查class1是否为class2的父类。若是，返回true。
      * 注意：如果class1==class2，返回true。
@@ -163,6 +131,7 @@ public class ReflectUtil {
      * 给obj赋值
      * 如果值为null，不会报错，只是不为当前属性赋值。
      */
+    @SuppressWarnings("unchecked")
     public static void setObjectValue(Object obj, boolean ignoreMismatch, GetValue getValue) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -262,6 +231,50 @@ public class ReflectUtil {
 
     public interface GetValue {
         Object get(Field field, boolean isBasicType);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Method getter(Class cls, String fieldName) {
+        if (cls == null) {
+            throw new RuntimeException("class is null");
+        }
+        if (TextUtil.isBlank(fieldName)) {
+            throw new RuntimeException("fieldName is empty");
+        }
+        Field field;
+        try {
+            field = cls.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+
+        String upperFirstFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        String getterName;
+        if (isBoolean(field)) {
+            if (fieldName.startsWith("is")) {
+                getterName = fieldName;
+            } else {
+                getterName = "is" + upperFirstFieldName;
+            }
+        } else {
+            getterName = "get" + upperFirstFieldName;
+        }
+
+        try {
+            return cls.getMethod(getterName);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean isBoolean(Field field) {
+        switch (field.getType().getName()) {
+            case "boolean":
+            case "java.lang.Boolean":
+                return true;
+            default:
+                return false;
+        }
     }
 
 }

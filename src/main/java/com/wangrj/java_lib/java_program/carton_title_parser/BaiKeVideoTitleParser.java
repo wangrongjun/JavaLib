@@ -5,8 +5,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * by ���ٿ� on 2016/7/26.
- * http://www.jb51.net/article/43485.htm  Jsoup����HTMLʵ�����ĵ��������
+ * by 王荣俊 on 2016/7/26.
+ * http://www.jb51.net/article/43485.htm  Jsoup解析HTML实例及文档方法详解
  */
 public class BaiKeVideoTitleParser {
 
@@ -15,11 +15,11 @@ public class BaiKeVideoTitleParser {
     }
 
     /**
-     * ������������
+     * 解析各话制作
      *
-     * @param column ����������е��±꣬0��1��2��3��4��
+     * @param column 表格中所需列的下标，0，1，2，3，4等
      */
-    public static String parse1(Document document, int column, TitleHandler handler) throws Exception {
+    public static String parseTd(Document document, int column, TitleHandler handler) throws Exception {
         StringBuilder builder = new StringBuilder();
         Elements elements = document.select("tr");
         for (Element element : elements) {
@@ -39,9 +39,9 @@ public class BaiKeVideoTitleParser {
     }
 
     /**
-     * �����ּ�����
+     * 解析分集剧情
      */
-    public static String parse2(Document document, TitleHandler handler) throws Exception {
+    public static String parseSpan(Document document, TitleHandler handler) throws Exception {
         StringBuilder builder = new StringBuilder();
         Elements spans = document.select("span");
         for (Element span : spans) {

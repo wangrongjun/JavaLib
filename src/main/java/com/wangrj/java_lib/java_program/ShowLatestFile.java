@@ -31,13 +31,15 @@ public class ShowLatestFile {
         if (!filterFile.exists()) {
             FileWriter fileWriter = new FileWriter(filterFile);
             fileWriter.write("#filterRegex=^.+\\\\.exe$\r\n");
-            fileWriter.write("#filterRegex=^.+\\\\([\\\\d]+\\\\)\\\\.[^\\\\.]+$\r\n");
+            fileWriter.write("#filterRegex=^.+\\\\([\\\\d]+\\\\)\\\\.[^.]+$\r\n");
             fileWriter.flush();
             fileWriter.close();
             System.out.println("已创建配置文件：" + filterFile.getAbsolutePath());
         } else {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(filterFile));
+            InputStreamReader isr = new InputStreamReader(new FileInputStream(filterFile), "utf-8");
+            properties.load(isr);
+            isr.close();
             System.out.println("已读取配置文件：" + filterFile.getAbsolutePath());
             regex = properties.getProperty(FILTER_REGEX_KEY_NAME);
             if (TextUtil.isNotBlank(regex)) {
@@ -47,7 +49,7 @@ public class ShowLatestFile {
 
         System.out.println("请输入目录：");
         Scanner scanner = new Scanner(System.in);
-        File dir = new File(scanner.next());
+        File dir = new File(scanner.nextLine());
         scanner.close();
 
         if (!dir.exists() || !dir.isDirectory()) {
@@ -58,8 +60,8 @@ public class ShowLatestFile {
         // 搜索文件
         List<File> fileList;
         if (TextUtil.isNotBlank(regex)) {
-            Pattern pattern = Pattern.compile(regex);
-            fileList = FileUtil.findChildrenUnderDir(dir, file -> pattern.matcher(file.getName()).matches());
+            String finalRegex = regex;
+            fileList = FileUtil.findChildrenUnderDir(dir, file -> file.getName().matches(finalRegex));
         } else {
             fileList = FileUtil.findChildrenUnderDir(dir, null);
         }

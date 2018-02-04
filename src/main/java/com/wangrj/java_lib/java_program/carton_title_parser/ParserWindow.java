@@ -220,10 +220,10 @@ public class ParserWindow extends JFrame implements ActionListener {
                 Document document = Jsoup.connect(url).get();
                 String result = "";
                 if (parseMode == 1) {
-                    result = BaiKeVideoTitleParser.parse1(document, cbColumn.getSelectedIndex(),
+                    result = BaiKeVideoTitleParser.parseTd(document, cbColumn.getSelectedIndex(),
                             deleteTextBeforeSpace ? handler : null);
                 } else if (parseMode == 2) {
-                    result = BaiKeVideoTitleParser.parse2(document,
+                    result = BaiKeVideoTitleParser.parseSpan(document,
                             deleteTextBeforeSpace ? handler : null);
                 }
                 taResult.setText(result);
@@ -243,10 +243,10 @@ public class ParserWindow extends JFrame implements ActionListener {
             Document document = Jsoup.parse(html);
             String result = "";
             if (parseMode == 1) {
-                result = BaiKeVideoTitleParser.parse1(document, cbColumn.getSelectedIndex(),
+                result = BaiKeVideoTitleParser.parseTd(document, cbColumn.getSelectedIndex(),
                         deleteTextBeforeSpace ? handler : null);
             } else if (parseMode == 2) {
-                result = BaiKeVideoTitleParser.parse2(document,
+                result = BaiKeVideoTitleParser.parseSpan(document,
                         deleteTextBeforeSpace ? handler : null);
             }
             taResult.setText(result);

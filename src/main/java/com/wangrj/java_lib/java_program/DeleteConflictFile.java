@@ -20,11 +20,14 @@ import static org.junit.Assert.assertEquals;
 public class DeleteConflictFile {
 
     private static final String CONFLICT_FILE_NAME_REGEX =
-            "(.+)的冲突文件 \\d+-\\d+-\\d+ \\d+-\\d+-\\d+-\\d+(\\..*)?";
+            "^(.+)的冲突文件 \\d+-\\d+-\\d+ \\d+-\\d+-\\d+-\\d+(\\..*)?$";
+
+    private static final String CONFLICT_FILE_NAME_REGEX1 =
+            "^(.+)\\(\\d+\\)(\\..*)?$";
 
     private static final String helloWorld = "" +
             " ----- 搜索并处理天翼云的重复文件 ------\n" +
-            "对于文件名以“的冲突文件 2017-12-17 22-10-24-637”类似格式结尾（不包括后缀名）的处理方式：\n" +
+            "对于文件名以“的冲突文件 2017-12-17 22-10-24-637”或“(20180202214932)”类似格式结尾（不包括后缀名）的处理方式：\n" +
             "1. 如果同一目录下存在冲突文件对应的原文件。且如果原文件大小与冲突文件大小一致，移动冲突文件到指定目录，否则提示出错。\n" +
             "2. 如果同一目录下不存在冲突文件对应的原文件，重命名为原文件名。";
 
@@ -109,8 +112,10 @@ public class DeleteConflictFile {
     @Test
     public void testIsConflictFile() {
         assertEquals(true, "openGL相关库文件的冲突文件 2017-12-17 22-16-29-692.rar".matches(CONFLICT_FILE_NAME_REGEX));
+        assertEquals(true, "openGL相关库文件的冲突文件 2017-12-17 22-16-29-692".matches(CONFLICT_FILE_NAME_REGEX));
+        assertEquals(true, "openGL相关库文件的冲突文件 2017-12-17 22-16-29-692.".matches(CONFLICT_FILE_NAME_REGEX));
+
         assertEquals(false, "的冲突文件 2017-12-17 22-16-29-692.rar".matches(CONFLICT_FILE_NAME_REGEX));
-        assertEquals(false, "openGL相关库文件的冲突文件 2017-12-17 22-16-29-6921.rar".matches(CONFLICT_FILE_NAME_REGEX));
         assertEquals(false, "openGL相关库文件的冲突文件  2017-12-17 22-16-29-692.rar".matches(CONFLICT_FILE_NAME_REGEX));
     }
 

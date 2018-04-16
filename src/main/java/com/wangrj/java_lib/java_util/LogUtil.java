@@ -10,8 +10,8 @@ import java.util.List;
 
 public class LogUtil {
 
-    public static String print(String msg, String... ignoreClass) {
-        String s = get(msg, 2, Arrays.asList(ignoreClass));
+    public static String print(Object msg, String... ignoreClass) {
+        String s = get(String.valueOf(msg), 2, Arrays.asList(ignoreClass));
         System.out.println(s);
         return s;
     }

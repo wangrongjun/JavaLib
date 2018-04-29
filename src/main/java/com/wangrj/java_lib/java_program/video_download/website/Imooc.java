@@ -5,9 +5,8 @@ import com.wangrj.java_lib.java_program.video_download.bean.CourseDataFile;
 import com.wangrj.java_lib.java_program.video_download.bean.ImoocBugInfo;
 import com.wangrj.java_lib.java_program.video_download.bean.Video;
 import com.wangrj.java_lib.java_util.GsonUtil;
-import com.wangrj.java_lib.java_util.HttpUtil;
+import com.wangrj.java_lib.java_util.HttpRequest;
 import com.wangrj.java_lib.java_util.TextUtil;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -49,12 +48,16 @@ public class Imooc {
     }
 
     public Course getCourse() throws Exception {
-        HttpUtil.HttpRequest request = new HttpUtil.HttpRequest();
-        HttpUtil.Result r = request.setCookie(cookie).setFirefoxUserAgent().request(courseUrl);
-        if (r.state == HttpUtil.OK) {
-            return parseHtml(r.result);
+        String firefoxUserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.8.1.14) " +
+                "Gecko/20080404 Firefox/2.0.0.14";
+        HttpRequest.Response response = new HttpRequest().
+                setCookie(cookie).
+                setUserAgent(firefoxUserAgent).
+                request(courseUrl);
+        if (response.getStatus() == HttpRequest.Status.SUCCESS) {
+            return parseHtml(response.getResponseData());
         } else {
-            throw new Exception(GsonUtil.printFormatJson(r));
+            throw new Exception(GsonUtil.printFormatJson(response));
         }
     }
 
@@ -173,9 +176,9 @@ public class Imooc {
 
         for (int i = 0; i < videos.size(); i++) {
             String id = videos.get(i).getId();
-            HttpUtil.Result r = HttpUtil.request(BUG_URL + id);
+            HttpRequest.Response response = new HttpRequest().request(BUG_URL + id);
 
-            ImoocBugInfo imoocBugInfo = GsonUtil.fromJson(r.result, ImoocBugInfo.class);
+            ImoocBugInfo imoocBugInfo = GsonUtil.fromJson(response.getResponseData(), ImoocBugInfo.class);
             int index = 0;
             switch (videoQuality) {
                 case VIDEO_QUALITY_L:

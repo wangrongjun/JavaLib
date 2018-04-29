@@ -1,7 +1,7 @@
 package com.wangrj.java_lib.test.crawl_site;
 
 import com.wangrj.java_lib.java_util.FileUtil;
-import com.wangrj.java_lib.java_util.HttpUtil;
+import com.wangrj.java_lib.java_util.HttpRequest;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,10 +48,9 @@ public class CrawlSiteRunClass {
         }
     }
 
-    private static HttpUtil.Result get(String url) {
-        HttpUtil.HttpRequest request = new HttpUtil.HttpRequest();
-        request.setUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
-        return request.request(url);
+    private static HttpRequest.Response get(String url) {
+        String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+        return new HttpRequest().setUserAgent(userAgent).request(url);
     }
 
 }

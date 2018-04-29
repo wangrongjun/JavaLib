@@ -5,10 +5,8 @@ import com.wangrj.java_lib.java_program.video_download.bean.Course;
 import com.wangrj.java_lib.java_program.video_download.bean.CourseDataFile;
 import com.wangrj.java_lib.java_program.video_download.bean.Video;
 import com.wangrj.java_lib.java_util.GsonUtil;
-import com.wangrj.java_lib.java_util.HttpUtil;
+import com.wangrj.java_lib.java_util.HttpRequest;
 import com.wangrj.java_lib.java_util.TextUtil;
-
-import com.wangrj.java_lib.java_program.video_download.bean.CourseDataFile;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -32,12 +30,16 @@ public class JiKeXueYuan {
     }
 
     public Course getCourse() throws Exception {
-        HttpUtil.HttpRequest request = new HttpUtil.HttpRequest();
-        HttpUtil.Result r = request.setCookie(cookie).setFirefoxUserAgent().request(courseUrl);
-        if (r.state == HttpUtil.OK) {
-            return parseHtml(r.result);
+        String firefoxUserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.8.1.14) " +
+                "Gecko/20080404 Firefox/2.0.0.14";
+        HttpRequest.Response response = new HttpRequest().
+                setCookie(cookie).
+                setUserAgent(firefoxUserAgent).
+                request(courseUrl);
+        if (response.getStatus() == HttpRequest.Status.SUCCESS) {
+            return parseHtml(response.getResponseData());
         } else {
-            throw new Exception(GsonUtil.printFormatJson(r));
+            throw new Exception(GsonUtil.printFormatJson(response));
         }
     }
 
@@ -64,9 +66,9 @@ public class JiKeXueYuan {
         for (int i = 1; i < len; i++) {
             String nextUrl = courseUrl.replace(".html", "_" + (i + 1) + ".html");
             videoPageUrl.add(nextUrl);
-            HttpUtil.Result r = new HttpUtil.HttpRequest().setCookie(cookie).request(nextUrl);
-            if (r.state == HttpUtil.OK) {
-                videoRealUrl.add(getVideoUrl(r.result));
+            HttpRequest.Response response = new HttpRequest().setCookie(cookie).request(nextUrl);
+            if (response.getStatus() == HttpRequest.Status.SUCCESS) {
+                videoRealUrl.add(getVideoUrl(response.getResponseData()));
             } else {
                 throw new Exception("nextUrl的html获取失败。nextUrl : " + nextUrl);
             }
@@ -134,9 +136,8 @@ public class JiKeXueYuan {
 
     private CourseDataFile getCourseDataFile(String courseId) {
 
-        HttpUtil.HttpRequest request = new HttpUtil.HttpRequest();
-        HttpUtil.Result r = request.setCookie(cookie).request(courseDataFileUrl + courseId);
-        String json = r.result;
+        HttpRequest.Response response = new HttpRequest().setCookie(cookie).request(courseDataFileUrl + courseId);
+        String json = response.getResponseData();
         String name;
         String url;
         // 先通过i,j获取资料文件的url

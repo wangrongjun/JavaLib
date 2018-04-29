@@ -22,17 +22,18 @@ public class OCRBaidu {
     }
 
     public static void main(String[] args) throws IOException {
-        ConfigUtil.read(Config.class, "config.txt", true);
+//        ConfigUtil.read(Config.class, "config.txt", true);
 
-        byte[] bytes = StreamUtil.toBytes(new FileInputStream("E:/2.jpg"));
+        byte[] bytes = StreamUtil.toBytes(new FileInputStream("E:/Test/1.jpg"));
         String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-        HttpUtil.Result result = new HttpUtil.HttpRequest().
-                addRequestProperty("Content-Type", "application/x-www-form-urlencoded").
-                setOutput("access_token=" + Config.accessToken + "&image=" + base64).
+        String requestBody = "access_token=" + Config.accessToken + "&image=" + base64;
+        HttpRequest.Response response = new HttpRequest().
+                setRequestHeader("Content-Type", "application/x-www-form-urlencoded").
+                setRequestBody(requestBody.getBytes()).
+                returnResponseHeader(true).
                 request(Config.url);
 
-        GsonUtil.printFormatJson(result);
+        GsonUtil.printFormatJson(response);
     }
 
 }

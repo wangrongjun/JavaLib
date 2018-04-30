@@ -62,6 +62,11 @@ public class HttpRequest {
         return this;
     }
 
+    public HttpRequest setRequestHeaders(Map<String, String> requestHeaders) {
+        requestHeaderMap.putAll(requestHeaders);
+        return this;
+    }
+
     public HttpRequest setRequestBody(byte[] requestBody) {
         this.requestBody = requestBody;
         return this;

@@ -9,8 +9,6 @@ import com.wangrj.java_lib.db3.example.dao.DeptDao;
 import com.wangrj.java_lib.db3.example.dao.EmpDao;
 import com.wangrj.java_lib.db3.example.dao.PosDao;
 import com.wangrj.java_lib.java_util.DateUtil;
-import com.wangrj.java_lib.db3.example.bean.Pos;
-import com.wangrj.java_lib.java_util.DateUtil;
 import org.junit.After;
 import org.junit.Test;
 
@@ -60,11 +58,11 @@ public class OADaoTest {
         empDao.insert(田七);
         empDao.insert(陆八);
         empDao.insert(薄九);
-        张三.setEname("张三");
+        张三.setEmpName("张三");
         empDao.update(张三);
         赵六.setGender(1L);
         empDao.update(赵六);
-        empDao.deleteById(田七.getEmpno());
+        empDao.deleteById(田七.getEmpId());
     }
 
     @Test

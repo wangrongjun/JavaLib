@@ -21,11 +21,11 @@ public interface ${daoSimpleName} {
 
     @SelectProvider(type = Builder.class, method = "queryAllSql")
     <#if haveFk>@ResultMap("multiMap")</#if><#if !haveFk>@ResultType(${pojoSimpleName}.class)</#if>
-    List<${pojoSimpleName}> queryAll(@Param("orderByList") String... orderByList);
+    List<${pojoSimpleName}> queryAll(@Param("sortByList") String... sortByList);
 
     @SelectProvider(type = Builder.class, method = "querySql")
     <#if haveFk>@ResultMap("multiMap")</#if><#if !haveFk>@ResultType(${pojoSimpleName}.class)</#if>
-    List<${pojoSimpleName}> query(@Param("${pojoVarName}") ${pojoSimpleName} ${pojoVarName}, @Param("orderByList") String... orderByList);
+    List<${pojoSimpleName}> query(@Param("${pojoVarName}") ${pojoSimpleName} ${pojoVarName}, @Param("sortByList") String... sortByList);
 
     @SelectProvider(type = Builder.class, method = "queryAllCountSql")
     int queryAllCount();
@@ -68,22 +68,22 @@ public interface ${daoSimpleName} {
             }}.toString();
         }
 
-        public String queryAllSql(@Param("orderByList") String... orderByList) {
+        public String queryAllSql(@Param("sortByList") String... sortByList) {
             return new SQL() {{
                 SELECT("*");
                 FROM("${tableName}");
-                ORDER_BY(orderByList);
+                ORDER_BY(sortByList);
             }}.toString();
         }
 
-        public String querySql(@Param("${pojoVarName}") ${pojoSimpleName} ${pojoVarName}, @Param("orderByList") String... orderByList) {
+        public String querySql(@Param("${pojoVarName}") ${pojoSimpleName} ${pojoVarName}, @Param("sortByList") String... sortByList) {
             return new SQL() {{
                 SELECT("*");
                 FROM("${tableName}");
                 <#list fields as field>
                 if (${pojoVarName}.${field.getter}() != null) WHERE("${field.columnName}=${r'#'}{${pojoVarName}.${field.propertyName}<#if field.type==2>.${field.fkIdName}</#if>}");
                 </#list>
-                ORDER_BY(orderByList);
+                ORDER_BY(sortByList);
             }}.toString();
         }
 

@@ -34,7 +34,9 @@ public class TextUtil {
     }
 
     public static boolean isNotBlank(String s) {
-        return isNotEmpty(s) && isNotEmpty(s.trim());
+        return isNotEmpty(s) &&
+                isNotEmpty(s.trim()) &&
+                s.replace("\n", "").replace("\r", "").replace("\t", "").length() > 0;
     }
 
     public static boolean isBlank(String s) {

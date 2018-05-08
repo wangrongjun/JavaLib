@@ -1,9 +1,7 @@
 package com.wangrj.java_lib.db3.example.bean;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * by wangrongjun on 2017/8/23.
@@ -17,7 +15,11 @@ public class Pos {
     @Column(nullable = false)
     private String posName;
     @ManyToOne
+    @JoinColumn(name = "deptId")
     private Dept dept;
+    @OneToMany
+    @JoinColumn(name = "posId")
+    private List<Emp> empList;
 
     public Pos() {
     }
@@ -55,5 +57,13 @@ public class Pos {
 
     public void setDept(Dept dept) {
         this.dept = dept;
+    }
+
+    public List<Emp> getEmpList() {
+        return empList;
+    }
+
+    public void setEmpList(List<Emp> empList) {
+        this.empList = empList;
     }
 }

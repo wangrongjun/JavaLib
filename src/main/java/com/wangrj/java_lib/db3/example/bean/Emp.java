@@ -16,11 +16,12 @@ public class Emp {
 
     @Id
     @GeneratedValue
-    private Long empno;
+    private Long empId;
     @Column(length = 20, nullable = false)
-    private String ename;
+    private String empName;
     private Long gender;
     @ManyToOne
+    @JoinColumn(name = "posId")
     private Pos pos;
     private Double salary;
     private Date hireDate;//入职时间
@@ -28,9 +29,15 @@ public class Emp {
     public Emp() {
     }
 
-    public Emp(Long empno, String ename, Long gender, Pos pos, Double salary, Date hireDate) {
-        this.empno = empno;
-        this.ename = ename;
+    public Emp(Long empId, String empName, Pos pos) {
+        this.empId = empId;
+        this.empName = empName;
+        this.pos = pos;
+    }
+
+    public Emp(Long empId, String empName, Long gender, Pos pos, Double salary, Date hireDate) {
+        this.empId = empId;
+        this.empName = empName;
         this.gender = gender;
         this.pos = pos;
         this.salary = salary;
@@ -45,20 +52,20 @@ public class Emp {
         return GENDER_WOMAN;
     }
 
-    public Long getEmpno() {
-        return empno;
+    public Long getEmpId() {
+        return empId;
     }
 
-    public void setEmpno(Long empno) {
-        this.empno = empno;
+    public void setEmpId(Long empId) {
+        this.empId = empId;
     }
 
-    public String getEname() {
-        return ename;
+    public String getEmpName() {
+        return empName;
     }
 
-    public void setEname(String ename) {
-        this.ename = ename;
+    public void setEmpName(String empName) {
+        this.empName = empName;
     }
 
     public Long getGender() {

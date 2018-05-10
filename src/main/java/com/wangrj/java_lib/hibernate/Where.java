@@ -46,6 +46,11 @@ public class Where {
         return this;
     }
 
+    public Where equal(String name, int value) {
+        expressionList.add(new Expression(name, String.valueOf(value), QueryMode.EQUAL, QueryLogic.AND));
+        return this;
+    }
+
     public Where notEqual(String name, String value) {
         expressionList.add(new Expression(name, value, QueryMode.NOT_EQUAL, QueryLogic.AND));
         return this;

@@ -19,7 +19,9 @@ public class Where {
         MORE,
         MORE_EQUAL,
         LIKE,
-        NOT_LIKE
+        NOT_LIKE,
+        IS_NULL,
+        IS_NOT_NULL
     }
 
     /**
@@ -41,38 +43,43 @@ public class Where {
         return expressionList.size();
     }
 
-    public Where equal(String name, String value) {
+    public Where equal(String name, Object value) {
         expressionList.add(new Expression(name, value, QueryMode.EQUAL, QueryLogic.AND));
         return this;
     }
 
-    public Where equal(String name, int value) {
-        expressionList.add(new Expression(name, String.valueOf(value), QueryMode.EQUAL, QueryLogic.AND));
-        return this;
-    }
-
-    public Where notEqual(String name, String value) {
+    public Where notEqual(String name, Object value) {
         expressionList.add(new Expression(name, value, QueryMode.NOT_EQUAL, QueryLogic.AND));
         return this;
     }
 
-    public Where less(String name, String value) {
+    public Where less(String name, Object value) {
         expressionList.add(new Expression(name, value, QueryMode.LESS, QueryLogic.AND));
         return this;
     }
 
-    public Where lessEqual(String name, String value) {
+    public Where lessEqual(String name, Object value) {
         expressionList.add(new Expression(name, value, QueryMode.LESS_EQUAL, QueryLogic.AND));
         return this;
     }
 
-    public Where more(String name, String value) {
+    public Where more(String name, Object value) {
         expressionList.add(new Expression(name, value, QueryMode.MORE, QueryLogic.AND));
         return this;
     }
 
-    public Where moreEqual(String name, String value) {
+    public Where moreEqual(String name, Object value) {
         expressionList.add(new Expression(name, value, QueryMode.MORE_EQUAL, QueryLogic.AND));
+        return this;
+    }
+
+    public Where isNull(String name) {
+        expressionList.add(new Expression(name, null, QueryMode.IS_NULL, QueryLogic.AND));
+        return this;
+    }
+
+    public Where isNotNull(String name) {
+        expressionList.add(new Expression(name, null, QueryMode.IS_NOT_NULL, QueryLogic.AND));
         return this;
     }
 
@@ -96,16 +103,8 @@ public class Where {
         return this;
     }
 
-    public static Where eq(String whereName, String whereValue) {
+    public static Where eq(String whereName, Object whereValue) {
         return new Where().equal(whereName, whereValue);
-    }
-
-    public static Where eq(String whereName, int whereValue) {
-        return new Where().equal(whereName, String.valueOf(whereValue));
-    }
-
-    public static Where eq(String whereName, long whereValue) {
-        return new Where().equal(whereName, String.valueOf(whereValue));
     }
 
     /**
@@ -118,68 +117,73 @@ public class Where {
             return "";
         }
         String sql = "";
-        for (int i = 0; i < size(); i++) {
+        for (int i = 0; i < expressionList.size(); i++) {
             Expression expression = expressionList.get(i);
-            if (expression.value == null) {// username='null' 无意义，忽略
-                continue;
+            String name = expression.name;
+            Object value = expression.value;
+            QueryMode mode = expression.queryMode;
+            // username='null' 无意义，报错
+            if (value == null && mode != QueryMode.IS_NULL && mode != QueryMode.IS_NOT_NULL) {
+                throw new IllegalArgumentException("The value of " + name + " is null");
             }
-            // 1.字段名字
-            sql += expression.name;
-            // 2.查询模式
+            // TODO 使用占位符（？）或定义参数
             switch (expression.queryMode) {
                 case EQUAL:
-                    sql += "=";
+                    sql += name + " = '" + value + "'";
                     break;
                 case NOT_EQUAL:
-                    sql += "!=";
+                    sql += name + " != '" + value + "'";
                     break;
                 case LESS:
-                    sql += "<";
+                    sql += name + " < '" + value + "'";
                     break;
                 case LESS_EQUAL:
-                    sql += "<=";
+                    sql += name + " <= '" + value + "'";
                     break;
                 case MORE:
-                    sql += ">";
+                    sql += name + " > '" + value + "'";
                     break;
                 case MORE_EQUAL:
-                    sql += ">=";
+                    sql += name + " >= '" + value + "'";
+                    break;
+                case IS_NULL:
+                    sql += name + " IS NULL";
+                    break;
+                case IS_NOT_NULL:
+                    sql += name + " IS NOT NULL";
                     break;
                 case LIKE:
-                    sql += " like ";
+                    sql += name + " LIKE '" + value + "'";
                     break;
                 case NOT_LIKE:
-                    sql += " not like ";
+                    sql += name + " NOT LIKE '" + value + "'";
                     break;
             }
-            // 3.赋值
-            // TODO 使用占位符（？）或定义参数
-            sql += "'" + expression.value + "'";
-            // 4.如果不是最后一个查询条件，添加查询逻辑
+            // 如果不是最后一个查询条件，添加查询逻辑
             if (i < size() - 1) {
                 switch (expression.queryLogic) {
                     case AND:
-                        sql += " and ";
+                        sql += " AND ";
                         break;
                     case OR:
-                        sql += " or ";
+                        sql += " OR ";
                         break;
                 }
             }
         }
         if (sql.length() > 0) {
-            sql = " where " + sql;
+            sql = " WHERE " + sql;
         }
         return sql;
     }
 
     private class Expression {
         String name;
-        String value;
+        Object value;
         QueryMode queryMode;
         QueryLogic queryLogic;
 
-        Expression(String name, String value, QueryMode queryMode,
+        Expression(String name, Object value, QueryMode queryMode,
                    QueryLogic queryLogic) {
             this.name = name;
             this.value = value;

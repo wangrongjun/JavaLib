@@ -6,10 +6,7 @@ import com.wangrj.java_lib.java_program.shopping_system.Response;
 import com.wangrj.java_lib.java_program.shopping_system.StateCode;
 import com.wangrj.java_lib.java_program.shopping_system.bean.User;
 import com.wangrj.java_lib.web.CustomHttpServlet;
-import com.wangrj.java_lib.java_program.shopping_system.bean.User;
 import com.wangrj.java_lib.java_program.shopping_system.dao.UserDao;
-import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.web.CustomHttpServlet;
 
 import java.util.HashMap;
 
@@ -53,6 +50,6 @@ public class LoginServlet extends CustomHttpServlet {
 
     @Override
     protected String onWriteResultStart() {
-        return GsonUtil.formatJson(response);
+        return GsonUtil.toPrettyJson(response);
     }
 }

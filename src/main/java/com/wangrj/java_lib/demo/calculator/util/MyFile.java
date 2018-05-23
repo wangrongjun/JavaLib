@@ -7,7 +7,6 @@ import com.wangrj.java_lib.demo.calculator.bean.Sign;
 import com.wangrj.java_lib.demo.calculator.constant.C;
 import com.wangrj.java_lib.java_util.FileUtil;
 import com.wangrj.java_lib.java_util.GsonUtil;
-import com.wangrj.java_lib.demo.calculator.bean.Sign;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -76,7 +75,7 @@ public class MyFile {
             return;
         }
         try {
-            FileUtil.write(GsonUtil.formatJson(signs).replace("\n", "\r\n"), C.dataFileName);
+            FileUtil.write(GsonUtil.toPrettyJson(signs).replace("\n", "\r\n"), C.dataFileName);
         } catch (IOException e) {
             e.printStackTrace();
         }

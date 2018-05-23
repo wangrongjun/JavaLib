@@ -23,19 +23,13 @@ public class LogUtil {
     }
 
     public static String printEntity(Object entity) {
-        String s = get(GsonUtil.formatJson(entity), 2, null);
+        String s = get(GsonUtil.toPrettyJson(entity), 2, null);
         System.out.println(s);
         return s;
     }
 
-    public static String printEntity(Object entity, List<String> ignoreField) {
-        String s = get(GsonUtil.formatJson(entity, ignoreField), 2, null);
-        System.out.println(s);
-        return s;
-    }
-
-    public static String printEntity(Object entity, String... ignoreField) {
-        String s = get(GsonUtil.formatJson(entity, Arrays.asList(ignoreField)), 2, null);
+    public static String printEntity(Object entity, String... ignoreFields) {
+        String s = get(GsonUtil.toPrettyJson(entity, ignoreFields), 2, null);
         System.out.println(s);
         return s;
     }

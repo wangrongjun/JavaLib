@@ -14,7 +14,7 @@ public class TestServlet {
     public void testRegister() {
         String url = "http://localhost:8080/shopping_system/register?phone=15521302230&password=123";
         HttpRequest.Response response = new HttpRequest().request(url);
-        DebugUtil.println(url + "\n" + GsonUtil.printFormatJson(response));
+        DebugUtil.println(url + "\n" + GsonUtil.printPrettyJson(response));
     }
 
 }

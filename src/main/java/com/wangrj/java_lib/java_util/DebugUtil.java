@@ -26,7 +26,7 @@ public class DebugUtil {
     }
 
     public static String printlnEntity(Object entity) {
-        String s = getDebugMessage(GsonUtil.formatJson(entity), 2) + "\n";
+        String s = getDebugMessage(GsonUtil.toPrettyJson(entity), 2) + "\n";
         if (isDebug) {
             System.out.println(s);
         }

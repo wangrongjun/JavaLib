@@ -7,11 +7,6 @@ import com.wangrj.java_lib.java_util.GsonUtil;
 import com.wangrj.java_lib.java_program.shopping_system.bean.Orders;
 import com.wangrj.java_lib.web.CustomHttpServlet;
 import com.wangrj.java_lib.java_program.shopping_system.Response;
-import com.wangrj.java_lib.java_program.shopping_system.bean.Orders;
-import com.wangrj.java_lib.java_program.shopping_system.dao.OrdersDao;
-import com.wangrj.java_lib.java_util.DateUtil;
-import com.wangrj.java_lib.java_util.GsonUtil;
-import com.wangrj.java_lib.web.CustomHttpServlet;
 
 import java.util.HashMap;
 
@@ -59,6 +54,6 @@ public class AddOrderServlet extends CustomHttpServlet {
 
     @Override
     protected String onWriteResultStart() {
-        return GsonUtil.formatJson(response);
+        return GsonUtil.toPrettyJson(response);
     }
 }

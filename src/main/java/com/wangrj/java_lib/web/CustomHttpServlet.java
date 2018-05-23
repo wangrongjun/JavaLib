@@ -149,7 +149,7 @@ public abstract class CustomHttpServlet extends HttpServlet {
             if (canWrite) {
                 String out = onWriteResultStart();
                 if (!TextUtil.isEmpty(out)) {
-//                    System.out.println(JsonFormatUtil.formatJson(out));
+//                    System.out.println(JsonFormatUtil.toPrettyJson(out));
                     OutputStreamWriter osw = new OutputStreamWriter(response.getOutputStream(), charset);
                     osw.write(out);
                     osw.flush();

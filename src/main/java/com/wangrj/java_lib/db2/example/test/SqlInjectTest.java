@@ -5,7 +5,6 @@ import com.wangrj.java_lib.db2.example.dao.DepartmentDao;
 import com.wangrj.java_lib.db2.example.dao.impl.DepartmentDaoImpl;
 import com.wangrj.java_lib.java_util.GsonUtil;
 
-import com.wangrj.java_lib.db2.example.bean.Department;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,8 +39,8 @@ public class SqlInjectTest {
          */
         String name2 = "name' or 1=1;-- ";
 
-        GsonUtil.printFormatJson(departmentDao.queryByName(name1));
-        GsonUtil.printFormatJson(departmentDao.queryByName(name2));
+        GsonUtil.printPrettyJson(departmentDao.queryByName(name1));
+        GsonUtil.printPrettyJson(departmentDao.queryByName(name2));
     }
 
 }

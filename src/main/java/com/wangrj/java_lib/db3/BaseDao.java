@@ -103,7 +103,7 @@ public class BaseDao<T> implements Dao<T> {
     protected static void printResult(List list) {
         if (printResult) {
             System.out.println("\n----------- begin -----------");
-            GsonUtil.printFormatJson(list);
+            GsonUtil.printPrettyJson(list);
             System.out.println("-----------  end  -----------\n");
         }
     }
@@ -111,7 +111,7 @@ public class BaseDao<T> implements Dao<T> {
     protected static void printResult(long count) {
         if (printResult) {
             System.out.println("\n----------- begin -----------");
-            GsonUtil.printFormatJson("count: " + count);
+            GsonUtil.printPrettyJson("count: " + count);
             System.out.println("-----------  end  -----------\n");
         }
     }

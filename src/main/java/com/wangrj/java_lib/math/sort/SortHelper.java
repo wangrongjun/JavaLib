@@ -3,7 +3,6 @@ package com.wangrj.java_lib.math.sort;
 import com.wangrj.java_lib.java_util.GsonUtil;
 import com.wangrj.java_lib.java_util.MathUtil;
 import com.wangrj.java_lib.math.Heap;
-import com.wangrj.java_lib.java_util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -256,7 +255,7 @@ public class SortHelper {
         System.out.println("基本操作次数：" + sortQuick + "\n");
 
         sortQuick(users, comparator);
-        GsonUtil.printFormatJson(users);
+        GsonUtil.printPrettyJson(users);
 
     }
 

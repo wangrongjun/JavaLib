@@ -39,7 +39,7 @@ public class JiKeXueYuan {
         if (response.getStatus() == HttpRequest.Status.SUCCESS) {
             return parseHtml(response.getResponseData());
         } else {
-            throw new Exception(GsonUtil.printFormatJson(response));
+            throw new Exception(GsonUtil.printPrettyJson(response));
         }
     }
 

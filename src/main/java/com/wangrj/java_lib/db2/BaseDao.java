@@ -4,8 +4,6 @@ import com.wangrj.java_lib.java_util.GsonUtil;
 import com.wangrj.java_lib.java_util.LogUtil;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.java_util.LogUtil;
-import com.wangrj.java_lib.java_util.ReflectUtil;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -146,7 +144,7 @@ public class BaseDao<T> implements Dao<T> {
     private static void printResult(List list) {
         if (printResult) {
             System.out.println("\n----------- begin -----------");
-            GsonUtil.printFormatJson(list);
+            GsonUtil.printPrettyJson(list);
             System.out.println("-----------  end  -----------\n");
         }
     }
@@ -154,7 +152,7 @@ public class BaseDao<T> implements Dao<T> {
     private static void printResult(long count) {
         if (printResult) {
             System.out.println("\n----------- begin -----------");
-            GsonUtil.printFormatJson("count: " + count);
+            GsonUtil.printPrettyJson("count: " + count);
             System.out.println("-----------  end  -----------\n");
         }
     }

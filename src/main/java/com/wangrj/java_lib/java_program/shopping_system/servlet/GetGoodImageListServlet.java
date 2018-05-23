@@ -7,11 +7,6 @@ import com.wangrj.java_lib.java_program.shopping_system.StateCode;
 import com.wangrj.java_lib.java_program.shopping_system.bean.GoodImage;
 import com.wangrj.java_lib.java_program.shopping_system.dao.GoodImageDao;
 import com.wangrj.java_lib.web.CustomHttpServlet;
-import com.wangrj.java_lib.java_program.shopping_system.Response;
-import com.wangrj.java_lib.java_program.shopping_system.bean.GoodImage;
-import com.wangrj.java_lib.java_util.GsonUtil;
-import com.wangrj.java_lib.java_util.TextUtil;
-import com.wangrj.java_lib.web.CustomHttpServlet;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +46,6 @@ public class GetGoodImageListServlet extends CustomHttpServlet {
 
     @Override
     protected String onWriteResultStart() {
-        return GsonUtil.formatJson(response);
+        return GsonUtil.toPrettyJson(response);
     }
 }

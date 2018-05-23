@@ -6,7 +6,6 @@ import com.wangrj.java_lib.java_program.shopping_system.StateCode;
 import com.wangrj.java_lib.java_program.shopping_system.bean.Good;
 import com.wangrj.java_lib.java_program.shopping_system.dao.GoodDao;
 import com.wangrj.java_lib.web.CustomHttpServlet;
-import com.wangrj.java_lib.java_program.shopping_system.dao.GoodDao;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -28,6 +27,6 @@ public class GetGoodListServlet extends CustomHttpServlet {
             response = new Response<>(StateCode.ERROR_UNKNOWN, e.toString());
         }
 
-        return GsonUtil.formatJson(response);
+        return GsonUtil.toPrettyJson(response);
     }
 }

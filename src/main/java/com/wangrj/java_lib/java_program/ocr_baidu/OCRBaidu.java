@@ -33,7 +33,7 @@ public class OCRBaidu {
                 returnResponseHeader(true).
                 request(Config.url);
 
-        GsonUtil.printFormatJson(response);
+        GsonUtil.printPrettyJson(response);
     }
 
 }

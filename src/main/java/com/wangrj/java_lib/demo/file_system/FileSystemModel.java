@@ -38,7 +38,7 @@ public class FileSystemModel {
     }
 
     public void save() {
-        String json = GsonUtil.formatJson(rootNode);
+        String json = GsonUtil.toPrettyJson(rootNode);
         try {
             FileUtil.write(json.replace("\n", "\r\n"), savePath);
             System.out.println("�ѱ���");

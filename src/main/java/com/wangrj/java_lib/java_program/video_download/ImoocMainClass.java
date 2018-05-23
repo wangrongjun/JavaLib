@@ -25,7 +25,7 @@ public class ImoocMainClass {
         }
         Imooc imooc = new Imooc(url, Imooc.VIDEO_QUALITY_M, FileUtil.read(cookieFile));
         Course course = imooc.getCourse();
-        FileUtil.write(GsonUtil.formatJson(course), "E:/course.txt");
+        FileUtil.write(GsonUtil.toPrettyJson(course), "E:/course.txt");
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("course", course);
         FreeMakerUtil.convert(new File("E:/"), "index.ftl", dataModel, new FileWriter("E:/output.html"));

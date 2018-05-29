@@ -1,13 +1,9 @@
 package com.wangrj.java_lib.java_program.student_manage_system.service;
 
-import com.sun.istack.internal.Nullable;
 import com.wangrj.java_lib.java_program.student_manage_system.bean.Course;
 import com.wangrj.java_lib.java_program.student_manage_system.bean.Manager;
 import com.wangrj.java_lib.java_program.student_manage_system.bean.Student;
 import com.wangrj.java_lib.java_program.student_manage_system.constant.CourseSortType;
-import com.wangrj.java_lib.java_program.student_manage_system.constant.StudentSortType;
-import com.wangrj.java_lib.java_program.student_manage_system.bean.Course;
-import com.wangrj.java_lib.java_program.student_manage_system.bean.Manager;
 import com.wangrj.java_lib.java_program.student_manage_system.constant.StudentSortType;
 
 import java.util.List;
@@ -19,7 +15,7 @@ public interface IManagerService {
 
     Manager getManagerFromLocal();
 
-    void setManagerToLocal(@Nullable Manager manager);
+    void setManagerToLocal(Manager manager);
 
     /**
      * 获取所有课程（包括选课人数和当前用户是否已选）

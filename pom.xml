@@ -9,6 +9,11 @@
     <name>JavaLib</name>
     <url>http://maven.apache.org</url>
 
+    <properties>
+        <!--如果没有，mvn compile 时会报错，说中文是非法字符-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
 
         <!--Android反编译xml-->
@@ -17,8 +22,9 @@
             <artifactId>AXMLPrinter2</artifactId>
             <version>1.0</version>
             <scope>system</scope>
+            <!--${project.basedir}/lib/AXMLPrinter2.jar-->
             <systemPath>
-                ${project.basedir}/lib/AXMLPrinter2.jar
+                C:/IDE/ideaIU-project/JavaLib/lib/AXMLPrinter2.jar
             </systemPath>
         </dependency>
 
@@ -90,11 +96,11 @@
             <version>2.6.12</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.5.0</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.mongodb</groupId>-->
+        <!--<artifactId>mongo-java-driver</artifactId>-->
+        <!--<version>3.5.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -107,8 +113,9 @@
             <artifactId>ojdbc6</artifactId>
             <version>1.0</version>
             <scope>system</scope>
+            <!--${project.basedir}/lib/ojdbc6.jar-->
             <systemPath>
-                ${project.basedir}/lib/ojdbc6.jar
+                C:/IDE/ideaIU-project/JavaLib/lib/ojdbc6.jar
             </systemPath>
         </dependency>
 

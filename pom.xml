@@ -7,11 +7,13 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>JavaLib</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <!--如果没有，mvn compile 时会报错，说中文是非法字符-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--指定JDK版本为1.8-->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -171,10 +173,8 @@
 
     </dependencies>
 
-    <!--如果没有以下内容，会报错：Error:java: Compilation failed: internal java compiler error-->
     <build>
-        <finalName>JavaLib</finalName>
-        <!--配置src/main/java为资源目录，这样该目录下（包括子目录）的资源文件就可以发布到target/classes下-->
+        <!--配置src/main/java为资源目录，这样该目录下（包括子目录）的资源文件如xml文件就可以发布到target/classes下-->
         <!--这样可以避免因为没发布使得Mybatis读不到xxDao的映射文件-->
         <resources>
             <resource>
@@ -184,31 +184,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
+
 </project>

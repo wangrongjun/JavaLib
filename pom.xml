@@ -22,10 +22,7 @@
             <artifactId>AXMLPrinter2</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <!--${project.basedir}/lib/AXMLPrinter2.jar-->
-            <systemPath>
-                C:/IDE/ideaIU-project/JavaLib/lib/AXMLPrinter2.jar
-            </systemPath>
+            <systemPath>${project.basedir}/lib/AXMLPrinter2.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -113,10 +110,7 @@
             <artifactId>ojdbc6</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <!--${project.basedir}/lib/ojdbc6.jar-->
-            <systemPath>
-                C:/IDE/ideaIU-project/JavaLib/lib/ojdbc6.jar
-            </systemPath>
+            <systemPath>${project.basedir}/lib/ojdbc6.jar</systemPath>
         </dependency>
 
         <dependency>

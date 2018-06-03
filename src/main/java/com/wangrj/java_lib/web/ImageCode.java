@@ -13,6 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * 在页面使用：
+ * <img src="${pageContext.request.contextPath}/validateCode.jsp"/>
+ * <p>
+ * validateCode.jsp：
+ * <% new ImageCode().out(request, response); %>
+ */
 public class ImageCode {
     private char code[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
             'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',

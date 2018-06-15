@@ -1,7 +1,9 @@
 package com.wangrj.java_lib.java_util;
 
 import java.io.OutputStream;
-import java.net.*;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,70 +82,43 @@ public class HttpRequest {
     /**
      * 注意：在上传文件时，url不能带参数，否则2Mb以下的文件会上传失败（服务器会把字节流当作url的参数列表来处理，并提示乱码）
      */
-    public Response request(String url) {
-        Response response = new Response();
-        try {
-            // 请求初始化
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod(requestMethod);
-            conn.setDoInput(true);
-            conn.setDoOutput(requestBody != null && requestBody.length > 0);
-            if (connectTimeOut > 0) {
-                conn.setConnectTimeout(connectTimeOut);
-            }
-            if (readTimeOut > 0) {
-                conn.setReadTimeout(readTimeOut);
-            }
-            conn.setUseCaches(false);// 设置不使用缓存（否则上传文件时容易出现问题）
+    public Response request(String url) throws Exception {
+        Response response = new Response(charsetName);
 
-            // 设置请求头
-            for (Map.Entry<String, String> entry : requestHeaderMap.entrySet()) {
-                conn.setRequestProperty(entry.getKey(), entry.getValue());
-            }
-
-            // 设置请求体
-            if (requestBody != null && requestBody.length > 0) {
-                OutputStream os = conn.getOutputStream();
-                os.write(requestBody);
-                os.flush();
-                os.close();
-            }
-
-            // 获取请求的响应信息
-            response.responseCode = conn.getResponseCode();
-            if (returnResponseHeader) {
-                response.responseHeader = new ResponseHeader(conn);
-            }
-            response.responseData = StreamUtil.readInputStream(conn.getInputStream(), charsetName);
-            response.status = Status.SUCCESS;
-        } catch (UnknownHostException e) {
-            response.status = Status.NO_INTERNET;
-            response.exception = e;
-        } catch (ConnectException e) {
-            response.status = Status.SERVER_ERROR;
-            response.exception = e;
-        } catch (SocketTimeoutException e) {
-            response.status = Status.TIME_OUT;
-            response.exception = e;
-        } catch (Exception e) {
-            response.status = Status.UNKNOWN_ERROR;
-            response.exception = e;
+        // 请求初始化
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setRequestMethod(requestMethod);
+        conn.setDoInput(true);
+        conn.setDoOutput(requestBody != null && requestBody.length > 0);
+        if (connectTimeOut > 0) {
+            conn.setConnectTimeout(connectTimeOut);
         }
+        if (readTimeOut > 0) {
+            conn.setReadTimeout(readTimeOut);
+        }
+        conn.setUseCaches(false);// 设置不使用缓存（否则上传文件时容易出现问题）
+
+        // 设置请求头
+        for (Map.Entry<String, String> entry : requestHeaderMap.entrySet()) {
+            conn.setRequestProperty(entry.getKey(), entry.getValue());
+        }
+
+        // 设置请求体
+        if (requestBody != null && requestBody.length > 0) {
+            OutputStream os = conn.getOutputStream();
+            os.write(requestBody);
+            os.flush();
+            os.close();
+        }
+
+        // 获取请求的响应信息
+        response.responseCode = conn.getResponseCode();
+        if (returnResponseHeader) {
+            response.responseHeader = new ResponseHeader(conn);
+        }
+        response.responseData = StreamUtil.toBytes(conn.getInputStream());
+
         return response;
-    }
-
-    public enum Status {
-        SUCCESS(0),
-        NO_INTERNET(-1),
-        TIME_OUT(-2),
-        SERVER_ERROR(-3),
-        UNKNOWN_ERROR(-4);
-
-        private int code;
-
-        Status(int code) {
-            this.code = code;
-        }
     }
 
     public static class ResponseHeader {
@@ -204,50 +179,33 @@ public class HttpRequest {
 
     public static class Response {
 
-        private Status status;
-        private Exception exception;
         private int responseCode;
         private ResponseHeader responseHeader;
-        private String responseData;
+        private byte[] responseData;
+        private String charsetName;
 
-        public Status getStatus() {
-            return status;
-        }
-
-        public void setStatus(Status status) {
-            this.status = status;
-        }
-
-        public Exception getException() {
-            return exception;
-        }
-
-        public void setException(Exception exception) {
-            this.exception = exception;
+        public Response(String charsetName) {
+            this.charsetName = charsetName;
         }
 
         public int getResponseCode() {
             return responseCode;
         }
 
-        public void setResponseCode(int responseCode) {
-            this.responseCode = responseCode;
-        }
-
         public ResponseHeader getResponseHeader() {
             return responseHeader;
         }
 
-        public void setResponseHeader(ResponseHeader responseHeader) {
-            this.responseHeader = responseHeader;
-        }
-
-        public String getResponseData() {
+        public byte[] getResponseData() {
             return responseData;
         }
 
-        public void setResponseData(String responseData) {
-            this.responseData = responseData;
+        public String toResponseText() {
+            try {
+                return new String(responseData, charsetName);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

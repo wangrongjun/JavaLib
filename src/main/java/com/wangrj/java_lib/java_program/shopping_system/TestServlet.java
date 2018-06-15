@@ -11,7 +11,7 @@ import org.junit.Test;
 public class TestServlet {
 
     @Test
-    public void testRegister() {
+    public void testRegister() throws Exception {
         String url = "http://localhost:8080/shopping_system/register?phone=15521302230&password=123";
         HttpRequest.Response response = new HttpRequest().request(url);
         DebugUtil.println(url + "\n" + GsonUtil.printPrettyJson(response));

@@ -54,11 +54,7 @@ public class Imooc {
                 setCookie(cookie).
                 setUserAgent(firefoxUserAgent).
                 request(courseUrl);
-        if (response.getStatus() == HttpRequest.Status.SUCCESS) {
-            return parseHtml(response.getResponseData());
-        } else {
-            throw new Exception(GsonUtil.printPrettyJson(response));
-        }
+        return parseHtml(response.toResponseText());
     }
 
     private Course parseHtml(String html) throws Exception {
@@ -178,7 +174,7 @@ public class Imooc {
             String id = videos.get(i).getId();
             HttpRequest.Response response = new HttpRequest().request(BUG_URL + id);
 
-            ImoocBugInfo imoocBugInfo = GsonUtil.fromJson(response.getResponseData(), ImoocBugInfo.class);
+            ImoocBugInfo imoocBugInfo = GsonUtil.fromJson(response.toResponseText(), ImoocBugInfo.class);
             int index = 0;
             switch (videoQuality) {
                 case VIDEO_QUALITY_L:

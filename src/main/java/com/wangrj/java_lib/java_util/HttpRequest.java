@@ -1,5 +1,7 @@
 package com.wangrj.java_lib.java_util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -82,7 +84,7 @@ public class HttpRequest {
     /**
      * 注意：在上传文件时，url不能带参数，否则2Mb以下的文件会上传失败（服务器会把字节流当作url的参数列表来处理，并提示乱码）
      */
-    public Response request(String url) throws Exception {
+    public Response request(String url) throws ResponseCodeNot200Exception, IOException {
         Response response = new Response(charsetName);
 
         // 请求初始化
@@ -112,11 +114,22 @@ public class HttpRequest {
         }
 
         // 获取请求的响应信息
-        response.responseCode = conn.getResponseCode();
         if (returnResponseHeader) {
             response.responseHeader = new ResponseHeader(conn);
         }
-        response.responseData = StreamUtil.toBytes(conn.getInputStream());
+        response.responseCode = conn.getResponseCode();
+        if (response.responseCode == 200) {
+            InputStream is = conn.getInputStream();
+            if (is != null) {
+                response.responseData = StreamUtil.toBytes(is);
+            }
+        } else {
+            InputStream is = conn.getErrorStream();
+            if (is != null) {
+                response.responseData = StreamUtil.toBytes(is);
+            }
+            throw new ResponseCodeNot200Exception(response);
+        }
 
         return response;
     }
@@ -179,7 +192,7 @@ public class HttpRequest {
 
     public static class Response {
 
-        private int responseCode;
+        private Integer responseCode;
         private ResponseHeader responseHeader;
         private byte[] responseData;
         private String charsetName;
@@ -188,7 +201,7 @@ public class HttpRequest {
             this.charsetName = charsetName;
         }
 
-        public int getResponseCode() {
+        public Integer getResponseCode() {
             return responseCode;
         }
 
@@ -201,11 +214,33 @@ public class HttpRequest {
         }
 
         public String toResponseText() {
-            try {
-                return new String(responseData, charsetName);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+            if (responseData != null && responseData.length > 0) {
+                try {
+                    return new String(responseData, charsetName);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            return null;
+        }
+    }
+
+    public static class ResponseCodeNot200Exception extends Exception {
+        private Response response;
+
+        public ResponseCodeNot200Exception(Response response) {
+            this.response = response;
+        }
+
+        public Response getResponse() {
+            return response;
+        }
+
+        @Override
+        public String toString() {
+            return ResponseCodeNot200Exception.class.getName() + ": " +
+                    "responseCode = " + response.responseCode +
+                    ", error = " + response.toResponseText();
         }
     }
 

@@ -195,15 +195,16 @@ public class ExcelUtil {
     /**
      * 把Excel中多个单元格复制到的文本进行预处理（把换行符变为字符串"\r\n"）
      * <p>
-     * 如果某一行包含正则 /\t["]{1,3,5,7,9}/ 匹配的子串，则依次读取该行接下来的行，只要该行接下来的行不包含\t，就选出来。
-     * 之后把该行和接下来所有选出来的行合并，行与行之间用\n作为分隔符，并去除第一行和最后一行首尾的双引号。
+     * 如果某一行包含 \t" 或者 \t""" 的子串(\t后面跟在奇数个双引号)，则依次读取该行接下来的行，只要该行接下来的行不包含\t，就选出来。
+     * 之后把该行和接下来所有选出来的行合并，行与行之间用\r\n作为分隔符，并去掉多余的双引号。
      * 去掉双引号：只要是奇数个双引号连在一起的，都要减少一个。如1个变0个，2个不管，3个变2个，4个不管。
      */
     public static String convertExcelText(String excelText) {
         StringBuilder builder = new StringBuilder();
         String[] lines = excelText.split("\r\n");
         int index = 0;
-        Pattern pattern = Pattern.compile("\t[\"]([^\"]|[\"]{2})");
+        // 由于正则无法指定匹配奇数次出现，所以们目前只支持匹配 \t"^" 和 \t"""^"
+        Pattern pattern = Pattern.compile("\t(\"[^\"]|\"\"\"[^\"])");
         while (index < lines.length) {
             builder.append(lines[index]);
             if (pattern.matcher(lines[index++]).find()) {
@@ -212,9 +213,9 @@ public class ExcelUtil {
                 }
             }
         }
-        // 连在一起的奇数个双引号减少一个
+        // 下面循环的作用是把连在一起的奇数个双引号减少一个
         int count = 0;
-        char[] chars = (builder.toString() + "a").toCharArray();// 末尾添加a来辅助，避免对末尾的双引号做单独处理
+        char[] chars = (builder.toString() + "a").toCharArray();// 末尾添加a来辅助，避免对末尾可能出现的双引号做单独处理
         builder = new StringBuilder();
         for (char c : chars) {
             if (c == '"') {

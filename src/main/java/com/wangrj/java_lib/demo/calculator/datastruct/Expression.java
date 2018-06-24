@@ -1,9 +1,7 @@
 package com.wangrj.java_lib.demo.calculator.datastruct;
 
 import com.wangrj.java_lib.demo.calculator.constant.C;
-import com.wangrj.java_lib.demo.calculator.util.Util;
-import com.wangrj.java_lib.demo.calculator.constant.C;
-import com.wangrj.java_lib.demo.calculator.util.Util;
+import com.wangrj.java_lib.demo.calculator.util.CalculatorUtil;
 
 import java.util.ArrayList;
 
@@ -89,7 +87,7 @@ public class Expression {
         });
 
         try {
-            return Util.calculatePostExpression(expression);
+            return CalculatorUtil.calculatePostExpression(expression);
         } catch (Exception e) {
             throw e;
         }
@@ -112,12 +110,12 @@ public class Expression {
             @Override
             public void visit(BiTree tree) {
                 if (SignsManager.isSign(tree.data)) {
-                    if (tree.lchild != null && Util.isNumber(tree.lchild.data)
+                    if (tree.lchild != null && CalculatorUtil.isNumber(tree.lchild.data)
                             && tree.rchild != null
-                            && Util.isNumber(tree.rchild.data)) {
+                            && CalculatorUtil.isNumber(tree.rchild.data)) {
                         double n1 = Double.parseDouble(tree.lchild.data);
                         double n2 = Double.parseDouble(tree.rchild.data);
-                        Util.calculateBySign(C.binDir,
+                        CalculatorUtil.calculateBySign(C.binDir,
                                 SignsManager.getSignByStrSign(tree.data), n1,
                                 n2);
                     }

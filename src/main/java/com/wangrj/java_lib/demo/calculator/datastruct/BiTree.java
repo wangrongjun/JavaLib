@@ -1,7 +1,7 @@
 package com.wangrj.java_lib.demo.calculator.datastruct;
 
 import com.wangrj.java_lib.demo.calculator.constant.C;
-import com.wangrj.java_lib.demo.calculator.util.Util;
+import com.wangrj.java_lib.demo.calculator.util.CalculatorUtil;
 
 import java.util.ArrayList;
 
@@ -44,9 +44,9 @@ public class BiTree {
             // 先删除空格
             strExpr = strExpr.replace(" ", "");
 
-            ArrayList<String> inExpr = Util.spiltExpression(strExpr);
+            ArrayList<String> inExpr = CalculatorUtil.spiltExpression(strExpr);
 
-            preExpr = Util.inToPreExpression(inExpr);
+            preExpr = CalculatorUtil.inToPreExpression(inExpr);
 
         }
 

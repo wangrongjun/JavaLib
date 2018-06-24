@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by 王荣俊 on 2016/4/6.
  */
-public class Util {
+public class DownloaderUtil {
     /**
      * @return 若同一目录下有重名，返回fileName+(1)，否则返回fileName
      */

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-public class Util {
+public class CalculatorUtil {
 
     public static boolean isNumber(String s) {
         try {

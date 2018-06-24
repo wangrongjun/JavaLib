@@ -7,7 +7,6 @@ import jxl.format.Border;
 import jxl.format.BorderLineStyle;
 import jxl.write.*;
 import jxl.write.Number;
-import org.junit.Test;
 
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class ExcelUtil {
@@ -192,49 +192,47 @@ public class ExcelUtil {
         return excelIn(entityClass, new FileInputStream(excelFilePath));
     }
 
-    @Test
-    public void testExcelOut() throws Exception {
-        List<User> userList = new ArrayList<>();
-        userList.add(new User());
-        for (int i = 0; i < 100; i++) {
-            User user = new User();
-            user.userId = i;
-            user.phone = 1302369100L + i;
-            user.gender = i % 2;
-            user.idNumber = 440181199202145300L + i;
-            user.address = "广州市天河区天心大街" + i + "号";
-            user.score1 = 600 + i * 10;
-            user.score2 = 600F + i * 10;
-            user.score3 = 600 + i * 10;
-            user.score4 = 600D + i * 10;
-            user.vip1 = i % 2 == 0;
-            user.vip2 = i % 2 == 0;
-            user.birthday = DateUtil.changeDate(new Date(), i * 10);
-            userList.add(user);
+    /**
+     * 把Excel中多个单元格复制到的文本进行预处理（把换行符变为字符串"\r\n"）
+     * <p>
+     * 如果某一行包含正则 /\t["]{1,3,5,7,9}/ 匹配的子串，则依次读取该行接下来的行，只要该行接下来的行不包含\t，就选出来。
+     * 之后把该行和接下来所有选出来的行合并，行与行之间用\n作为分隔符，并去除第一行和最后一行首尾的双引号。
+     * 去掉双引号：只要是奇数个双引号连在一起的，都要减少一个。如1个变0个，2个不管，3个变2个，4个不管。
+     */
+    public static String convertExcelText(String excelText) {
+        StringBuilder builder = new StringBuilder();
+        String[] lines = excelText.split("\r\n");
+        int index = 0;
+        Pattern pattern = Pattern.compile("\t[\"]([^\"]|[\"]{2})");
+        while (index < lines.length) {
+            builder.append(lines[index]);
+            if (pattern.matcher(lines[index++]).find()) {
+                while (index < lines.length && !lines[index++].contains("\t")) {
+                    builder.append("\\r\\n").append(lines[index++]);
+                }
+            }
         }
-
-        excelOut(userList, "E:/Test/jxl_test.xls");
-    }
-
-    @Test
-    public void testExcelIn() throws Exception {
-        List<User> userList = excelIn(User.class, "E:/Test/jxl_test.xls");
-        LogUtil.printEntity(userList);
-    }
-
-    static class User {
-        Integer userId;
-        int gender;
-        long idNumber;
-        Long phone;
-        float score1;
-        Float score2;
-        double score3;
-        Double score4;
-        boolean vip1;
-        Boolean vip2;
-        String address;
-        Date birthday;
+        // 连在一起的奇数个双引号减少一个
+        int count = 0;
+        char[] chars = (builder.toString() + "a").toCharArray();// 末尾添加a来辅助，避免对末尾的双引号做单独处理
+        builder = new StringBuilder();
+        for (char c : chars) {
+            if (c == '"') {
+                count++;
+                builder.append('"');
+            } else {
+                if (count > 0) {
+                    if (count % 2 == 1) {// 奇数个双引号连在一起，需要减少一个
+                        builder.deleteCharAt(builder.length() - 1);
+                    }
+                    count = 0;
+                }
+                builder.append(c);
+            }
+        }
+        String result = builder.toString();
+        result = result.substring(0, result.length() - 1);// 去掉最后那个多余的a
+        return result;
     }
 
 }

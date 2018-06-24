@@ -116,11 +116,11 @@ public class BaseDao<T> implements Dao<T> {
         }
     }
 
-    protected boolean executeUpdate(String sql) {
+    public boolean executeUpdate(String sql) {
         return executeUpdate(ListUtil.build(sql));
     }
 
-    protected synchronized boolean executeUpdate(List<String> sqlList) {
+    public synchronized boolean executeUpdate(List<String> sqlList) {
         boolean succeed = true;
         Connection conn = getConnection();
         for (String sql : sqlList) {
@@ -351,7 +351,7 @@ public class BaseDao<T> implements Dao<T> {
         return entityList;
     }
 
-    protected List<T> executeQuery(String sql, int maxQueryForeignKeyLevel,
+    public List<T> executeQuery(String sql, int maxQueryForeignKeyLevel,
                                    List<String> ignoreReferenceList,
                                    List<String> requiredReferenceVariableList) {
         Connection connection = getConnection();
@@ -366,14 +366,14 @@ public class BaseDao<T> implements Dao<T> {
         return list;
     }
 
-    protected List<T> executeQuery(String sql) {
+    public List<T> executeQuery(String sql) {
         return executeQuery(sql, 32, null, null);
     }
 
     /**
      * @param sql 必须以select count(*) ...开头
      */
-    protected int executeQueryCount(String sql) {
+    public int executeQueryCount(String sql) {
         printSql(sql);
         int count = 0;
         Connection conn = getConnection();

@@ -78,7 +78,7 @@ public class StudentDaoImpl extends StudentManageSystemDao<Student> implements I
     }
 
     @Override
-    protected List<Student> executeQuery(String sql, int maxQueryForeignKeyLevel, List<String> ignoreReferenceList,
+    public List<Student> executeQuery(String sql, int maxQueryForeignKeyLevel, List<String> ignoreReferenceList,
                                          List<String> requiredReferenceVariableList) {
         // 把默认为32改为默认为1
         maxQueryForeignKeyLevel = maxQueryForeignKeyLevel == 0 ? 1 : maxQueryForeignKeyLevel;

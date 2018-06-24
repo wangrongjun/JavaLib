@@ -50,7 +50,7 @@ public class Downloader implements OnProgressListener {
         Task task = new Task(fileName, downloadPath, threadNumber, url, 0, 0, false);
 
 //        TODO 根据文件名在tasks查询任务是否已存在，若存在，fileName+（1）
-        task.setFileName(Util.renameIfNecessary(task.getFileName(), task.getPath(), tasks));
+        task.setFileName(DownloaderUtil.renameIfNecessary(task.getFileName(), task.getPath(), tasks));
 
 //        TODO 根据url获取文件长度
         int length = HttpUtil.getDownloadFileLength(url);
@@ -103,7 +103,7 @@ public class Downloader implements OnProgressListener {
      */
     public void startTask(int taskId) {
 //        TODO 根据taskId从tasks读取任务信息，从数据库读取线程信息，创建线程对象,添加到downloadThreads,最后启动
-        Task task = Util.getTask(taskId, tasks);
+        Task task = DownloaderUtil.getTask(taskId, tasks);
         ArrayList<ThreadInfo> threadInfos = db.queryThreads(taskId);
         for (ThreadInfo info : threadInfos) {
             DownloadThread downloadThread = new DownloadThread(task, info, this);
@@ -167,7 +167,7 @@ public class Downloader implements OnProgressListener {
      */
     @Override
     public synchronized void onDownloading(int taskId, int threadId, int speedPreSecond, int finished, int length) {
-        Task task = Util.getTask(taskId, tasks);
+        Task task = DownloaderUtil.getTask(taskId, tasks);
         task.setFinished(task.getFinished() + speedPreSecond);
         task.setSpeedPreSecond(task.getSpeedPreSecond() + speedPreSecond);
 
@@ -196,7 +196,7 @@ public class Downloader implements OnProgressListener {
     @Override
     public void onError(int taskId, int threadId, int finished, String exception) {
         db.updateThreadProgress(taskId, threadId, finished);
-        DebugUtil.println(Util.getTask(taskId, tasks).getFileName() +
+        DebugUtil.println(DownloaderUtil.getTask(taskId, tasks).getFileName() +
                 " thread-" + threadId + "  " + exception);
     }
 
@@ -207,22 +207,22 @@ public class Downloader implements OnProgressListener {
         db.deleteThread(taskId, threadId);
         System.out.println("------- thread " + threadId + " finish----------");
 
-        if (Util.isAllThreadFinished(taskId, downloadThreads)) {//单个文件下载结束
-            Task task = Util.getTask(taskId, tasks);
+        if (DownloaderUtil.isAllThreadFinished(taskId, downloadThreads)) {//单个文件下载结束
+            Task task = DownloaderUtil.getTask(taskId, tasks);
             if (db.queryThreads(taskId).size() == 0) {//若数据库所有该任务的线程都被删除
                 task.setSuccess(true);
-                System.out.println("-----" + Util.getTask(taskId, tasks).getFileName() + " success-----");
+                System.out.println("-----" + DownloaderUtil.getTask(taskId, tasks).getFileName() + " success-----");
             } else {//否则就是有线程出错，需要从出错的位置接着下载,默认重新下载5次
                 if (reStartNumber <= 5) {
                     startTask(taskId);
                     reStartNumber++;
-                    System.out.println("-----" + Util.getTask(taskId, tasks).getFileName() + " reStart-----");
+                    System.out.println("-----" + DownloaderUtil.getTask(taskId, tasks).getFileName() + " reStart-----");
                 } else {
-                    System.out.println("-----" + Util.getTask(taskId, tasks).getFileName() + " fail-----");
+                    System.out.println("-----" + DownloaderUtil.getTask(taskId, tasks).getFileName() + " fail-----");
                 }
             }
 
-            if (Util.isAllThreadFinished(downloadThreads)) {//所有文件下载结束
+            if (DownloaderUtil.isAllThreadFinished(downloadThreads)) {//所有文件下载结束
                 System.out.println("----------all finish--------");
                 close();
 

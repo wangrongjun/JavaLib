@@ -5,7 +5,7 @@ import com.wangrj.java_lib.demo.calculator.datastruct.Expression;
 import com.wangrj.java_lib.demo.calculator.datastruct.SignsManager;
 import com.wangrj.java_lib.demo.calculator.util.Compiler;
 import com.wangrj.java_lib.demo.calculator.util.MyFile;
-import com.wangrj.java_lib.demo.calculator.util.Util;
+import com.wangrj.java_lib.demo.calculator.util.CalculatorUtil;
 
 import java.awt.BorderLayout;
 import java.awt.TextArea;
@@ -330,7 +330,7 @@ public class Window extends JFrame implements ActionListener {
                     textPostExpr.setText(expr.writePostExpr() + "");
 
                     if (checkBoxHasParameter.isSelected()) {// 表达式含参
-                        Util.assignParameterFromText(expr.exprTree,
+                        CalculatorUtil.assignParameterFromText(expr.exprTree,
                                 textParameter.getText());
                     }
 

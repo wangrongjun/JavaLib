@@ -2,8 +2,6 @@ package com.wangrj.java_lib.java_util;
 
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,9 +60,17 @@ public class ExcelUtilTest {
 
     @Test
     public void test() {
-        String excelText1 = "a\\tb\\r\\n\"1\\r\\n2\"\\t\"\"\"3\\r\\n4\"\"\"";
-        String pretreatedExcelText1 = "a\\tb\\r\\n1\\r\\n2\\t\"\"3\\r\\n4\"\"";
-        assertEquals(pretreatedExcelText1, ExcelUtil.convertExcelText(excelText1));
+        String excelText = "a\\tb\\tc\\r\\n\"A\\r\\nB\"\\t\"C\\r\\nD\"\\t\"E\\r\\nF\"";
+        String pretreatedExcelText = "a\\tb\\tc\\r\\nA\\r\\nB\\tC\\r\\nD\\tE\\r\\nF";
+        assertEquals(pretreatedExcelText, ExcelUtil.convertExcelText(excelText));
+
+        excelText = "a\\tb\\r\\n\"1\\r\\n2\"\\t\"\"\"3\\r\\n4\"\"\"";
+        pretreatedExcelText = "a\\tb\\r\\n1\\r\\n2\\t\"\"3\\r\\n4\"\"";
+        assertEquals(pretreatedExcelText, ExcelUtil.convertExcelText(excelText));
+
+//        excelText = "a\\tb\\tc\\r\\n\"12\"\\t\"3\"\"\\r\\n4\"\\t\"\"\"5\\r\\n6\"\"\"";
+//        pretreatedExcelText = "a\\tb\\tc\\r\\n\"12\"\\t\"3\"\\r\\n4\"\\t\"\"5\\r\\n6\"\"";
+//        assertEquals(pretreatedExcelText, ExcelUtil.convertExcelText(excelText));
     }
 
 }

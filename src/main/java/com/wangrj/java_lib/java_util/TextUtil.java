@@ -34,13 +34,11 @@ public class TextUtil {
     }
 
     public static boolean isNotBlank(String s) {
-        return isNotEmpty(s) &&
-                isNotEmpty(s.trim()) &&
-                s.replace("\n", "").replace("\r", "").replace("\t", "").length() > 0;
+        return !isBlank(s);
     }
 
     public static boolean isBlank(String s) {
-        return isEmpty(s) || isEmpty(s.trim());
+        return s == null || s.length() == 0 || s.matches("\\s+");
     }
 
     public static boolean notEquals(String s, String... strings) {

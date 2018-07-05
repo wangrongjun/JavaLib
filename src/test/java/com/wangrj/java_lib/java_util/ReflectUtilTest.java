@@ -1,6 +1,5 @@
 package com.wangrj.java_lib.java_util;
 
-import com.wangrj.java_lib.test.JavaLibTestClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * by wangrongjun on 2018/2/3.

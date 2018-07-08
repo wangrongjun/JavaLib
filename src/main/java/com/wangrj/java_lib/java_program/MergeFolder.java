@@ -37,10 +37,10 @@ public class MergeFolder {
 
         List<File> mergeFromFiles = FileUtil.findChildrenUnderDir(mergeFromDir, pathname -> !pathname.isDirectory());
         for (File mergeFromFile : mergeFromFiles) {
-            File mergeToFile = new File(mergeFromFile.getPath().replaceFirst(mergeFrom + "[/|\\\\]", mergeTo + File.separator));
+            File mergeToFile = new File(mergeFromFile.getPath().replaceFirst("merge_from[/|\\\\]", mergeTo + "/"));// 这里不能用斜杠，否则会被当作引用字符
             if (mergeToFile.exists()) {// 如果需要被覆盖的文件存在
                 String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-                String backupFilePath = mergeFromFile.getPath().replaceFirst(mergeFrom + "[/|\\\\]", mergeTo + "_old_bak_" + time + File.separator);
+                String backupFilePath = mergeFromFile.getPath().replaceFirst(mergeFrom + "[/|\\\\]", mergeTo + "_old_bak_" + time + "/");
                 new File(TextUtil.getTextExceptLastSlash(backupFilePath)).mkdirs();// 备份前先创建父目录
                 FileUtil.copy(mergeToFile, new File(backupFilePath));// 备份
                 FileUtil.copy(mergeFromFile, mergeToFile);// 替换

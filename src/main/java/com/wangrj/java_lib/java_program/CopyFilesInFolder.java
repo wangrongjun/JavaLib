@@ -10,6 +10,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 根据文件路径清单复制指定目录下相应的文件，复制时保持目录结构
+ */
 public class CopyFilesInFolder {
 
     private static String filesTextFileName = "files.txt";

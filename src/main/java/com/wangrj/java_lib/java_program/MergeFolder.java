@@ -4,6 +4,7 @@ import com.wangrj.java_lib.java_util.FileUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,7 +36,12 @@ public class MergeFolder {
             return;
         }
 
-        List<File> mergeFromFiles = FileUtil.findChildrenUnderDir(mergeFromDir, pathname -> !pathname.isDirectory());
+        List<File> mergeFromFiles = FileUtil.findChildrenUnderDir(mergeFromDir, new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return !pathname.isDirectory();
+            }
+        });
         for (File mergeFromFile : mergeFromFiles) {
             File mergeToFile = new File(mergeFromFile.getPath().replaceFirst("merge_from[/|\\\\]", mergeTo + "/"));// 这里不能用斜杠，否则会被当作引用字符
             if (mergeToFile.exists()) {// 如果需要被覆盖的文件存在
@@ -50,6 +56,7 @@ public class MergeFolder {
             }
         }
 
+        System.out.println("folder merge succeed!");
     }
 
 }

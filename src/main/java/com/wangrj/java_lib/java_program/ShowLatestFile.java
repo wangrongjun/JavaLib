@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
  * by wangrongjun on 2017/7/4.
@@ -18,32 +17,39 @@ import java.util.regex.Pattern;
 
 public class ShowLatestFile {
 
-    private static final String FILTER_FILE_NAME = "filters.properties";
+    private static final String PROPERTIES_FILE_NAME = "ShowLatestFile.properties";
     private static final String FILTER_REGEX_KEY_NAME = "filterRegex";
+    private static final String OUTPUT_PATH_KEY_NAME = "outputPath";
 
     public static void main(String[] args) throws IOException {
 
         System.out.println("------------ 按照修改日期对文件排序 -----------");
 
-        // 读取/创建filter配置文件
-        String regex = null;
-        File filterFile = new File(FILTER_FILE_NAME);
-        if (!filterFile.exists()) {
-            FileWriter fileWriter = new FileWriter(filterFile);
+        // 读取或创建配置文件
+        String filterRegex = null;
+        String outputPath = null;
+        File propertiesFile = new File(PROPERTIES_FILE_NAME);
+        if (!propertiesFile.exists()) {
+            FileWriter fileWriter = new FileWriter(propertiesFile);
             fileWriter.write("#filterRegex=^.+\\\\.exe$\r\n");
             fileWriter.write("#filterRegex=^.+\\\\([\\\\d]+\\\\)\\\\.[^.]+$\r\n");
+            fileWriter.write("#outputPath=output.txt");
             fileWriter.flush();
             fileWriter.close();
-            System.out.println("已创建配置文件：" + filterFile.getAbsolutePath());
+            System.out.println("已创建配置文件：" + propertiesFile.getAbsolutePath());
         } else {
             Properties properties = new Properties();
-            InputStreamReader isr = new InputStreamReader(new FileInputStream(filterFile), "utf-8");
+            InputStreamReader isr = new InputStreamReader(new FileInputStream(propertiesFile), "utf-8");
             properties.load(isr);
             isr.close();
-            System.out.println("已读取配置文件：" + filterFile.getAbsolutePath());
-            regex = properties.getProperty(FILTER_REGEX_KEY_NAME);
-            if (TextUtil.isNotBlank(regex)) {
-                System.out.println("根据正则表达式查找文件：" + regex);
+            System.out.println("已读取配置文件：" + propertiesFile.getAbsolutePath());
+            filterRegex = properties.getProperty(FILTER_REGEX_KEY_NAME);
+            if (TextUtil.isNotBlank(filterRegex)) {
+                System.out.println("根据正则表达式查找文件：" + filterRegex);
+            }
+            outputPath = properties.getProperty(OUTPUT_PATH_KEY_NAME);
+            if (TextUtil.isNotBlank(outputPath)) {
+                System.out.println("结果将会输出到文件：" + outputPath);
             }
         }
 
@@ -59,21 +65,31 @@ public class ShowLatestFile {
 
         // 搜索文件
         List<File> fileList;
-        if (TextUtil.isNotBlank(regex)) {
-            String finalRegex = regex;
-            fileList = FileUtil.findChildrenUnderDir(dir, file -> file.getName().matches(finalRegex));
+        if (TextUtil.isNotBlank(filterRegex)) {
+            String finalFilterRegex = filterRegex;
+            fileList = FileUtil.findChildrenUnderDir(dir, file -> file.getName().matches(finalFilterRegex));
         } else {
             fileList = FileUtil.findChildrenUnderDir(dir, null);
         }
 
         SortHelper.sortMerge(fileList, (file1, file2) -> file1.lastModified() < file2.lastModified() ? 1 : -1);
 
+        StringBuilder output = new StringBuilder();
         SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
         for (File file : fileList) {
             String time = sdf.format(new Date(file.lastModified()));
             String type = file.isDirectory() ? "目录" : "文件";
-            System.out.println(type + "  " + time + "  " + file.getAbsolutePath().replace(dir.getAbsolutePath(), ""));
+            output.append(type).append("  ").append(time).append("  ").
+                    append(file.getAbsolutePath().replace(dir.getAbsolutePath(), "")).
+                    append("\r\n");
+        }
+
+        if (TextUtil.isNotBlank(outputPath)) {
+            FileUtil.write(output.toString(), outputPath);
+            System.out.println("结果已经输出到文件：" + outputPath);
+        } else {
+            System.out.println(output.toString());
         }
 
     }

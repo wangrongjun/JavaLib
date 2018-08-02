@@ -125,10 +125,11 @@ public class HttpRequest {
             }
         } else {
             InputStream is = conn.getErrorStream();
+            String errorMessage = null;
             if (is != null) {
-                response.responseData = StreamUtil.toBytes(is);
+                errorMessage = StreamUtil.readInputStream(is);
             }
-            throw new ResponseCodeNot200Exception(response);
+            throw new ResponseCodeNot200Exception(response.responseCode, conn.getResponseMessage(), errorMessage);
         }
 
         return response;
@@ -226,21 +227,22 @@ public class HttpRequest {
     }
 
     public static class ResponseCodeNot200Exception extends Exception {
-        private Response response;
+        private int responseCode;
+        private String responseMessage;
+        private String errorMessage;
 
-        public ResponseCodeNot200Exception(Response response) {
-            this.response = response;
-        }
-
-        public Response getResponse() {
-            return response;
+        ResponseCodeNot200Exception(int responseCode, String responseMessage, String errorMessage) {
+            this.responseCode = responseCode;
+            this.responseMessage = responseMessage;
+            this.errorMessage = errorMessage;
         }
 
         @Override
         public String toString() {
-            return ResponseCodeNot200Exception.class.getName() + ": " +
-                    "responseCode = " + response.responseCode +
-                    ", error = " + response.toResponseText();
+            return ResponseCodeNot200Exception.class.getSimpleName() + ": " +
+                    "responseCode = " + responseCode +
+                    ", responseMessage = " + responseMessage +
+                    ", errorMessage = " + errorMessage;
         }
     }
 

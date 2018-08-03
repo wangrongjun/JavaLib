@@ -10,9 +10,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class SearchFile {
+/**
+ * 搜索指定目录下包含指定关键字的所有文本文件
+ * <p>
+ * by wangrongjun on 2018/8/3.
+ */
+public class SearchFile extends JavaProgram {
 
-    public static void main(String[] args) throws IOException {
+    @Param("查询目录")
+    @FileIsDirectory
+    private String folderPath;
+    @Param("搜索关键字")
+    @NotBlank
+    private String searchWord;
+
+    public static void main(String[] args) {
+        SearchFile searchFile = new SearchFile();
+        searchFile.initParam();
+
+        System.out.println("1.folderPath: " + searchFile.folderPath);
+        System.out.println("2.searchWord: " + searchFile.searchWord);
+    }
+
+    public static void main1(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入查询的目录：");
         File folder = new File(scanner.next());

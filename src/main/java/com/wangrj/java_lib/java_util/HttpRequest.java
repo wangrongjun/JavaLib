@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * by wangrongjun on 2018/4/29.
@@ -223,6 +224,33 @@ public class HttpRequest {
                 }
             }
             return null;
+        }
+
+        public String toResponseHeaderString() {
+            ResponseHeader responseHeader = getResponseHeader();
+            if (responseHeader == null) {
+                return null;
+            }
+            StringBuilder builder = new StringBuilder();
+            builder.append("Content-Length: ").append(responseHeader.getContentLength()).append("\n");
+            if (responseHeader.getContentType() != null) {
+                builder.append("Content-Type: ").append(responseHeader.getContentType()).append("\n");
+            }
+            if (responseHeader.getCookie() != null) {
+                builder.append("Cookie: ").append(responseHeader.getCookie()).append("\n");
+            }
+            if (responseHeader.getSetCookie() != null) {
+                builder.append("Set-Cookie: ").append(responseHeader.getSetCookie()).append("\n");
+            }
+            Map<String, List<String>> headerFields = responseHeader.getHeaderFields();
+            for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
+                String value = null;
+                if (entry.getValue() != null) {
+                    value = entry.getValue().stream().collect(Collectors.joining(" ||| "));
+                }
+                builder.append(entry.getKey()).append(": ").append(value).append("\n");
+            }
+            return builder.toString();
         }
     }
 

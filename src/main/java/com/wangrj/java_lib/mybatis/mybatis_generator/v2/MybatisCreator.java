@@ -2,7 +2,7 @@ package com.wangrj.java_lib.mybatis.mybatis_generator.v2;
 
 import com.wangrj.java_lib.constant.JavaLibConstant;
 import com.wangrj.java_lib.db3.main.NameConverter;
-import com.wangrj.java_lib.java_util.FreeMakerUtil;
+import com.wangrj.java_lib.java_util.FreeMarkerUtil;
 import com.wangrj.java_lib.java_util.LogUtil;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
@@ -131,7 +131,7 @@ public class MybatisCreator {
         dataModel.put("fields", fieldInfoList);
         LogUtil.printEntity(dataModel);
 
-        FreeMakerUtil.create(new File(daoFltFilePath), dataModel, writer);
+        FreeMarkerUtil.create(new File(daoFltFilePath), dataModel, writer);
     }
 
     public void createMapper(Class pojoClass, String daoName, Writer writer) throws IOException, TemplateException {
@@ -179,7 +179,7 @@ public class MybatisCreator {
         dataModel.put("fields", fieldInfoList);
         LogUtil.printEntity(dataModel);
 
-        FreeMakerUtil.create(new File(mapperFltFilePath), dataModel, writer);
+        FreeMarkerUtil.create(new File(mapperFltFilePath), dataModel, writer);
     }
 
     public MybatisCreator setSpringAnno(boolean springAnno) {

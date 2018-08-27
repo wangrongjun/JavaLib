@@ -2,7 +2,7 @@ package com.wangrj.java_lib.test;
 
 import com.wangrj.java_lib.constant.JavaLibConstant;
 import com.wangrj.java_lib.java_util.ExcelUtil;
-import com.wangrj.java_lib.java_util.FreeMakerUtil;
+import com.wangrj.java_lib.java_util.FreeMarkerUtil;
 import freemarker.template.TemplateException;
 import org.junit.Test;
 
@@ -69,7 +69,7 @@ public class MdCreator {
         dataModel.put("title", title);
         dataModel.put("rowList", rowList);
         String path = JavaLibConstant.srcDir() + "com/wangrj/java_lib/test/question.ftl";
-        FreeMakerUtil.create(new File(path), dataModel, new FileWriter("E:/" + title + ".md"));
+        FreeMarkerUtil.create(new File(path), dataModel, new FileWriter("E:/" + title + ".md"));
     }
 
 }

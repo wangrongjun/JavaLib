@@ -1,7 +1,7 @@
 package com.wangrj.java_lib.mybatis.mybatis_generator.v1;
 
 import com.wangrj.java_lib.constant.JavaLibConstant;
-import com.wangrj.java_lib.java_util.FreeMakerUtil;
+import com.wangrj.java_lib.java_util.FreeMarkerUtil;
 import com.wangrj.java_lib.java_util.LogUtil;
 import com.wangrj.java_lib.java_util.ReflectUtil;
 import com.wangrj.java_lib.java_util.TextUtil;
@@ -87,7 +87,7 @@ public class MybatisCreator {
         dataModel.put("fields", fieldInfoList);
         LogUtil.printEntity(dataModel);
 
-        FreeMakerUtil.create(new File(mapperFltFilePath), dataModel, writer);
+        FreeMarkerUtil.create(new File(mapperFltFilePath), dataModel, writer);
     }
 
     public void createDao(Class pojoClass, String daoName, Writer writer)
@@ -100,7 +100,7 @@ public class MybatisCreator {
         dataModel.put("pojoSimpleName", pojoClass.getSimpleName());
         dataModel.put("createAnno", createAnno);
 
-        FreeMakerUtil.create(new File(daoFltFilePath), dataModel, writer);
+        FreeMarkerUtil.create(new File(daoFltFilePath), dataModel, writer);
     }
 
     public MybatisCreator setCreateAnno(boolean createAnno) {

@@ -3,7 +3,7 @@ package com.wangrj.java_lib.java_program.video_download;
 import com.wangrj.java_lib.java_program.video_download.bean.Course;
 import com.wangrj.java_lib.java_program.video_download.website.Imooc;
 import com.wangrj.java_lib.java_util.FileUtil;
-import com.wangrj.java_lib.java_util.FreeMakerUtil;
+import com.wangrj.java_lib.java_util.FreeMarkerUtil;
 import com.wangrj.java_lib.java_util.GsonUtil;
 
 import java.io.File;
@@ -28,7 +28,7 @@ public class ImoocMainClass {
         FileUtil.write(GsonUtil.toPrettyJson(course), "E:/course.txt");
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("course", course);
-        FreeMakerUtil.convert(new File("E:/"), "index.ftl", dataModel, new FileWriter("E:/output.html"));
+        FreeMarkerUtil.convert(new File("E:/"), "index.ftl", dataModel, new FileWriter("E:/output.html"));
     }
 
 }

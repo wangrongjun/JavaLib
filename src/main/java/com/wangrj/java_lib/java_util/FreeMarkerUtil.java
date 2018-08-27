@@ -12,7 +12,7 @@ import freemarker.template.TemplateException;
  * by wangrongjun on 2017/8/15.
  */
 
-public class FreeMakerUtil {
+public class FreeMarkerUtil {
 
     public static void create(String fltText, Map<String, Object> dataModel, Writer writer)
             throws IOException, TemplateException {

@@ -1,9 +1,6 @@
 package com.wangrj.java_lib.java_util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -21,8 +18,9 @@ public class HttpRequest {
     private String charsetName = "UTF-8";
     private String requestMethod = "GET";
     private Map<String, String> requestHeaderMap = new HashMap<>();
-    private byte[] requestBody;
+    private ByteArrayOutputStream requestBody;
     private boolean returnResponseHeader = false;
+    private String boundary;
 
     public HttpRequest setConnectTimeOut(int connectTimeOut) {
         this.connectTimeOut = connectTimeOut;
@@ -73,13 +71,66 @@ public class HttpRequest {
     }
 
     public HttpRequest setRequestBody(byte[] requestBody) {
-        this.requestBody = requestBody;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            baos.write(requestBody);
+            baos.flush();
+            if (this.requestBody != null) {
+                this.requestBody.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.requestBody = baos;
         return this;
     }
 
     public HttpRequest returnResponseHeader(boolean returnResponseHeader) {
         this.returnResponseHeader = returnResponseHeader;
         return this;
+    }
+
+    public HttpRequest setContentTypeWithMultipartFormData(String boundary) {
+        if (TextUtil.isBlank(boundary)) {
+            throw new IllegalArgumentException("boundary is null");
+        }
+        this.boundary = boundary;
+        requestHeaderMap.put("Content-Type", "multipart/form-data; boundary=" + boundary);
+        return this;
+    }
+
+    public HttpRequest addMultipartField(String name, String value) throws IOException {
+        if (requestBody == null) {
+            requestBody = new ByteArrayOutputStream();
+        }
+        requestBody.write(("--" + boundary + "\r\n").getBytes());
+        requestBody.write(("Content-Disposition: form-data; name=\"" + name + "\"" + "\r\n").getBytes());
+        requestBody.write("\r\n".getBytes());
+        requestBody.write((value + "\r\n").getBytes());
+        return this;
+    }
+
+    public HttpRequest addMultipartFile(String name, String fileName, byte[] file) throws IOException {
+        if (requestBody == null) {
+            requestBody = new ByteArrayOutputStream();
+        }
+        requestBody.write(("--" + boundary + "\r\n").getBytes());
+        requestBody.write(("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
+        requestBody.write("Content-Type: application/octet-stream\r\n".getBytes());
+        requestBody.write("\r\n".getBytes());
+        requestBody.write(file);
+        requestBody.write("\r\n".getBytes());
+        return this;
+    }
+
+    public HttpRequest addMultipartFile(String name, String fileName, InputStream file) throws IOException {
+        return addMultipartFile(name, fileName, StreamUtil.toBytes(file));
+    }
+
+    public HttpRequest addMultipartFile(String name, String fileName, String filePath) throws IOException {
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            return addMultipartFile(name, fileName, StreamUtil.toBytes(fis));
+        }
     }
 
     /**
@@ -92,7 +143,7 @@ public class HttpRequest {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod(requestMethod);
         conn.setDoInput(true);
-        conn.setDoOutput(requestBody != null && requestBody.length > 0);
+        conn.setDoOutput(requestBody != null && requestBody.size() > 0);
         if (connectTimeOut > 0) {
             conn.setConnectTimeout(connectTimeOut);
         }
@@ -107,11 +158,15 @@ public class HttpRequest {
         }
 
         // 设置请求体
-        if (requestBody != null && requestBody.length > 0) {
+        if (requestBody != null && requestBody.size() > 0) {
+            if (boundary != null) {// 如果请求体是 MultipartFormData 的格式，需要补上最后的 boundary
+                requestBody.write(("--" + boundary + "--\r\n").getBytes());
+            }
             OutputStream os = conn.getOutputStream();
-            os.write(requestBody);
+            os.write(requestBody.toByteArray());
             os.flush();
             os.close();
+            requestBody.close();
         }
 
         // 获取请求的响应信息

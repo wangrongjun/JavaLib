@@ -8,7 +8,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>JavaLib</name>
 
-    <!-- mvn clean install -Dmaven.test.skip=true -->
+    <!-- mvn clean install clean -Dmaven.test.skip=true -->
 
     <properties>
         <!--如果没有，mvn compile 时会报错，说中文是非法字符-->

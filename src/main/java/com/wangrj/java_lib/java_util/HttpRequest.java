@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +21,7 @@ public class HttpRequest {
     private Map<String, String> requestHeaderMap = new HashMap<>();
     private ByteArrayOutputStream requestBody;
     private boolean returnResponseHeader = false;
-    private String boundary;
+    private String boundary;// 如果不为空，说明是请求体是 MultipartFormData 格式
 
     public HttpRequest setConnectTimeOut(int connectTimeOut) {
         this.connectTimeOut = connectTimeOut;
@@ -90,16 +91,15 @@ public class HttpRequest {
         return this;
     }
 
-    public HttpRequest setContentTypeWithMultipartFormData(String boundary) {
-        if (TextUtil.isBlank(boundary)) {
-            throw new IllegalArgumentException("boundary is null");
+    private void setMultipartFormData() {
+        if (boundary == null) {
+            boundary = "--" + UUID.randomUUID().toString() + "--";
         }
-        this.boundary = boundary;
         requestHeaderMap.put("Content-Type", "multipart/form-data; boundary=" + boundary);
-        return this;
     }
 
     public HttpRequest addMultipartField(String name, String value) throws IOException {
+        setMultipartFormData();
         if (requestBody == null) {
             requestBody = new ByteArrayOutputStream();
         }
@@ -111,6 +111,7 @@ public class HttpRequest {
     }
 
     public HttpRequest addMultipartFile(String name, String fileName, byte[] file) throws IOException {
+        setMultipartFormData();
         if (requestBody == null) {
             requestBody = new ByteArrayOutputStream();
         }

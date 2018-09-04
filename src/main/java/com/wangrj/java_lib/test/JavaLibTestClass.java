@@ -10,7 +10,6 @@ public class JavaLibTestClass {
     public static void main(String[] args) throws IOException, HttpRequest.ResponseCodeNot200Exception {
         HttpRequest.Response response = new HttpRequest().
                 setRequestMethod("POST").
-                setContentTypeWithMultipartFormData(UUID.randomUUID().toString()).
                 addMultipartField("param1", "abc").
                 addMultipartField("param2", "def").
                 addMultipartFile("file1", "a.zip", "E:/Test/a.zip1").

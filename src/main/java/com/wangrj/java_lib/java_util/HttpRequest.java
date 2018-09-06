@@ -86,6 +86,11 @@ public class HttpRequest {
         return this;
     }
 
+    public HttpRequest setRequestBody(String body) {
+        setRequestBody(body.getBytes());
+        return this;
+    }
+
     public HttpRequest returnResponseHeader(boolean returnResponseHeader) {
         this.returnResponseHeader = returnResponseHeader;
         return this;

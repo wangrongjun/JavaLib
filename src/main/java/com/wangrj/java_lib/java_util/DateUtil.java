@@ -9,6 +9,8 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import static junit.framework.TestCase.assertEquals;
@@ -24,6 +26,14 @@ public class DateUtil {
         SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getInstance();
         sdf.applyPattern(pattern);
         return sdf.format(date);
+    }
+
+    public static String formatLocalDateTime(LocalDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern(PATTERN_DATE_TIME));
+    }
+
+    public static String formatLocalDateTime(LocalDateTime time, String pattern) {
+        return time.format(DateTimeFormatter.ofPattern(pattern));
     }
 
     /**

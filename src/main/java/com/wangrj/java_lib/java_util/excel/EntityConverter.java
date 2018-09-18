@@ -147,7 +147,6 @@ public class EntityConverter {
                     field.set(entity, String.valueOf(value));// String.valueOf : 避免value不是字符串而报错
                     break;
                 case "Date":
-                case "Timestamp":
                     field.set(entity, value);
                     break;
                 case "LocalDateTime":

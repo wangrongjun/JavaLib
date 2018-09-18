@@ -136,6 +136,7 @@ public class ExcelWriter {
                             cell.setCellValue((String) value);
                             break;
                         case "Date":
+                        case "Timestamp":
                             cell.setCellValue((Date) value);
                             break;
                         case "LocalDateTime":

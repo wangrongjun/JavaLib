@@ -96,6 +96,16 @@ public class HttpRequest {
         return this;
     }
 
+    public HttpRequest addRequestParam(String name, String value) throws IOException {
+        if (requestBody == null) {
+            requestBody = new ByteArrayOutputStream();
+            requestBody.write((name + "=" + value).getBytes());
+        } else {
+            requestBody.write(("&" + name + "=" + value).getBytes());
+        }
+        return this;
+    }
+
     private void setMultipartFormData() {
         if (boundary == null) {
             boundary = "--" + UUID.randomUUID().toString() + "--";

@@ -34,6 +34,10 @@ public class DbHelper {
         this.config = config;
     }
 
+    public Connection getConnection() {
+        return getBaseDao(null).getConnection();
+    }
+
     public boolean createTable(Class<?> entityClass) {
         return getBaseDao(entityClass).createTable();
     }

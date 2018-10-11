@@ -12,6 +12,12 @@ import java.util.regex.Pattern;
  */
 public class SqlTemplate {
 
+    /**
+     * @param dataModel
+     * @param template
+     * @return
+     * @throws IllegalArgumentException if attribute in template is not define in dataModel
+     */
     public static String process(Object dataModel, String template) {
         StringBuffer result = new StringBuffer();
 
@@ -35,7 +41,7 @@ public class SqlTemplate {
         if (dataModel instanceof Map) {
             Map map = (Map) dataModel;
             if (!map.containsKey(attrName)) {
-                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not exists in dataModel");
+                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not define in dataModel");
             }
             return map.get(attrName);
 
@@ -46,7 +52,7 @@ public class SqlTemplate {
                 field.setAccessible(true);
                 return field.get(dataModel);
             } catch (NoSuchFieldException e) {
-                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not exists in dataModel", e);
+                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not define in dataModel", e);
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException(e);
             }

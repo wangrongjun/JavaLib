@@ -5,17 +5,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * 处理 sql 中模版指令（--#if attribute 和 --#endif）包裹的内容。
- * <p>
- * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
- */
+
 public class SqlTemplate {
 
     /**
-     * @param dataModel
-     * @param template
-     * @return
+     * 处理 sql 中模版指令（--#if attribute 和 --#endif）包裹的内容。
+     * <p>
+     * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
+     *
      * @throws IllegalArgumentException if attribute in template is not define in dataModel
      */
     public static String process(Object dataModel, String template) {

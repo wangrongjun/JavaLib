@@ -13,9 +13,16 @@ public class SqlTemplate {
      * <p>
      * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
      *
-     * @throws IllegalArgumentException if attribute in template is not define in dataModel
+     * @throws IllegalArgumentException if attribute in template is not defined in dataModel
      */
     public static String process(Object dataModel, String template) {
+        if (dataModel == null) {
+            throw new NullPointerException("dataModel is null");
+        }
+        if (template == null) {
+            throw new NullPointerException("template is null");
+        }
+
         StringBuffer result = new StringBuffer();
 
         String ifRegex = "[ ]*--#if (.+)\n([\\d\\D]+?)[ ]*--#endif[ ]*\n";
@@ -34,22 +41,33 @@ public class SqlTemplate {
         return result.toString();
     }
 
-    public static Object getAttrValue(Object dataModel, String attrName) {
+    private static Object getAttrValue(Object dataModel, String attrName) {
         if (dataModel instanceof Map) {
             Map map = (Map) dataModel;
             if (!map.containsKey(attrName)) {
-                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not define in dataModel");
+                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
             }
             return map.get(attrName);
 
         } else {
-            Field field;
+            Field field = null;
             try {
-                field = dataModel.getClass().getField(attrName);
+                Class tempClass = dataModel.getClass();
+                while (!tempClass.getName().equals("java.lang.Object")) {
+                    try {
+                        field = tempClass.getDeclaredField(attrName);
+                    } catch (NoSuchFieldException ignored) {
+                    }
+                    // 循环获取顶层父类，使得可以访问到父类的属性
+                    tempClass = tempClass.getSuperclass();
+                }
+                if (field == null) {
+                    throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
+                }
+
                 field.setAccessible(true);
                 return field.get(dataModel);
-            } catch (NoSuchFieldException e) {
-                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not define in dataModel", e);
+
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException(e);
             }

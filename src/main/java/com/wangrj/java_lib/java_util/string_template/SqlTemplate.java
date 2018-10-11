@@ -17,7 +17,6 @@ public class SqlTemplate {
      * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
      *
      * @param dataModels 可以设置多个dataModel，如果在第一个dataModel中找不到attribute，会在第二个找，依此类推。
-     *
      * @throws IllegalArgumentException if attribute in template is not defined in any of dataModels
      */
     public static String process(String template, Object... dataModels) {
@@ -30,7 +29,7 @@ public class SqlTemplate {
 
         StringBuffer result = new StringBuffer();
 
-        String ifRegex = "[ ]*--#if (.+)\n([\\d\\D]+?)[ ]*--#endif[ ]*\n?";
+        String ifRegex = "[ ]*--#if (.+)\n([\\d\\D]+?)\n?[ ]*--#endif[ ]*\n?";
         Matcher matcher = Pattern.compile(ifRegex).matcher(template);
         while (matcher.find()) {
             String attrName = matcher.group(1);
@@ -43,6 +42,11 @@ public class SqlTemplate {
             }
         }
         matcher.appendTail(result);
+
+        if (Pattern.compile("--#if .+").matcher(result.toString()).find()) {// 如果处理后的结果，还有模版指令，就报错
+            throw new IllegalStateException("Syntax Error");
+        }
+
         return result.toString();
     }
 

@@ -133,4 +133,15 @@ public class SqlTemplateTest {
         System.out.println(time3 - time2);
     }
 
+    @Test
+    public void testSyntaxError() throws Exception {
+        UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
+        try {
+            SqlTemplate.process(sql.replace("--#endif", "--#end if"), user);
+            fail();
+        } catch (IllegalStateException e) {
+            assertEquals("Syntax Error", e.getMessage());
+        }
+    }
+
 }

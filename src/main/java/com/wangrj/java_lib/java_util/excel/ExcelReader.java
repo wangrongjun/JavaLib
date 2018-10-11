@@ -3,10 +3,7 @@ package com.wangrj.java_lib.java_util.excel;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +35,8 @@ public class ExcelReader {
 
     /**
      * 从 Excel 文件的指定的矩形区域中读取数据并返回 二维数组
+     * <p>
+     * @return 值类型有且仅有以下类型：String, boolean, double, Date
      */
     public List<List<Object>> readExcel(InputStream excelFile) throws IOException {
         // 先备份输入流，以便第一次以 xls 的格式读取失败后，可以再接着以 xlsx 的格式读取一次

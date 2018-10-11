@@ -1,6 +1,5 @@
 package com.wangrj.java_lib.java_util.excel;
 
-import com.wangrj.java_lib.java_util.DateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -12,8 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,9 +40,15 @@ public class ExcelWriter {
      */
     private int startRow = 0;
     private int startColumn = 0;
+    /**
+     * 设置日期类型数据在Excel的显示格式，默认是 yyyy-MM-dd HH:mm:ss
+     */
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 把 二维数组 中的数据写到Excel文件的 指定的起始位置 并导出Excel文件
+     *
+     * @param valueLists 值类型仅支持以下类型：String, boolean, double, Date
      */
     public void writeExcel(List<List<Object>> valueLists, OutputStream os) throws IOException {
         if (valueLists == null) {
@@ -112,18 +116,18 @@ public class ExcelWriter {
                     }
 
                     switch (value.getClass().getSimpleName()) {
-                        case "int":
-                        case "Integer":
-                            cell.setCellValue((int) value);
-                            break;
-                        case "long":
-                        case "Long":
-                            cell.setCellValue((long) value);
-                            break;
-                        case "float":
-                        case "Float":
-                            cell.setCellValue((float) value);
-                            break;
+//                        case "int":
+//                        case "Integer":
+//                            cell.setCellValue((int) value);
+//                            break;
+//                        case "long":
+//                        case "Long":
+//                            cell.setCellValue((long) value);
+//                            break;
+//                        case "float":
+//                        case "Float":
+//                            cell.setCellValue((float) value);
+//                            break;
                         case "double":
                         case "Double":
                             cell.setCellValue((double) value);
@@ -136,11 +140,8 @@ public class ExcelWriter {
                             cell.setCellValue((String) value);
                             break;
                         case "Date":
-                        case "Timestamp":
-                            cell.setCellValue((Date) value);
-                            break;
-                        case "LocalDateTime":
-                            cell.setCellValue(DateUtil.formatLocalDateTime((LocalDateTime) value));
+//                            cell.setCellValue((Date) value);// 直接设置，Excel会会显示一个数字，而非日期。因为ApachePOI对日期的支持不是很好。
+                            cell.setCellValue(new SimpleDateFormat(dateFormat).format((Date) value));
                             break;
                         default:
                             throw new IllegalArgumentException("can not resolve type: " +
@@ -192,26 +193,38 @@ public class ExcelWriter {
         setStart(result[0], result[1]);
     }
 
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
     /**
      * 通过单元格编号转换为行号和列号。比如cellNumber=A2，就返回[1,0]
      * <p>
-     * 目前只支持列为单个字母的解析。比如支持A2，A23，不支持AB2
-     * <p>
-     * TODO 支持多字母的列的解析
+     * B2 -> [1,1]
+     * AA3 -> [2,26]
+     * A23 -> [22,0]
      */
     public static int[] parseCellNumber(String cellNumber) {
-        String regex = "^([a-zA-Z])(\\d+)$";
+        String regex = "^([a-zA-Z]{1,2})(\\d+)$";
         if (!cellNumber.matches(regex)) {
             throw new IllegalArgumentException("cellNumber is invalid: " + cellNumber);
         }
         Matcher matcher = Pattern.compile(regex).matcher(cellNumber);
-        boolean find = matcher.find();
-        if (!find) {
+        if (!matcher.find()) {
             throw new IllegalStateException("regex is error");
         }
+
         String column = matcher.group(1);
         String row = matcher.group(2);
-        return new int[]{Integer.parseInt(row) - 1, column.charAt(0) - 'A'};
+
+        int columnIndex;
+        if (column.length() == 1) {
+            columnIndex = column.charAt(0) - 'A';
+        } else {// length == 2
+            columnIndex = (column.charAt(0) - 'A' + 1) * 26 + column.charAt(1) - 'A';
+        }
+
+        return new int[]{Integer.parseInt(row) - 1, columnIndex};
     }
 
 }

@@ -1,6 +1,5 @@
 package com.wangrj.java_lib.java_util.excel;
 
-import com.wangrj.java_lib.test.TestUser;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -8,6 +7,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -58,15 +61,22 @@ public class EntityConverterTest {
     @Test
     public void testEntityConverter() throws ParseException {
         List<TestUser> userList = TestUser.example(2);
+        userList.get(1).setUsername(null);
 
         EntityConverter converter = new EntityConverter();
         List<List<Object>> valueLists = converter.entityListToValueLists(userList);
-        assertArrayEquals(valueLists.get(0).toArray(), new Object[]{1, "name_1", true, 1L, d("1996-01-01"), 1.5});
-        assertArrayEquals(valueLists.get(1).toArray(), new Object[]{2, "name_2", true, 2L, d("1996-01-02"), 2.5});
+        Date date = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        // 不知为什么，以下两行在本地没问题，sit就报错
+        assertArrayEquals(valueLists.get(0).toArray(), new Object[]{"1", "name_1", true, "1", d("1996-01-01"), 1.5, date, date});
+        assertArrayEquals(valueLists.get(1).toArray(), new Object[]{"2", null, true, "2", d("1996-01-02"), 2.5, date, date});
 
-        // 注意！此时valueLists只有6列（少了password）
+        // 注意！此时valueLists故意减去一列（少了password）
         // 如果直接把valueLists转换为entityList，会出错（因为entityList有7列），所以直接指定entityList的属性来赋值。
-        converter.setFieldNameList(Arrays.asList("userId", "username", "gender", "age", "birthday", "salary"));
+        converter.setFieldNameList(Arrays.asList("userId", "username", "gender", "age", "birthday", "salary", "localDate", "localDateTime"));
+        converter.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        valueLists.get(1).set(4, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));// birthday
+        valueLists.get(1).set(6, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));// localDate
+        valueLists.get(1).set(7, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));// localDateTime
         List<TestUser> newUserList = converter.valueListsToEntityList(valueLists, TestUser.class);
         // 这时newUserList的password列为空
         assertNull(newUserList.get(0).getPassword());

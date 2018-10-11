@@ -1,20 +1,28 @@
 package com.wangrj.java_lib.java_util.excel;
 
-import com.wangrj.java_lib.java_util.DateUtil;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * by robin.wang on 2018/8/26.
+ * <p>
+ * 实体数组与Object数组之间的相互转换
  */
 public class EntityConverter {
 
@@ -23,10 +31,19 @@ public class EntityConverter {
     public @interface EntityConverterIgnore {
     }
 
-    private List<String> fieldNameList;// 设置valueList每一列对应的Class Field。如果不设置，则按照 cls.getDeclaredFields() 的顺序赋值
+    /**
+     * 设置valueList每一列对应的Class Field。如果不设置，则按照 cls.getDeclaredFields() 的顺序赋值
+     */
+    private List<String> fieldNameList;
+    /**
+     * 设置日期类型数据在Excel的显示格式，默认是 yyyy-MM-dd HH:mm:ss
+     */
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 把实体数组转换为二维值数组。二维值数组的一行代表一个实体，一列代表实体的一个属性。
+     *
+     * @return 值类型有且仅有以下类型：String, boolean, double, Date
      */
     public List<List<Object>> entityListToValueLists(List entityList) {
         if (entityList == null || entityList.size() == 0) {
@@ -47,12 +64,8 @@ public class EntityConverter {
                     continue;
                 }
                 field.setAccessible(true);
-                try {
-                    Object value = field.get(entity);
-                    valueList.add(value);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to get value from field: " + field.getName(), e);
-                }
+                Object value = getValueFromEntity(entity, field);
+                valueList.add(value);
             }
             valueLists.add(valueList);
         }
@@ -62,6 +75,8 @@ public class EntityConverter {
 
     /**
      * 把二维值数组转换为实体数组。二维值数组的一行代表一个实体，一列代表实体的一个属性。
+     *
+     * @return 值类型仅支持以下类型：String, boolean, double, Date
      */
     public <T> List<T> valueListsToEntityList(List<List<Object>> valueLists, Class<T> entityClass) {
         List<T> entityList = new ArrayList<>();
@@ -147,17 +162,88 @@ public class EntityConverter {
                     field.set(entity, String.valueOf(value));// String.valueOf : 避免value不是字符串而报错
                     break;
                 case "Date":
-                    field.set(entity, value);
+                    switch (value.getClass().getSimpleName()) {
+                        case "Date":
+                            field.set(entity, value);
+                            break;
+                        case "String":
+                            field.set(entity, new SimpleDateFormat(dateFormat).parse(String.valueOf(value)));
+                            break;
+                        case "double":
+                            field.set(entity, new Date((long) Double.parseDouble(String.valueOf(value))));
+                            break;
+                    }
+                    break;
+                case "LocalDate":
+                    switch (value.getClass().getSimpleName()) {
+                        case "Date":
+                            LocalDate localDate = ((Date) value).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                            field.set(entity, localDate);
+                            break;
+                        case "String":
+                            field.set(entity, LocalDate.parse(String.valueOf(value), DateTimeFormatter.ofPattern(dateFormat)));
+                            break;
+                        case "double":
+                            Date date = new Date((long) Double.parseDouble(String.valueOf(value)));
+                            field.set(entity, date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            break;
+                    }
                     break;
                 case "LocalDateTime":
-                    field.set(entity, DateUtil.formatLocalDateTime((LocalDateTime) value));
+                    switch (value.getClass().getSimpleName()) {
+                        case "Date":
+                            LocalDateTime localDateTime = ((Date) value).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                            field.set(entity, localDateTime);
+                            break;
+                        case "String":
+                            field.set(entity, LocalDateTime.parse(String.valueOf(value), DateTimeFormatter.ofPattern(dateFormat)));
+                            break;
+                        case "double":
+                            Date date = new Date((long) Double.parseDouble(String.valueOf(value)));
+                            field.set(entity, date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                            break;
+                    }
                     break;
                 default:
                     throw new IllegalArgumentException("can not resolve type: " +
                             field.getType().getName() + " - " + field.getName());
             }
-        } catch (IllegalArgumentException | IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | ParseException e) {
             throw new RuntimeException("Failed to set value to field: " + field.getName(), e);
+        }
+    }
+
+    /**
+     * @return 如果 field 是 double,boolean 类型，就返回对应的类型。
+     * 如果是 Date,LocalDate,LocalDateTime，统一返回Date类型。
+     * 其余情况返回String类型（toString得到的值）。
+     */
+    private Object getValueFromEntity(Object entity, Field field) {
+        try {
+            Object value = field.get(entity);
+            if (value == null) {
+                return null;
+            }
+            switch (field.getType().getSimpleName()) {
+                case "double":
+                case "Double":
+                case "boolean":
+                case "Boolean":
+                case "Date":
+                    return value;
+                case "Timestamp":
+                    return new Date(((Timestamp) value).getTime());
+                case "LocalDate":
+                    Instant instant = ((LocalDate) value).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+                    return Date.from(instant);
+                case "LocalDateTime":
+                    instant = ((LocalDateTime) value).atZone(ZoneId.systemDefault()).toInstant();
+                    return Date.from(instant);
+                default:
+                    return String.valueOf(value);
+            }
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to get value from field: " + field.getName(), e);
         }
     }
 
@@ -165,4 +251,7 @@ public class EntityConverter {
         this.fieldNameList = fieldNameList;
     }
 
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
 }

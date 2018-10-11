@@ -15,7 +15,7 @@ public class SqlTemplate {
      *
      * @throws IllegalArgumentException if attribute in template is not defined in dataModel
      */
-    public String process(Object dataModel, String template) {
+    public static String process(Object dataModel, String template) {
         if (dataModel == null) {
             throw new NullPointerException("dataModel is null");
         }
@@ -41,9 +41,9 @@ public class SqlTemplate {
         return result.toString();
     }
 
-    private Map<String, List<Field>> fieldCacheMap = new HashMap<>();
+    private static Map<String, List<Field>> fieldCacheMap = new HashMap<>();
 
-    private Object getAttrValue(Object dataModel, String attrName) {
+    private static Object getAttrValue(Object dataModel, String attrName) {
         if (dataModel instanceof Map) {
             Map map = (Map) dataModel;
             if (!map.containsKey(attrName)) {
@@ -56,11 +56,11 @@ public class SqlTemplate {
         List<Field> fieldList = fieldCacheMap.get(dataModel.getClass().getName());
         if (fieldList == null) {
             fieldList = new ArrayList<>();
-            Class superClass = dataModel.getClass();
+            Class tempClass = dataModel.getClass();
             // 循环获取父类（除了Object），并保存父类的属性
-            while (!superClass.getName().equals("java.lang.Object")) {
-                fieldList.addAll(Arrays.asList(superClass.getDeclaredFields()));
-                superClass = superClass.getSuperclass();
+            while (!tempClass.getName().equals("java.lang.Object")) {
+                fieldList.addAll(Arrays.asList(tempClass.getDeclaredFields()));
+                tempClass = tempClass.getSuperclass();
             }
             fieldCacheMap.put(dataModel.getClass().getName(), fieldList);
         }

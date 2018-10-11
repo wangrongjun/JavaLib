@@ -45,25 +45,25 @@ public class SqlTemplateTest {
 
         dataModel.remove("selectColumns");
         try {
-            new SqlTemplate().process(dataModel, sql);
+            SqlTemplate.process(dataModel, sql);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("attribute 'selectColumns' in template is not defined in dataModel", e.getMessage());
         }
 
         dataModel.put("selectColumns", true);
-        String result = new SqlTemplate().process(dataModel, sql);
+        String result = SqlTemplate.process(dataModel, sql);
         assertTrue(result.contains("SELECT"));
         assertTrue(!result.contains("group_id"));
         assertTrue(!result.contains("group_name"));
 
         dataModel.put("groupId", 1);
-        result = new SqlTemplate().process(dataModel, sql);
+        result = SqlTemplate.process(dataModel, sql);
         assertTrue(result.contains("group_id"));
         assertTrue(!result.contains("group_name"));
 
         dataModel.put("groupName", "group_1");
-        result = new SqlTemplate().process(dataModel, sql);
+        result = SqlTemplate.process(dataModel, sql);
         assertTrue(result.contains("group_name"));
 
         System.out.println(sql);
@@ -92,12 +92,26 @@ public class SqlTemplateTest {
     @Test
     public void processEntity() throws Exception {
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
-        String result = new SqlTemplate().process(user, sql);
+        String result = SqlTemplate.process(user, sql);
         assertTrue(result.contains("created_on"));
 
         user.setCreatedOn(null);
-        result = new SqlTemplate().process(user, sql);
+        result = SqlTemplate.process(user, sql);
         assertTrue(!result.contains("created_on"));
+    }
+
+    @Test
+    public void testSpeed() throws Exception {
+        UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
+
+        long time1 = System.currentTimeMillis();
+        SqlTemplate.process(user, sql);
+        long time2 = System.currentTimeMillis();
+        SqlTemplate.process(user, sql);
+        long time3 = System.currentTimeMillis();
+
+        System.out.println(time2 - time1);
+        System.out.println(time3 - time2);
     }
 
 }

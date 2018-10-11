@@ -104,7 +104,7 @@ public class SqlTemplate {
                     try {
                         // 寻找 field 对应的 getter 方法，抛异常代表找不到 getter 方法
                         getMethod = tempClass.getDeclaredMethod(getMethodName);
-                    } catch (NoSuchMethodException ignored) {//
+                    } catch (NoSuchMethodException ignored) {
                     }
                     fieldMethodMap.put(field, getMethod);
                 }

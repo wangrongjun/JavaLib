@@ -48,7 +48,7 @@ public class SqlTemplateTest {
             SqlTemplate.process(sql, dataModel);
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("attribute 'selectColumns' in template is not defined in dataModel", e.getMessage());
+            assertEquals("attribute 'selectColumns' in template is not defined in any of dataModels", e.getMessage());
         }
 
         dataModel.put("selectColumns", true);
@@ -109,7 +109,7 @@ public class SqlTemplateTest {
             SqlTemplate.process(newSql, user);
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("attribute 'flag' in template is not defined in dataModel", e.getMessage());
+            assertEquals("attribute 'flag' in template is not defined in any of dataModels", e.getMessage());
         }
 
         Map<String, Object> map = new HashMap<String, Object>() {{

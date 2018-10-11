@@ -16,7 +16,9 @@ public class SqlTemplate {
      * <p>
      * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
      *
-     * @throws IllegalArgumentException if attribute in template is not defined in dataModel
+     * @param dataModels 可以设置多个dataModel，如果在第一个dataModel中找不到attribute，会在第二个找，依此类推。
+     *
+     * @throws IllegalArgumentException if attribute in template is not defined in any of dataModels
      */
     public static String process(String template, Object... dataModels) {
         if (dataModels == null || dataModels.length == 0) {
@@ -90,7 +92,7 @@ public class SqlTemplate {
         }
 
         if (!found) {
-            throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
+            throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in any of dataModels");
         } else {
             return value;
         }

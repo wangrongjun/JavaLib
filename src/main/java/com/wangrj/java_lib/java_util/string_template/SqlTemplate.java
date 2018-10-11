@@ -32,6 +32,9 @@ public class SqlTemplate {
         StringBuffer result = new StringBuffer();
 
         String ifRegex = "[ ]*--#if (.+)\n([\\d\\D]+?)\n?[ ]*--#endif[ ]*\n?";
+        if (template.contains("\r")) {
+            ifRegex = ifRegex.replace("\n", "\r\n");
+        }
         Matcher matcher = Pattern.compile(ifRegex).matcher(template);
         while (matcher.find()) {
             String attrName = matcher.group(1);

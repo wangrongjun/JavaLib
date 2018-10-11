@@ -101,6 +101,25 @@ public class SqlTemplateTest {
     }
 
     @Test
+    public void processMultiDataModel() throws Exception {
+
+        String newSql = sql + "\n --#if flag\nABC\n --#endif";
+        UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
+        try {
+            SqlTemplate.process(newSql, user);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("attribute 'flag' in template is not defined in dataModel", e.getMessage());
+        }
+
+        Map<String, Object> map = new HashMap<String, Object>() {{
+            put("flag", true);
+        }};
+        String result = SqlTemplate.process(newSql, user, map);
+        assertTrue(result.contains("ABC"));
+    }
+
+    @Test
     public void testSpeed() throws Exception {
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
 

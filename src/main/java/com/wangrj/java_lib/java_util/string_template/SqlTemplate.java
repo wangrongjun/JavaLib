@@ -1,7 +1,7 @@
 package com.wangrj.java_lib.java_util.string_template;
 
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +15,7 @@ public class SqlTemplate {
      *
      * @throws IllegalArgumentException if attribute in template is not defined in dataModel
      */
-    public static String process(Object dataModel, String template) {
+    public String process(Object dataModel, String template) {
         if (dataModel == null) {
             throw new NullPointerException("dataModel is null");
         }
@@ -41,36 +41,39 @@ public class SqlTemplate {
         return result.toString();
     }
 
-    private static Object getAttrValue(Object dataModel, String attrName) {
+    private Map<String, List<Field>> fieldCacheMap = new HashMap<>();
+
+    private Object getAttrValue(Object dataModel, String attrName) {
         if (dataModel instanceof Map) {
             Map map = (Map) dataModel;
             if (!map.containsKey(attrName)) {
                 throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
+            } else {
+                return map.get(attrName);
             }
-            return map.get(attrName);
+        }
 
-        } else {
-            Field field = null;
-            try {
-                Class tempClass = dataModel.getClass();
-                while (!tempClass.getName().equals("java.lang.Object")) {
-                    try {
-                        field = tempClass.getDeclaredField(attrName);
-                    } catch (NoSuchFieldException ignored) {
-                    }
-                    // 循环获取顶层父类，使得可以访问到父类的属性
-                    tempClass = tempClass.getSuperclass();
-                }
-                if (field == null) {
-                    throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
-                }
-
-                field.setAccessible(true);
-                return field.get(dataModel);
-
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException(e);
+        List<Field> fieldList = fieldCacheMap.get(dataModel.getClass().getName());
+        if (fieldList == null) {
+            fieldList = new ArrayList<>();
+            Class superClass = dataModel.getClass();
+            // 循环获取父类（除了Object），并保存父类的属性
+            while (!superClass.getName().equals("java.lang.Object")) {
+                fieldList.addAll(Arrays.asList(superClass.getDeclaredFields()));
+                superClass = superClass.getSuperclass();
             }
+            fieldCacheMap.put(dataModel.getClass().getName(), fieldList);
+        }
+
+        Field field = fieldList.stream().filter(f -> f.getName().equals(attrName)).findFirst().orElse(null);
+        if (field == null) {
+            throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
+        }
+        field.setAccessible(true);
+        try {
+            return field.get(dataModel);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
         }
     }
 

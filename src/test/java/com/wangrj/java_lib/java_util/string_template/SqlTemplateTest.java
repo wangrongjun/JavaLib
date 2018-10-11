@@ -45,25 +45,25 @@ public class SqlTemplateTest {
 
         dataModel.remove("selectColumns");
         try {
-            SqlTemplate.process(dataModel, sql);
+            new SqlTemplate().process(dataModel, sql);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("attribute 'selectColumns' in template is not defined in dataModel", e.getMessage());
         }
 
         dataModel.put("selectColumns", true);
-        String result = SqlTemplate.process(dataModel, sql);
+        String result = new SqlTemplate().process(dataModel, sql);
         assertTrue(result.contains("SELECT"));
         assertTrue(!result.contains("group_id"));
         assertTrue(!result.contains("group_name"));
 
         dataModel.put("groupId", 1);
-        result = SqlTemplate.process(dataModel, sql);
+        result = new SqlTemplate().process(dataModel, sql);
         assertTrue(result.contains("group_id"));
         assertTrue(!result.contains("group_name"));
 
         dataModel.put("groupName", "group_1");
-        result = SqlTemplate.process(dataModel, sql);
+        result = new SqlTemplate().process(dataModel, sql);
         assertTrue(result.contains("group_name"));
 
         System.out.println(sql);
@@ -92,11 +92,11 @@ public class SqlTemplateTest {
     @Test
     public void processEntity() throws Exception {
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
-        String result = SqlTemplate.process(user, sql);
+        String result = new SqlTemplate().process(user, sql);
         assertTrue(result.contains("created_on"));
 
         user.setCreatedOn(null);
-        result = SqlTemplate.process(user, sql);
+        result = new SqlTemplate().process(user, sql);
         assertTrue(!result.contains("created_on"));
     }
 

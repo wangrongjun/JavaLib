@@ -45,25 +45,25 @@ public class SqlTemplateTest {
 
         dataModel.remove("selectColumns");
         try {
-            SqlTemplate.process(dataModel, sql);
+            SqlTemplate.process(sql, dataModel);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("attribute 'selectColumns' in template is not defined in dataModel", e.getMessage());
         }
 
         dataModel.put("selectColumns", true);
-        String result = SqlTemplate.process(dataModel, sql);
+        String result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("SELECT"));
         assertTrue(!result.contains("group_id"));
         assertTrue(!result.contains("group_name"));
 
         dataModel.put("groupId", 1);
-        result = SqlTemplate.process(dataModel, sql);
+        result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("group_id"));
         assertTrue(!result.contains("group_name"));
 
         dataModel.put("groupName", "group_1");
-        result = SqlTemplate.process(dataModel, sql);
+        result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("group_name"));
 
         System.out.println(sql);
@@ -71,7 +71,7 @@ public class SqlTemplateTest {
         System.out.println(result);
     }
 
-    static class BaseEntity {
+    public static class BaseEntity {
         private LocalDateTime createdOn;
 
         public LocalDateTime getCreatedOn() {
@@ -92,11 +92,11 @@ public class SqlTemplateTest {
     @Test
     public void processEntity() throws Exception {
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
-        String result = SqlTemplate.process(user, sql);
+        String result = SqlTemplate.process(sql, user);
         assertTrue(result.contains("created_on"));
 
         user.setCreatedOn(null);
-        result = SqlTemplate.process(user, sql);
+        result = SqlTemplate.process(sql, user);
         assertTrue(!result.contains("created_on"));
     }
 
@@ -105,9 +105,9 @@ public class SqlTemplateTest {
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
 
         long time1 = System.currentTimeMillis();
-        SqlTemplate.process(user, sql);
+        SqlTemplate.process(sql, user);
         long time2 = System.currentTimeMillis();
-        SqlTemplate.process(user, sql);
+        SqlTemplate.process(sql, user);
         long time3 = System.currentTimeMillis();
 
         System.out.println(time2 - time1);

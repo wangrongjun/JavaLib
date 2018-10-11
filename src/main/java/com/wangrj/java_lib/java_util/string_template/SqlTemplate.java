@@ -1,6 +1,8 @@
 package com.wangrj.java_lib.java_util.string_template;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,8 +17,8 @@ public class SqlTemplate {
      *
      * @throws IllegalArgumentException if attribute in template is not defined in dataModel
      */
-    public static String process(Object dataModel, String template) {
-        if (dataModel == null) {
+    public static String process(String template, Object... dataModels) {
+        if (dataModels == null || dataModels.length == 0) {
             throw new NullPointerException("dataModel is null");
         }
         if (template == null) {
@@ -30,7 +32,7 @@ public class SqlTemplate {
         while (matcher.find()) {
             String attrName = matcher.group(1);
             String body = matcher.group(2);
-            Object attrValue = getAttrValue(dataModel, attrName);
+            Object attrValue = getAttrValue(dataModels, attrName);
             if (attrValue != null) {
                 matcher.appendReplacement(result, body);
             } else {
@@ -41,26 +43,47 @@ public class SqlTemplate {
         return result.toString();
     }
 
-    public static Object getAttrValue(Object dataModel, String attrName) {
-        if (dataModel instanceof Map) {
-            Map map = (Map) dataModel;
-            if (!map.containsKey(attrName)) {
-                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
-            } else {
-                return map.get(attrName);
+    public static Object getAttrValue(Object[] dataModels, String attrName) {
+        boolean found = false;
+        Object value = null;
+
+        for (Object dataModel : dataModels) {
+            if (dataModel instanceof Map) {
+                Map map = (Map) dataModel;
+                if (map.containsKey(attrName)) {
+                    value = map.get(attrName);
+                    found = true;
+                    break;
+                }
+            }
+
+            List<Field> fieldList = getFieldList(dataModel.getClass());
+            Field field = fieldList.stream().filter(f -> f.getName().equals(attrName)).findFirst().orElse(null);
+            if (field != null) {
+                found = true;
+                field.setAccessible(true);
+                try {
+                    String getMethodName = "get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
+                    try {
+                        // 寻找 field 对应的 getter 方法，找到就调用 getter 方法以获取 field 的值
+                        Method getMethod = dataModel.getClass().getDeclaredMethod(getMethodName);
+                        value = getMethod.invoke(dataModel);
+                    } catch (NoSuchMethodException e) {// 抛异常代表找不到 getter 方法，就直接赋值
+                        value = field.get(dataModel);
+                    } catch (InvocationTargetException e) {// 执行 getter 方法出错，向上抛异常
+                        throw new IllegalStateException(e);
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                }
+                break;
             }
         }
 
-        List<Field> fieldList = getFieldList(dataModel.getClass());
-        Field field = fieldList.stream().filter(f -> f.getName().equals(attrName)).findFirst().orElse(null);
-        if (field == null) {
+        if (!found) {
             throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
-        }
-        field.setAccessible(true);
-        try {
-            return field.get(dataModel);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
+        } else {
+            return value;
         }
     }
 

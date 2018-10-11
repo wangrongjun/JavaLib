@@ -1,5 +1,6 @@
 package com.wangrj.java_lib.java_util.string_template;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,9 +34,22 @@ public class SqlTemplate {
     public static Object getAttrValue(Object dataModel, String attrName) {
         if (dataModel instanceof Map) {
             Map map = (Map) dataModel;
+            if (!map.containsKey(attrName)) {
+                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not exists in dataModel");
+            }
             return map.get(attrName);
+
         } else {
-            throw new RuntimeException("Not Support");
+            Field field;
+            try {
+                field = dataModel.getClass().getField(attrName);
+                field.setAccessible(true);
+                return field.get(dataModel);
+            } catch (NoSuchFieldException e) {
+                throw new IllegalArgumentException("attribute '" + attrName + "' in template is not exists in dataModel", e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 

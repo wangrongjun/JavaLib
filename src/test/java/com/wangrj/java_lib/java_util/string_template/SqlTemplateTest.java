@@ -8,7 +8,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 /**
- * by wangrongjun on 2018/10/10.
+ * by robin.wang on 2018/10/10.
  */
 public class SqlTemplateTest {
 

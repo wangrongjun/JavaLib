@@ -1,5 +1,7 @@
 package com.wangrj.java_lib.java_util.string_template;
 
+import com.sun.istack.internal.NotNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -64,34 +66,14 @@ public class SqlTemplate {
                 }
             }
 
-            Map<Field, Method> fieldMethodMap = getFieldList(dataModel.getClass());
-            Field field = null;
-            Method getterMethod = null;
-            for (Map.Entry<Field, Method> entry : fieldMethodMap.entrySet()) {
-                if (entry.getKey().getName().equals(attrName)) {
-                    field = entry.getKey();
-                    getterMethod = entry.getValue();
+            Map<Field, Object> fieldAndValueMap = getFieldAndValueMap(dataModel);
+            for (Map.Entry<Field, Object> entry : fieldAndValueMap.entrySet()) {
+                Field field = entry.getKey();
+                if (field.getName().equals(attrName)) {
+                    found = true;
+                    value = entry.getValue();
                     break;
                 }
-            }
-
-            if (field != null) {
-                found = true;
-                if (getterMethod != null) {// 如果 getter 存在，就执行 getter 方法取值
-                    try {
-                        value = getterMethod.invoke(dataModel);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new IllegalStateException(e);// 执行 getter 方法出错，向上抛异常
-                    }
-                } else {// 否则直接从 field 取值
-                    field.setAccessible(true);
-                    try {
-                        value = field.get(dataModel);
-                    } catch (IllegalAccessException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }
-                break;
             }
         }
 
@@ -109,7 +91,7 @@ public class SqlTemplate {
      * <p>
      * 注意：返回的结果包括指定类的父类（以及父类的父类，到Object为止，不包括Object）的 fields 以及对应的 getter
      */
-    public static Map<Field, Method> getFieldList(Class cls) {
+    public static Map<Field, Method> getFieldAndGetterMethodMap(@NotNull Class cls) {
         Map<Field, Method> fieldMethodMap = fieldCacheMap.get(cls.getName());
         if (fieldMethodMap == null) {
             fieldMethodMap = new HashMap<>();
@@ -131,6 +113,39 @@ public class SqlTemplate {
             fieldCacheMap.put(cls.getName(), fieldMethodMap);
         }
         return fieldMethodMap;
+    }
+
+    /**
+     * 获取实体对象的 declaredFields 以及对应的 value
+     * <p>
+     * 注意：返回的结果包括指定类的父类（以及父类的父类，到Object为止，不包括Object）的 fields 以及对应的 value。
+     * 其中 value 默认使用 getter 获取。如果没有 getter，直接从属性获取。
+     */
+    public static Map<Field, Object> getFieldAndValueMap(@NotNull Object entity) {
+        Map<Field, Object> fieldAndValueMap = new HashMap<>();
+
+        Map<Field, Method> fieldMethodMap = getFieldAndGetterMethodMap(entity.getClass());
+        for (Map.Entry<Field, Method> entry : fieldMethodMap.entrySet()) {
+            Field field = entry.getKey();
+            Method getterMethod = entry.getValue();
+            Object value;
+            if (getterMethod != null) {// 如果 getter 存在，就执行 getter 方法取值
+                try {
+                    value = getterMethod.invoke(entity);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException(e);// 执行 getter 方法出错，向上抛异常
+                }
+            } else {// 否则直接从 field 取值
+                field.setAccessible(true);
+                try {
+                    value = field.get(entity);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+            fieldAndValueMap.put(field, value);
+        }
+        return fieldAndValueMap;
     }
 
 }

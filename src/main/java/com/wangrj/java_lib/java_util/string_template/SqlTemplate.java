@@ -41,9 +41,7 @@ public class SqlTemplate {
         return result.toString();
     }
 
-    private static Map<String, List<Field>> fieldCacheMap = new HashMap<>();
-
-    private static Object getAttrValue(Object dataModel, String attrName) {
+    public static Object getAttrValue(Object dataModel, String attrName) {
         if (dataModel instanceof Map) {
             Map map = (Map) dataModel;
             if (!map.containsKey(attrName)) {
@@ -53,18 +51,7 @@ public class SqlTemplate {
             }
         }
 
-        List<Field> fieldList = fieldCacheMap.get(dataModel.getClass().getName());
-        if (fieldList == null) {
-            fieldList = new ArrayList<>();
-            Class tempClass = dataModel.getClass();
-            // 循环获取父类（除了Object），并保存父类的属性
-            while (!tempClass.getName().equals("java.lang.Object")) {
-                fieldList.addAll(Arrays.asList(tempClass.getDeclaredFields()));
-                tempClass = tempClass.getSuperclass();
-            }
-            fieldCacheMap.put(dataModel.getClass().getName(), fieldList);
-        }
-
+        List<Field> fieldList = getFieldList(dataModel.getClass());
         Field field = fieldList.stream().filter(f -> f.getName().equals(attrName)).findFirst().orElse(null);
         if (field == null) {
             throw new IllegalArgumentException("attribute '" + attrName + "' in template is not defined in dataModel");
@@ -75,6 +62,25 @@ public class SqlTemplate {
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static Map<String, List<Field>> fieldCacheMap = new HashMap<>();
+
+    /**
+     * 获取指定类的 DeclaredFields，同时返回指定类的父类（以及父类的父类，到Object为止，不包括Object）的 DeclaredFields
+     */
+    public static List<Field> getFieldList(Class cls) {
+        List<Field> fieldList = fieldCacheMap.get(cls.getName());
+        if (fieldList == null) {
+            fieldList = new ArrayList<>();
+            Class tempClass = cls;
+            while (!tempClass.getName().equals("java.lang.Object")) {
+                fieldList.addAll(Arrays.asList(tempClass.getDeclaredFields()));
+                tempClass = tempClass.getSuperclass();
+            }
+            fieldCacheMap.put(cls.getName(), fieldList);
+        }
+        return fieldList;
     }
 
 }

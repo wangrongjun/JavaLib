@@ -5,7 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * by wangrongjun on 2018/10/10.
+ * 处理 sql 中模版指令（--#if attribute 和 --#endif）包裹的内容。
+ * <p>
+ * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
  */
 public class SqlTemplate {
 

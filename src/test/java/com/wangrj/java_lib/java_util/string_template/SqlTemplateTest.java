@@ -54,13 +54,13 @@ public class SqlTemplateTest {
         dataModel.put("selectColumns", true);
         String result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("SELECT"));
-        assertTrue(!result.contains("group_id"));
-        assertTrue(!result.contains("group_name"));
+        assertFalse(result.contains("group_id"));
+        assertFalse(result.contains("group_name"));
 
         dataModel.put("groupId", 1);
         result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("group_id"));
-        assertTrue(!result.contains("group_name"));
+        assertFalse(result.contains("group_name"));
 
         dataModel.put("groupName", "group_1");
         result = SqlTemplate.process(sql, dataModel);
@@ -71,7 +71,10 @@ public class SqlTemplateTest {
         System.out.println(result);
     }
 
-    public static class BaseEntity {
+    public static class UserEntity {
+        private Boolean selectColumns;
+        private Integer groupId;
+        private String groupName;
         private LocalDateTime createdOn;
 
         public LocalDateTime getCreatedOn() {
@@ -83,12 +86,6 @@ public class SqlTemplateTest {
         }
     }
 
-    public static class UserEntity extends BaseEntity {
-        private Boolean selectColumns;
-        private Integer groupId;
-        private String groupName;
-    }
-
     @Test
     public void processEntity() throws Exception {
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
@@ -97,25 +94,24 @@ public class SqlTemplateTest {
 
         user.setCreatedOn(null);
         result = SqlTemplate.process(sql, user);
-        assertTrue(!result.contains("created_on"));
+        assertFalse(result.contains("created_on"));
     }
 
     @Test
     public void processMultiDataModel() throws Exception {
-
         String newSql = sql + "\n --#if flag\nABC\n --#endif";
         UserEntity user = new EntityExampleCreator().containsSuperClassFields(true).create(UserEntity.class).get(0);
         try {
             SqlTemplate.process(newSql, user);
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("attribute 'flag' in template is not defined in any of dataModels", e.getMessage());
+            assertTrue(e.getMessage().contains("flag"));
         }
 
-        Map<String, Object> map = new HashMap<String, Object>() {{
+        Map<String, Object> dataModel = new HashMap<String, Object>() {{
             put("flag", true);
         }};
-        String result = SqlTemplate.process(newSql, user, map);
+        String result = SqlTemplate.process(newSql, user, dataModel);
         assertTrue(result.contains("ABC"));
     }
 

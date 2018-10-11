@@ -88,27 +88,21 @@ public class SqlTemplate {
 
     /**
      * 获取指定类的 declaredFields 以及对应的 getterMethods
-     * <p>
-     * 注意：返回的结果包括指定类的父类（以及父类的父类，到Object为止，不包括Object）的 fields 以及对应的 getter
      */
-    public static Map<Field, Method> getFieldAndGetterMethodMap(@NotNull Class cls) {
+    public static Map<Field, Method> getFieldAndGetterMethodMap(@NotNull Class<?> cls) {
         Map<Field, Method> fieldMethodMap = fieldCacheMap.get(cls.getName());
         if (fieldMethodMap == null) {
             fieldMethodMap = new HashMap<>();
-            Class<?> tempClass = cls;
-            while (!tempClass.getName().equals("java.lang.Object")) {
-                Field[] fields = tempClass.getDeclaredFields();
-                for (Field field : fields) {
-                    String getMethodName = "get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
-                    Method getMethod = null;
-                    try {
-                        // 寻找 field 对应的 getter 方法，抛异常代表找不到 getter 方法
-                        getMethod = tempClass.getDeclaredMethod(getMethodName);
-                    } catch (NoSuchMethodException ignored) {
-                    }
-                    fieldMethodMap.put(field, getMethod);
+            Field[] fields = cls.getDeclaredFields();
+            for (Field field : fields) {
+                String getMethodName = "get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
+                Method getMethod = null;
+                try {
+                    // 寻找 field 对应的 getter 方法，抛异常代表找不到 getter 方法
+                    getMethod = cls.getDeclaredMethod(getMethodName);
+                } catch (NoSuchMethodException ignored) {
                 }
-                tempClass = tempClass.getSuperclass();
+                fieldMethodMap.put(field, getMethod);
             }
             fieldCacheMap.put(cls.getName(), fieldMethodMap);
         }
@@ -116,10 +110,7 @@ public class SqlTemplate {
     }
 
     /**
-     * 获取实体对象的 declaredFields 以及对应的 value
-     * <p>
-     * 注意：返回的结果包括指定类的父类（以及父类的父类，到Object为止，不包括Object）的 fields 以及对应的 value。
-     * 其中 value 默认使用 getter 获取。如果没有 getter，直接从属性获取。
+     * 获取实体对象的declaredFields以及对应的value。其中value默认使用getter获取。如果没有getter，直接从属性获取。
      */
     public static Map<Field, Object> getFieldAndValueMap(@NotNull Object entity) {
         Map<Field, Object> fieldAndValueMap = new HashMap<>();

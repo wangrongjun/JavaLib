@@ -1,7 +1,5 @@
 package com.wangrj.java_lib.java_util.string_template;
 
-import com.sun.istack.internal.NotNull;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 public class SqlTemplate {
 
@@ -92,7 +89,7 @@ public class SqlTemplate {
     /**
      * 获取指定类的 declaredFields 以及对应的 getterMethods
      */
-    public static Map<Field, Method> getFieldAndGetterMethodMap(@NotNull Class<?> cls) {
+    public static Map<Field, Method> getFieldAndGetterMethodMap(Class<?> cls) {
         Map<Field, Method> fieldMethodMap = fieldCacheMap.get(cls.getName());
         if (fieldMethodMap == null) {
             fieldMethodMap = new HashMap<>();
@@ -115,7 +112,7 @@ public class SqlTemplate {
     /**
      * 获取实体对象的declaredFields以及对应的value。其中value默认使用getter获取。如果没有getter，直接从属性获取。
      */
-    public static Map<Field, Object> getFieldAndValueMap(@NotNull Object entity) {
+    public static Map<Field, Object> getFieldAndValueMap(Object entity) {
         Map<Field, Object> fieldAndValueMap = new HashMap<>();
 
         Map<Field, Method> fieldMethodMap = getFieldAndGetterMethodMap(entity.getClass());

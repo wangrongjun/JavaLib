@@ -26,7 +26,7 @@ public class SqlTemplateTest {
             "  --#if groupId\n" +
             "  AND group_id = :groupId\n" +
             "  --#endif\n" +
-            "  --#if groupName\n" +
+            "  --#if !groupName\n" +
             "  AND group_name = :groupName\n" +
             "  --#endif\n" +
             "  --#if createdOn\n" +
@@ -55,16 +55,16 @@ public class SqlTemplateTest {
         String result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("SELECT"));
         assertFalse(result.contains("group_id"));
-        assertFalse(result.contains("group_name"));
+        assertTrue(result.contains("group_name"));
 
         dataModel.put("groupId", 1);
         result = SqlTemplate.process(sql, dataModel);
         assertTrue(result.contains("group_id"));
-        assertFalse(result.contains("group_name"));
+        assertTrue(result.contains("group_name"));
 
         dataModel.put("groupName", "group_1");
         result = SqlTemplate.process(sql, dataModel);
-        assertTrue(result.contains("group_name"));
+        assertFalse(result.contains("group_name"));
 
         System.out.println(sql);
         System.out.println("================================");

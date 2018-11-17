@@ -13,7 +13,7 @@ public class SqlTemplate {
     /**
      * 处理 sql 中模版指令（--#if attribute 和 --#endif）包裹的内容。
      * <p>
-     * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。
+     * 处理方式：根据 attribute 是否为空，来决定输出的结果是否包含模版指令包裹的内容。如果attribute前加了非（!），则逻辑相反。
      *
      * @param dataModels 可以设置多个dataModel，如果在第一个dataModel中找不到attribute，会在第二个找，依此类推。
      * @throws IllegalArgumentException if attribute in template is not defined in any of dataModels
@@ -28,7 +28,7 @@ public class SqlTemplate {
 
         StringBuffer result = new StringBuffer();
 
-        String ifRegex = "[ ]*--#if (.+)\n([\\d\\D]+?)\n?[ ]*--#endif[ ]*\n?";
+        String ifRegex = "[ ]*--#if ([!]?.+)\n([\\d\\D]+?)\n?[ ]*--#endif[ ]*\n?";
         if (template.contains("\r")) {
             ifRegex = ifRegex.replace("\n", "\r\n");
         }
@@ -36,11 +36,20 @@ public class SqlTemplate {
         while (matcher.find()) {
             String attrName = matcher.group(1);
             String body = matcher.group(2);
-            Object attrValue = getAttrValue(dataModels, attrName);
-            if (attrValue != null) {
-                matcher.appendReplacement(result, body);
+            if (attrName.startsWith("!")) {// 逻辑非
+                Object attrValue = getAttrValue(dataModels, attrName.substring(1));
+                if (attrValue == null) {
+                    matcher.appendReplacement(result, body);
+                } else {
+                    matcher.appendReplacement(result, "");
+                }
             } else {
-                matcher.appendReplacement(result, "");
+                Object attrValue = getAttrValue(dataModels, attrName);
+                if (attrValue != null) {
+                    matcher.appendReplacement(result, body);
+                } else {
+                    matcher.appendReplacement(result, "");
+                }
             }
         }
         matcher.appendTail(result);

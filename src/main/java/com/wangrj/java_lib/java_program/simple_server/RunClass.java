@@ -9,8 +9,8 @@ import java.net.Socket;
  */
 public class RunClass {
 
-    public static final int port = 8080;
-    public static final String resourceRoot = "E:/resource";
+    public static int port = 8080;
+    public static String resourceRoot = "E:/resource";
     public static boolean shouldClose = false;
 
     /*
@@ -20,6 +20,13 @@ public class RunClass {
      */
 
     public static void main(String[] args) throws IOException {
+        if (args != null && args.length > 0) {
+            port = Integer.parseInt(args[0]);
+        }
+        if (args != null && args.length > 1) {
+            resourceRoot = args[1];
+        }
+
         ServerSocket server = new ServerSocket(port);
         while (!shouldClose) {
             Socket socket = server.accept();

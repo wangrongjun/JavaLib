@@ -231,4 +231,15 @@ public class BinaryUtil {
         return result;
     }
 
+    /**
+     * 获取一个byte中某个区段的bit组成的值
+     * 例子：
+     * 0b10101010, 0, 1 => 0b10 => 2
+     * 0b10101010, 1, 3 => 0b101 => 5
+     */
+    public static int getBitValue(byte data, int low, int high) {
+        // 思路：1.先把data右移low位，使得需要读取的区段的bit在最左侧 2.使用掩码把最左侧需要读取的区段的bit投影出来
+        return (data >> low) & (0b11111111 >> (8 - (high - low + 1)));
+    }
+
 }

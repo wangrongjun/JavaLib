@@ -131,7 +131,7 @@ public class BinaryUtil {
         }
     }
 
-    public static long toNumber(String binaryString) throws Exception {
+    public static long toNumber(String binaryString) {
         long temp = 1;
         long result = 0;
         for (int i = binaryString.length() - 1; i >= 0; i--) {
@@ -139,7 +139,7 @@ public class BinaryUtil {
             if (c == '1') {
                 result += temp;
             } else if (c != '0') {
-                throw new Exception("not binary string, with illegal char: " + c);
+                throw new IllegalArgumentException("not binary string, with illegal char: " + c);
             }
             temp *= 2;
         }

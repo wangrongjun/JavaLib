@@ -28,13 +28,13 @@ public class HttpServerThread extends Thread {
         byte[] buf = new byte[64];
         int length;
         StringBuilder requestHeader = new StringBuilder();
-        while ((length = is.read(buf)) != -1) {
-            requestHeader.append(new String(buf, 0, length));
-        }
-//        while (!requestHeader.toString().endsWith("\r\n\r\n")) {
-//            length = is.read(buf);
+//        while ((length = is.read(buf)) != -1) {
 //            requestHeader.append(new String(buf, 0, length));
 //        }
+        while (!requestHeader.toString().endsWith("\r\n\r\n")) {
+            length = is.read(buf);
+            requestHeader.append(new String(buf, 0, length));
+        }
         System.out.println("----------------------- request header from client\n" + requestHeader.toString().replace("\r\n", "\\r\\n\r\n"));
     }
 

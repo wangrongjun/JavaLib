@@ -1,0 +1,9 @@
+GET /img/icon-copy.png HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+Accept: image/webp,image/apng,image/*,*/*;q=0.8
+Referer: http://localhost:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: Idea-76e67745=0f7ac2e2-c074-4965-b0b0-a6c6e145f3f6; _ga=GA1.1.1848396372.1536761007; jenkins-timestamper-offset=-28800000; Idea-46a8d103=537c28c7-39f6-4e6b-b5a3-e76334f25baa

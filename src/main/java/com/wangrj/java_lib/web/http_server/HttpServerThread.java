@@ -28,24 +28,38 @@ public class HttpServerThread extends Thread {
         byte[] buf = new byte[64];
         int length;
         StringBuilder requestHeader = new StringBuilder();
-        while (!requestHeader.toString().endsWith("\r\n\r\n")) {
-            length = is.read(buf);
+        while ((length = is.read(buf)) != -1) {
             requestHeader.append(new String(buf, 0, length));
         }
-        System.out.println("----------------------- request header from client\n" + requestHeader);
+//        while (!requestHeader.toString().endsWith("\r\n\r\n")) {
+//            length = is.read(buf);
+//            requestHeader.append(new String(buf, 0, length));
+//        }
+        System.out.println("----------------------- request header from client\n" + requestHeader.toString().replace("\r\n", "\\r\\n\r\n"));
     }
 
     public static class HttpRequest {
-        private String requestHeader;
+        private String requestMethod;
+        private String requestPath;
         private byte[] requestBody;
 
         private HttpRequest(String requestHeader, byte[] requestBody) {
-            this.requestHeader = requestHeader;
             this.requestBody = requestBody;
+            String[] split = requestHeader.substring(0, requestHeader.indexOf("/n")).split(" ");
+            String requestMethod = split[0];
+            String requestPath = split[1];
+        }
+
+        public String getRequestMethod() {
+            return requestMethod;
         }
 
         public String getRequestPath() {
-            return null;
+            return requestPath;
+        }
+
+        public byte[] getRequestBody() {
+            return requestBody;
         }
     }
 

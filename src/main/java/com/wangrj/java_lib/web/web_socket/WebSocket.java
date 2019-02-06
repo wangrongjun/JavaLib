@@ -18,7 +18,7 @@ public class WebSocket implements Closeable {
         this.onDataReceivedListener = onDataReceivedListener;
     }
 
-    interface OnDataReceivedListener {
+    public interface OnDataReceivedListener {
         void onDataReceived(byte[] data);
     }
 

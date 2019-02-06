@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebSocket Test</title>
+</head>
+<body>
+
+<p id="state">state</p>
+<div>
+    <input type="text" id="sendText">
+    <button onclick="send()">发送</button>
+</div>
+<hr>
+<p id="msg"></p>
+
+<script src="http://apps.bdimg.com/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>
+    $state = $('#state');
+    $msg = $('#msg');
+    $sendText = $('#sendText');
+
+    $state.text('WebSocket connecting...');
+    const webSocket = new WebSocket('ws://localhost:8081');
+    webSocket.onopen = function (ev) {
+        $state.text('WebSocket connected: ' + webSocket.url);
+    };
+    webSocket.onmessage = function (messageEvent) {
+        $msg.html($msg.html() + messageEvent.data + "<br/>----------------------------------<br/>");
+    };
+    webSocket.onclose = function (closeEvent) {
+        $state.text("WebSocket closed");
+    };
+
+    function send() {
+        webSocket.send($sendText.val());
+        $sendText.val('');
+    }
+</script>
+
+</body>
+</html>

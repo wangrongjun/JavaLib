@@ -12,14 +12,15 @@ repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
 }
 
-tasks.withType(JavaCompile) {// 一定要有，否则编译报错非法字符
+// 一定要有，否则编译报错非法字符
+tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
 
+// 配置src/main/java为资源目录，这样该目录下（包括子目录）的资源文件如xml文件就可以发布到jar包里
+// 这样可以避免因为没发布使得Mybatis读不到xxDao的映射文件
 sourceSets {
     main {
-        // 配置src/main/java为资源目录，这样该目录下（包括子目录）的资源文件如xml文件就可以发布到jar包里
-        // 这样可以避免因为没发布使得Mybatis读不到xxDao的映射文件
         resources {
             srcDir 'src/main/java'
             include '**/*.xml'
@@ -29,6 +30,12 @@ sourceSets {
         }
     }
 }
+
+task sourceJar(type: Jar) << {
+    classifier = 'sources' // 源码Jar包后缀，默认为空
+    from sourceSets.main.allSource
+}
+//sourceJar.dependsOn 'build'
 
 dependencies {
     compile 'junit:junit:4.10'

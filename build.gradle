@@ -16,6 +16,20 @@ tasks.withType(JavaCompile) {// 一定要有，否则编译报错非法字符
     options.encoding = "UTF-8"
 }
 
+sourceSets {
+    main {
+        // 配置src/main/java为资源目录，这样该目录下（包括子目录）的资源文件如xml文件就可以发布到jar包里
+        // 这样可以避免因为没发布使得Mybatis读不到xxDao的映射文件
+        resources {
+            srcDir 'src/main/java'
+            include '**/*.xml'
+            include '**/*.html'
+            include '**/*.js'
+            include '**/*.css'
+        }
+    }
+}
+
 dependencies {
     compile 'junit:junit:4.10'
     compile 'org.apache.commons:commons-dbcp2:2.1.1'

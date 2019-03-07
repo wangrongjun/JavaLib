@@ -21,21 +21,25 @@ tasks.withType(JavaCompile) {
 // 这样可以避免因为没发布使得Mybatis读不到xxDao的映射文件
 sourceSets {
     main {
-        resources {
+        java {
             srcDir 'src/main/java'
-            include '**/*.xml'
-            include '**/*.html'
-            include '**/*.js'
-            include '**/*.css'
         }
     }
+//    main {
+//        resources {
+//            srcDir 'src/main/java'
+//            include '**/*.xml'
+//            include '**/*.html'
+//            include '**/*.js'
+//            include '**/*.css'
+//        }
+//    }
 }
 
-task sourceJar(type: Jar) << {
+task sourceJar(type: Jar) {
     classifier = 'sources' // 源码Jar包后缀，默认为空
     from sourceSets.main.allSource
 }
-//sourceJar.dependsOn 'build'
 
 dependencies {
     compile 'junit:junit:4.10'

@@ -12,6 +12,10 @@ repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
 }
 
+tasks.withType(JavaCompile) {// 一定要有，否则编译报错非法字符
+    options.encoding = "UTF-8"
+}
+
 dependencies {
     compile 'junit:junit:4.10'
     compile 'org.apache.commons:commons-dbcp2:2.1.1'

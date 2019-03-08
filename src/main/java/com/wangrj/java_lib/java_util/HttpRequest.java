@@ -198,7 +198,7 @@ public class HttpRequest {
         } else if (response.responseCode == 302) {// 重定向
             String location = conn.getHeaderField("Location");
             System.out.println("redirect to: " + location);
-            return request(url);
+            return request(location);
         } else {
             InputStream is = conn.getErrorStream();
             String errorMessage = null;

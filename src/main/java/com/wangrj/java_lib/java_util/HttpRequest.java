@@ -195,13 +195,17 @@ public class HttpRequest {
             if (is != null) {
                 response.responseData = StreamUtil.toBytes(is);
             }
+        } else if (response.responseCode == 302) {// 重定向
+            String location = conn.getHeaderField("Location");
+            System.out.println("redirect to: " + location);
+            return new HttpRequest().request(url);
         } else {
             InputStream is = conn.getErrorStream();
             String errorMessage = null;
             if (is != null) {
                 errorMessage = StreamUtil.readInputStream(is);
             }
-            throw new ResponseCodeNot200Exception(response.responseCode, conn.getResponseMessage(), errorMessage);
+            throw new ResponseCodeNot200Exception(response.responseCode, conn.getResponseMessage(), response.responseHeader, errorMessage);
         }
 
         return response;
@@ -298,41 +302,20 @@ public class HttpRequest {
         }
 
         public String toResponseHeaderString() {
-            ResponseHeader responseHeader = getResponseHeader();
-            if (responseHeader == null) {
-                return null;
-            }
-            StringBuilder builder = new StringBuilder();
-            builder.append("Content-Length: ").append(responseHeader.getContentLength()).append("\n");
-            if (responseHeader.getContentType() != null) {
-                builder.append("Content-Type: ").append(responseHeader.getContentType()).append("\n");
-            }
-            if (responseHeader.getCookie() != null) {
-                builder.append("Cookie: ").append(responseHeader.getCookie()).append("\n");
-            }
-            if (responseHeader.getSetCookie() != null) {
-                builder.append("Set-Cookie: ").append(responseHeader.getSetCookie()).append("\n");
-            }
-            Map<String, List<String>> headerFields = responseHeader.getHeaderFields();
-            for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
-                String value = null;
-                if (entry.getValue() != null) {
-                    value = entry.getValue().stream().collect(Collectors.joining(" ||| "));
-                }
-                builder.append(entry.getKey()).append(": ").append(value).append("\n");
-            }
-            return builder.toString();
+            return HttpRequest.toResponseHeaderString(getResponseHeader());
         }
     }
 
     public static class ResponseCodeNot200Exception extends Exception {
         private int responseCode;
         private String responseMessage;
+        private ResponseHeader responseHeader;
         private String errorMessage;
 
-        ResponseCodeNot200Exception(int responseCode, String responseMessage, String errorMessage) {
+        ResponseCodeNot200Exception(int responseCode, String responseMessage, ResponseHeader responseHeader, String errorMessage) {
             this.responseCode = responseCode;
             this.responseMessage = responseMessage;
+            this.responseHeader = responseHeader;
             this.errorMessage = errorMessage;
         }
 
@@ -341,8 +324,35 @@ public class HttpRequest {
             return ResponseCodeNot200Exception.class.getSimpleName() + ": " +
                     "responseCode = " + responseCode +
                     ", responseMessage = " + responseMessage +
-                    ", errorMessage = " + errorMessage;
+                    ", errorMessage = " + errorMessage +
+                    responseHeader == null ? "" : ", \nresponseHeader = \n" + toResponseHeaderString(responseHeader);
         }
+    }
+
+    private static String toResponseHeaderString(ResponseHeader responseHeader) {
+        if (responseHeader == null) {
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("Content-Length: ").append(responseHeader.getContentLength()).append("\n");
+        if (responseHeader.getContentType() != null) {
+            builder.append("Content-Type: ").append(responseHeader.getContentType()).append("\n");
+        }
+        if (responseHeader.getCookie() != null) {
+            builder.append("Cookie: ").append(responseHeader.getCookie()).append("\n");
+        }
+        if (responseHeader.getSetCookie() != null) {
+            builder.append("Set-Cookie: ").append(responseHeader.getSetCookie()).append("\n");
+        }
+        Map<String, List<String>> headerFields = responseHeader.getHeaderFields();
+        for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
+            String value = null;
+            if (entry.getValue() != null) {
+                value = entry.getValue().stream().collect(Collectors.joining(" ||| "));
+            }
+            builder.append(entry.getKey()).append(": ").append(value).append("\n");
+        }
+        return builder.toString();
     }
 
 }

@@ -325,7 +325,7 @@ public class HttpRequest {
                     "responseCode = " + responseCode +
                     ", responseMessage = " + responseMessage +
                     ", errorMessage = " + errorMessage +
-                    responseHeader == null ? "" : ", \nresponseHeader = \n" + toResponseHeaderString(responseHeader);
+                    (responseHeader == null ? "" : (", \nresponseHeader = \n" + toResponseHeaderString(responseHeader)));
         }
     }
 

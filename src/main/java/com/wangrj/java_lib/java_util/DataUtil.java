@@ -85,6 +85,24 @@ public class DataUtil {
         }
     }
 
+    public static String sha1Hex(byte[] data) throws Exception {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+
+        messageDigest.update(data);
+
+        byte[] sha1 = messageDigest.digest();
+        String sha1Hex = "";
+        for (int i = 0; i < sha1.length; ++i) {
+            String s = Integer.toHexString(sha1[i] & 255);// 参考Groovy的String.encodeHex方法
+            if (s.length() < 2) {
+                sha1Hex += "0";
+            }
+            sha1Hex += s;
+        }
+
+        return sha1Hex;
+    }
+
     /**
      * 文件转化为字符串
      */

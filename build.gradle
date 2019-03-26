@@ -36,6 +36,12 @@ sourceSets {
 //    }
 }
 
+buildscript {
+    ext {
+        springBootVersion = '2.0.0.RELEASE'
+    }
+}
+
 task sourceJar(type: Jar) {
     classifier = 'sources' // 源码Jar包后缀，默认为空
     from sourceSets.main.allSource
@@ -63,5 +69,10 @@ dependencies {
     compile 'org.apache.poi:poi-ooxml:3.17'
     compile 'org.apache.commons:commons-csv:1.4'
     compile 'org.apache.pdfbox:pdfbox:2.0.11'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+
+    compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+
     compile fileTree(dir: 'lib', includes: ['*.jar'])
 }
